@@ -106,3 +106,13 @@ class ProjectStateRepository:
         with self._lock:
             self._chat_history.append(msg)
             return msg
+
+    # --- Workspace filtering (多实例隔离预留) ---
+
+    def get_agents_by_workspace(self, workspace_id: str) -> list[AgentInstance]:
+        with self._lock:
+            return [a for a in self._agents.values() if a.workspace_id == workspace_id]
+
+    def get_features_by_workspace(self, workspace_id: str) -> list[Feature]:
+        with self._lock:
+            return [f for f in self._features.values() if f.workspace_id == workspace_id]

@@ -124,3 +124,39 @@ def test_repository_snapshot_includes_chat(repo: ProjectStateRepository) -> None
     snapshot = repo.load_snapshot()
     assert len(snapshot.chat_history) == 1
     assert snapshot.chat_history[0].content == "进展如何？"
+
+
+# --- Milestone 5: Workspace 过滤（多实例隔离预留） ---
+
+def test_repository_get_agents_by_workspace(repo: ProjectStateRepository) -> None:
+    a1 = AgentInstance(id="agent-1", role="backend", instance_number=1, workspace_id="ws-alpha")
+    a2 = AgentInstance(id="agent-2", role="backend", instance_number=2, workspace_id="ws-beta")
+    a3 = AgentInstance(id="agent-3", role="frontend", instance_number=1, workspace_id="ws-alpha")
+    repo.upsert_agent(a1)
+    repo.upsert_agent(a2)
+    repo.upsert_agent(a3)
+
+    alpha_agents = repo.get_agents_by_workspace("ws-alpha")
+    assert len(alpha_agents) == 2
+    assert {a.id for a in alpha_agents} == {"agent-1", "agent-3"}
+
+    beta_agents = repo.get_agents_by_workspace("ws-beta")
+    assert len(beta_agents) == 1
+    assert beta_agents[0].id == "agent-2"
+
+
+def test_repository_get_features_by_workspace(repo: ProjectStateRepository) -> None:
+    f1 = Feature(id="F001", category="auth", description="login", workspace_id="ws-alpha")
+    f2 = Feature(id="F002", category="api", description="REST", workspace_id="ws-beta")
+    f3 = Feature(id="F003", category="ui", description="form", workspace_id="ws-alpha")
+    repo.upsert_feature(f1)
+    repo.upsert_feature(f2)
+    repo.upsert_feature(f3)
+
+    alpha_features = repo.get_features_by_workspace("ws-alpha")
+    assert len(alpha_features) == 2
+    assert {f.id for f in alpha_features} == {"F001", "F003"}
+
+    beta_features = repo.get_features_by_workspace("ws-beta")
+    assert len(beta_features) == 1
+    assert beta_features[0].id == "F002"
