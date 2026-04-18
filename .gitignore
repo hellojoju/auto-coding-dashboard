@@ -1,0 +1,6 @@
+dashboard-ui/
+test-e2e-project/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
