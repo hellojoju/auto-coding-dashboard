@@ -14,6 +14,8 @@ def event_bus(tmp_path: Path) -> EventBus:
     return EventBus(log_file=tmp_path / "events.log")
 
 
+# --- Original fixtures (legacy tests) ---
+
 @pytest.fixture
 def app(event_bus: EventBus):
     return create_dashboard_app(event_bus=event_bus)
@@ -24,6 +26,107 @@ async def client(app):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as c:
         yield c
+
+
+# --- Repository-backed fixtures ---
+
+@pytest.fixture
+def repo(tmp_path: Path):
+    from dashboard.state_repository import ProjectStateRepository
+    return ProjectStateRepository(
+        base_dir=tmp_path,
+        project_id="test_proj",
+        run_id="run_001",
+    )
+
+
+@pytest.fixture
+def app_with_repo(event_bus: EventBus, repo):
+    return create_dashboard_app(event_bus=event_bus, repository=repo)
+
+
+@pytest.fixture
+async def client_with_repo(app_with_repo):
+    transport = ASGITransport(app=app_with_repo)
+    async with AsyncClient(transport=transport, base_url="http://test") as c:
+        yield c
+
+
+# --- GET /api/dashboard/state ---
+
+async def test_dashboard_state_returns_snapshot(client_with_repo):
+    resp = await client_with_repo.get("/api/dashboard/state")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "project_id" in data
+    assert "agents" in data
+    assert "features" in data
+    assert "chat_history" in data
+    assert "last_event_id" in data
+
+
+async def test_dashboard_state_reflects_agents(app_with_repo, repo):
+    agent = AgentInstance(id="backend-1", role="backend", instance_number=1)
+    repo.upsert_agent(agent)
+    transport = ASGITransport(app=app_with_repo)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get("/api/dashboard/state")
+        data = resp.json()
+        assert len(data["agents"]) == 1
+        assert data["agents"][0]["id"] == "backend-1"
+
+
+# --- GET /api/dashboard/events ---
+
+async def test_dashboard_events_returns_events(client_with_repo, repo):
+    repo.append_event(type="agent_log_emitted")
+    repo.append_event(type="agent_status_changed")
+    resp = await client_with_repo.get("/api/dashboard/events")
+    data = resp.json()
+    assert "events" in data
+    assert len(data["events"]) == 2
+    assert data["project_id"] == "test_proj"
+
+
+async def test_dashboard_events_with_after_id(client_with_repo, repo):
+    repo.append_event(type="e1")
+    repo.append_event(type="e2")
+    repo.append_event(type="e3")
+    resp = await client_with_repo.get("/api/dashboard/events", params={"after_event_id": 1})
+    data = resp.json()
+    assert len(data["events"]) == 2
+    assert data["events"][0]["type"] == "e2"
+
+
+# --- POST /api/dashboard/commands ---
+
+async def test_create_command_returns_202(client_with_repo):
+    resp = await client_with_repo.post(
+        "/api/dashboard/commands",
+        json={"type": "approve_decision", "target_id": "pm"},
+    )
+    assert resp.status_code == 202
+    data = resp.json()
+    assert data["status"] == "pending"
+    assert "command_id" in data
+
+
+async def test_get_command_by_id(client_with_repo):
+    create_resp = await client_with_repo.post(
+        "/api/dashboard/commands",
+        json={"type": "approve_decision", "target_id": "pm"},
+    )
+    cmd_id = create_resp.json()["command_id"]
+    resp = await client_with_repo.get(f"/api/dashboard/commands/{cmd_id}")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["command_id"] == cmd_id
+    assert data["type"] == "approve_decision"
+
+
+async def test_get_unknown_command_returns_404(client_with_repo):
+    resp = await client_with_repo.get("/api/dashboard/commands/nonexistent")
+    assert resp.status_code == 404
 
 
 # --- GET /api/state ---
