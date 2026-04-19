@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 import threading
 from pathlib import Path
 
@@ -40,6 +42,9 @@ class ProjectStateRepository:
         self._next_event_id = 0
         self._snapshot_version = 0
 
+        # 从磁盘加载已有状态
+        self._load_all()
+
     # --- Snapshot ---
 
     def load_snapshot(self) -> Snapshot:
@@ -61,6 +66,7 @@ class ProjectStateRepository:
     def upsert_agent(self, agent: AgentInstance) -> AgentInstance:
         with self._lock:
             self._agents[agent.id] = agent
+            self._save()
             return agent
 
     # --- Feature ---
@@ -68,6 +74,7 @@ class ProjectStateRepository:
     def upsert_feature(self, feature: Feature) -> Feature:
         with self._lock:
             self._features[feature.id] = feature
+            self._save()
             return feature
 
     # --- Command ---
@@ -77,6 +84,7 @@ class ProjectStateRepository:
             cmd.project_id = self._project_id
             cmd.run_id = self._run_id
             self._commands[cmd.command_id] = cmd
+            self._save()
             return cmd
 
     def get_command(self, command_id: str) -> Command | None:
@@ -94,6 +102,7 @@ class ProjectStateRepository:
             event.project_id = self._project_id
             event.run_id = self._run_id
             self._events.append(event)
+            self._save()
             return event
 
     def get_events_after(self, after_id: int, limit: int = 200) -> list[Event]:
@@ -105,6 +114,7 @@ class ProjectStateRepository:
     def add_chat_message(self, msg: ChatMessage) -> ChatMessage:
         with self._lock:
             self._chat_history.append(msg)
+            self._save()
             return msg
 
     # --- Workspace filtering (多实例隔离预留) ---
@@ -116,3 +126,38 @@ class ProjectStateRepository:
     def get_features_by_workspace(self, workspace_id: str) -> list[Feature]:
         with self._lock:
             return [f for f in self._features.values() if f.workspace_id == workspace_id]
+
+    # --- 持久化 ---
+
+    def _save(self) -> None:
+        """原子写入所有状态到磁盘。"""
+        state = {
+            "agents": [a.to_dict() for a in self._agents.values()],
+            "features": [f.to_dict() for f in self._features.values()],
+            "commands": [c.to_dict() for c in self._commands.values()],
+            "events": [e.to_dict() for e in self._events],
+            "chat_history": [m.to_dict() for m in self._chat_history],
+            "next_event_id": self._next_event_id,
+        }
+        tmp_fd, tmp_path = tempfile.mkstemp(dir=self._base, suffix=".tmp")
+        try:
+            with os.fdopen(tmp_fd, "w") as f:
+                json.dump(state, f, ensure_ascii=False, indent=2)
+            os.replace(tmp_path, self._base / "state.json")
+        except Exception:
+            os.unlink(tmp_path)
+            raise
+
+    def _load_all(self) -> None:
+        """从磁盘加载所有状态。"""
+        state_file = self._base / "state.json"
+        if not state_file.exists():
+            return
+        with open(state_file, "r") as f:
+            state = json.load(f)
+        self._agents = {a["id"]: AgentInstance.from_dict(a) for a in state.get("agents", [])}
+        self._features = {f["id"]: Feature.from_dict(f) for f in state.get("features", [])}
+        self._commands = {c["command_id"]: Command.from_dict(c) for c in state.get("commands", [])}
+        self._events = [Event.from_dict(e) for e in state.get("events", [])]
+        self._chat_history = [ChatMessage.from_dict(m) for m in state.get("chat_history", [])]
+        self._next_event_id = state.get("next_event_id", 0)
