@@ -3,17 +3,20 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
+import subprocess
 from collections import deque
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from dashboard.event_bus import EventBus
-from dashboard.models import ChatMessage, DashboardState, Event
+from dashboard.models import ChatMessage, Command, DashboardState, Event, ModuleAssignment
 from dashboard.state_repository import ProjectStateRepository
 from dashboard.command_processor import CommandProcessor, InvalidTransition
 from dashboard.consumer import CommandConsumer
@@ -85,6 +88,7 @@ async def lifespan(app: FastAPI):
 def create_dashboard_app(
     event_bus: EventBus,
     repository: ProjectStateRepository | None = None,
+    coordinator: "PMCoordinator | None" = None,
 ) -> FastAPI:
     app = FastAPI(title="AI Dev Dashboard", lifespan=lifespan)
     app.add_middleware(
@@ -125,6 +129,9 @@ def create_dashboard_app(
         processor=processor,
         event_bus=event_bus,
     )
+
+    # 注入 PMCoordinator（可选）
+    app.state.coordinator = coordinator
 
     # --- REST: 状态快照 ---
 
@@ -173,7 +180,19 @@ def create_dashboard_app(
             type="pm_decision", message=f"用户消息: {content}",
         )
         _emit_to_ws(app.state.broadcast_queue, event)
-        return {"success": True, "message_id": msg.id}
+
+        # 调用 PM 生成回复
+        pm_response = _generate_pm_response(
+            app.state.dashboard_state.chat_history,
+            app.state.repository,
+            app.state.broadcast_queue,
+        )
+
+        return {
+            "success": True,
+            "message_id": msg.id,
+            "pm_response": pm_response.to_dict() if pm_response else None,
+        }
 
     # --- REST: 批准（写为 pending，由 CommandConsumer 消费）---
 
@@ -275,6 +294,89 @@ def create_dashboard_app(
             raise HTTPException(status_code=404, detail="Command not found")
         return cmd.to_dict()
 
+    # --- REST: 模块分配 ---
+
+    @app.get("/api/dashboard/modules")
+    async def list_modules(role: str | None = None) -> dict:
+        """列出所有模块分配，可按角色过滤。"""
+        assignments = app.state.repository.list_module_assignments(role=role)
+        return {
+            "modules": [a.to_dict() for a in assignments],
+            "total": len(assignments),
+        }
+
+    @app.post("/api/dashboard/modules", status_code=201)
+    async def upsert_module(body: dict[str, Any]) -> dict:
+        """创建或更新模块分配。"""
+        required = ("module_id", "role")
+        for field in required:
+            if field not in body:
+                raise HTTPException(status_code=422, detail=f"Missing required field: {field}")
+
+        assignment = ModuleAssignment(
+            module_id=body["module_id"],
+            role=body["role"],
+            assigned_agent_id=body.get("assigned_agent_id", ""),
+            module_name=body.get("module_name", ""),
+            description=body.get("description", ""),
+            dependencies=body.get("dependencies", []),
+            status=body.get("status", "pending"),
+            interface_contract=body.get("interface_contract", {}),
+        )
+        saved = app.state.repository.upsert_module_assignment(assignment)
+        return {"success": True, "assignment": saved.to_dict()}
+
+    @app.delete("/api/dashboard/modules/{module_id}")
+    async def delete_module(module_id: str) -> dict:
+        """删除模块分配。"""
+        repo = app.state.repository
+        if not repo.get_module_assignment(module_id):
+            raise HTTPException(status_code=404, detail=f"Module {module_id} not found")
+        with repo._lock:
+            repo._module_assignments.pop(module_id, None)
+            repo._save()
+        return {"success": True, "module_id": module_id}
+
+    # --- REST: 执行控制 ---
+
+    @app.post("/api/execution/start")
+    async def start_execution() -> dict:
+        """启动 PMCoordinator 执行循环。"""
+        coordinator = getattr(app.state, "coordinator", None)
+        if not coordinator:
+            raise HTTPException(status_code=503, detail="PMCoordinator 未配置")
+        result = coordinator.start_execution()
+        if not result["success"]:
+            raise HTTPException(status_code=409, detail=result.get("error", "无法启动"))
+        return result
+
+    @app.post("/api/execution/stop")
+    async def stop_execution() -> dict:
+        """停止 PMCoordinator 执行循环。"""
+        coordinator = getattr(app.state, "coordinator", None)
+        if not coordinator:
+            raise HTTPException(status_code=503, detail="PMCoordinator 未配置")
+        return coordinator.stop_execution()
+
+    @app.get("/api/execution/status")
+    async def get_execution_status() -> dict:
+        """获取当前执行状态。"""
+        coordinator = getattr(app.state, "coordinator", None)
+        if not coordinator:
+            return {"status": "idle", "thread_alive": False, "error": None, "available": False}
+        return coordinator.get_execution_status()
+
+    # --- REST: 待审批列表 ---
+
+    @app.get("/api/dashboard/pending-approvals")
+    async def list_pending_approvals() -> dict:
+        """返回所有等待用户审批的命令。"""
+        approvals = app.state.repository.list_pending_approvals()
+        return {
+            "approvals": approvals,
+            "total": len(approvals),
+        }
+
     # --- WebSocket: 实时推送 ---
 
     @app.websocket("/ws/dashboard")
@@ -291,6 +393,7 @@ def create_dashboard_app(
                 "agents": [a.to_dict() for a in snapshot.agents],
                 "features": [f.to_dict() for f in snapshot.features],
                 "chat_history": [m.to_dict() for m in snapshot.chat_history],
+                "module_assignments": [m.to_dict() for m in snapshot.module_assignments],
             })
             while True:
                 try:
@@ -320,3 +423,88 @@ def _create_command(cmd_type: str, body: dict[str, Any]) -> Command:
         run_id=body.get("run_id", ""),
         issued_at=_now_iso(),
     )
+
+
+def _generate_pm_response(
+    chat_history: list[ChatMessage],
+    repository: ProjectStateRepository,
+    broadcast_queue: deque,
+) -> ChatMessage | None:
+    """调用 Claude CLI 生成 PM 回复。"""
+    # 构建对话上下文
+    history_lines = []
+    for msg in chat_history:
+        role_label = "用户" if msg.role == "user" else "PM"
+        history_lines.append(f"{role_label}: {msg.content}")
+
+    conversation_context = "\n".join(history_lines)
+
+    prompt = f"""你是一个资深产品经理和技术团队 Team Leader。
+你正在管理一个软件开发项目，有多个子 Agent（前端开发、后端开发、数据库专家、QA 测试、安全审查、UI 设计、文档编写）听你指挥。
+
+当前项目状态：
+- 你是唯一的 Team Leader，直接接受用户（甲方）的指令
+- 你需要分析用户需求，分解为可执行的任务
+- 每一步都要等待你的指令，由你来组织所有 Agent 工作
+- 如果涉及多个同职能 Agent，你要合理划分功能模块和接口
+
+以下是完整的对话历史：
+{conversation_context}
+
+请你：
+1. 分析用户最新消息的意图
+2. 结合项目状态给出明确的回复
+3. 如果需要进一步分解任务，说明你的计划
+4. 回复要简洁、明确、可执行
+
+请直接回复用户（不要输出额外的格式或标记）："""
+
+    logger.info(f"Calling Claude CLI for PM response, prompt length: {len(prompt)}")
+
+    try:
+        result = subprocess.run(
+            ["claude", "-p", prompt, "--dangerously-skip-permissions"],
+            capture_output=True,
+            timeout=120,
+            cwd=str(Path("/tmp/dashboard_state")),
+        )
+
+        stderr_text = result.stderr.decode("utf-8", errors="replace")
+        stdout_text = result.stdout.decode("utf-8", errors="replace")
+
+        if result.returncode != 0:
+            logger.error(f"Claude CLI PM response failed (rc={result.returncode}): {stderr_text[:300]}")
+            pm_content = f"PM 处理消息时出错: {stderr_text[:200]}"
+        else:
+            # 清理输出，提取实际回复内容
+            pm_content = stdout_text.strip()
+            if not pm_content:
+                pm_content = "PM 收到你的消息，正在思考中..."
+
+        pm_msg = ChatMessage(
+            id=f"pm_{_now_iso()}",
+            role="pm",
+            content=pm_content,
+        )
+
+        # 添加到 chat_history
+        chat_history.append(pm_msg)
+
+        # 持久化到 Repository
+        repository.add_chat_message(pm_msg)
+
+        # 广播给 WebSocket 客户端
+        event = repository.append_event(
+            type="pm_response",
+            message=pm_content[:200],  # 截断避免过大
+        )
+        _emit_to_ws(broadcast_queue, event)
+
+        return pm_msg
+
+    except subprocess.TimeoutExpired:
+        logger.error("Claude CLI PM response timed out")
+        return None
+    except Exception:
+        logger.exception("Unexpected error in _generate_pm_response")
+        return None
