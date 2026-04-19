@@ -211,18 +211,16 @@ def create_dashboard_app(
         await ws.accept()
         app.state.connected_ws.add(ws)
         try:
-            # 发送欢迎 + 状态快照
+            # 发送欢迎 + 状态快照（对齐前端 WsCallbacks.onSnapshot 期望）
             snapshot = app.state.repository.load_snapshot()
             await ws.send_json({
                 "type": "hello",
                 "schema_version": 1,
                 "project_id": app.state.repository._project_id,
                 "last_event_id": snapshot.last_event_id,
-                "state": {
-                    "agents": [a.to_dict() for a in snapshot.agents],
-                    "features": [f.to_dict() for f in snapshot.features],
-                    "chat_history": [m.to_dict() for m in snapshot.chat_history],
-                },
+                "agents": [a.to_dict() for a in snapshot.agents],
+                "features": [f.to_dict() for f in snapshot.features],
+                "chat_history": [m.to_dict() for m in snapshot.chat_history],
             })
             # 保持连接，轮询广播队列
             while True:
@@ -241,7 +239,7 @@ def create_dashboard_app(
 
     def emit_with_broadcast(event_type: str, **kwargs: Any) -> None:
         original_emit(event_type, **kwargs)
-        payload = {"type": event_type, **kwargs, "timestamp": _now_iso()}
+        payload = {"type": event_type, "payload": kwargs, "timestamp": _now_iso()}
         app.state.broadcast_queue.append(payload)
 
     event_bus.emit = emit_with_broadcast

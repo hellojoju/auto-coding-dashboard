@@ -266,4 +266,4 @@ def test_websocket_receives_broadcast(event_bus):
         # 接收广播
         data = ws.receive_json()
         assert data["type"] == "agent_status_changed"
-        assert data["agent_id"] == "backend-1"
+        assert data["payload"]["agent_id"] == "backend-1"

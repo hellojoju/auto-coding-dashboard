@@ -128,9 +128,8 @@ def test_scenario_websocket_hello(app):
         assert data["schema_version"] == 1
         assert data["project_id"] == "integration_proj"
         assert "last_event_id" in data
-        assert "state" in data
-        assert "agents" in data["state"]
-        assert "features" in data["state"]
+        assert "agents" in data
+        assert "features" in data
 
 
 # --- 场景 5: WebSocket 收到广播事件 ---
@@ -153,7 +152,7 @@ def test_scenario_websocket_receives_broadcast(event_bus, repo):
         # 接收广播
         data = ws.receive_json()
         assert data["type"] == "agent_status_changed"
-        assert data["agent_id"] == "dev-1"
+        assert data["payload"]["agent_id"] == "dev-1"
 
 
 # --- 场景 6: 快照 last_event_id 与事件一致 ---
@@ -259,11 +258,11 @@ def test_scenario_reconnection_recovery(app, repo):
         hello = ws.receive_json()
         assert hello["type"] == "hello"
         assert hello["last_event_id"] == 2
-        assert len(hello["state"]["agents"]) == 2
-        assert len(hello["state"]["features"]) == 1
+        assert len(hello["agents"]) == 2
+        assert len(hello["features"]) == 1
 
         # 验证 agents 状态
-        agents = hello["state"]["agents"]
+        agents = hello["agents"]
         pm = next(a for a in agents if a["id"] == "pm-1")
         assert pm["status"] == "running"
 

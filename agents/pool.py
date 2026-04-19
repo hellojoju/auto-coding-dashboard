@@ -155,6 +155,18 @@ class AgentPool:
                 "by_role": roles,
             }
 
+    def get_status(self) -> dict:
+        """获取 pool 当前状态，供 Dashboard 查询。"""
+        with self._lock:
+            agents = []
+            for inst in self._instances.values():
+                agents.append(inst.to_dict())
+            return {
+                "total_instances": len(self._instances),
+                "by_role": self.stats()["by_role"],
+                "agents": agents,
+            }
+
     def cleanup(self) -> None:
         """移除所有实例（workspace 目录保留，便于调试）。"""
         with self._lock:
