@@ -118,6 +118,19 @@ class AgentProcessManager:
         """从管理器移除 Agent。"""
         self._agents.pop(agent_id, None)
 
+    def get_all_agents(self) -> dict[str, dict]:
+        """返回所有 Agent 的进程状态概览。"""
+        result = {}
+        for agent_id, agent in self._agents.items():
+            status = self.get_agent_status(agent_id)
+            result[agent_id] = {
+                "role": agent.role,
+                "status": status.get("running") and "running" or "stopped",
+                "pid": status.get("pid"),
+                "exit_code": status.get("exit_code"),
+            }
+        return result
+
     def list_agents(self) -> dict[str, AgentProcess]:
         """返回所有注册的 Agent。"""
         return dict(self._agents)

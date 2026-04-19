@@ -370,6 +370,118 @@ def create_dashboard_app(
             return {"status": "idle", "thread_alive": False, "error": None, "available": False}
         return coordinator.get_execution_status()
 
+    # --- REST: Agent 管理 ---
+
+    @app.get("/api/agents")
+    async def list_agents() -> dict:
+        """列出所有 Agent 实例及其状态（含静默检测）。"""
+        coordinator = getattr(app.state, "coordinator", None)
+        repo = app.state.repository
+
+        # 从 Repository 加载已注册的 Agent
+        snapshot = repo.load_snapshot()
+        agents = [a.to_dict() for a in snapshot.agents]
+
+        # 补充静默检测状态
+        silence_status = {}
+        if coordinator:
+            silence_status = coordinator.get_all_silence_status()
+
+        for agent in agents:
+            agent["silence_status"] = silence_status.get(agent.get("id", ""), {})
+
+        # 从 Coordinator 补充执行中的 Agent 信息
+        if coordinator:
+            pm = coordinator._process_manager
+            for agent_id, proc_info in pm.get_all_agents().items():
+                for agent in agents:
+                    if agent["id"] == agent_id:
+                        agent["process_status"] = proc_info.get("status", "unknown")
+                        agent["pid"] = proc_info.get("pid")
+                        break
+
+        return {"agents": agents, "total": len(agents)}
+
+    @app.get("/api/agents/{agent_id}/status")
+    async def get_agent_status(agent_id: str) -> dict:
+        """获取单个 Agent 的详细状态，包括静默检测。"""
+        coordinator = getattr(app.state, "coordinator", None)
+        repo = app.state.repository
+
+        snapshot = repo.load_snapshot()
+        agent = None
+        for a in snapshot.agents:
+            if a.id == agent_id:
+                agent = a.to_dict()
+                break
+
+        if not agent:
+            raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+
+        result = {"agent": agent}
+
+        if coordinator:
+            silence = coordinator.get_all_silence_status().get(agent_id)
+            if silence:
+                result["silence_status"] = silence
+
+            pm = coordinator._process_manager
+            proc_status = pm.get_agent_status(agent_id)
+            if proc_status:
+                result["process_status"] = proc_status
+
+        return result
+
+    @app.post("/api/agents/{agent_id}/message")
+    async def send_agent_message(agent_id: str, body: dict[str, Any]) -> dict:
+        """向 Agent 发送消息（通过 stdin）。"""
+        coordinator = getattr(app.state, "coordinator", None)
+        if not coordinator:
+            raise HTTPException(status_code=503, detail="PMCoordinator 未配置")
+
+        message = body.get("message", "")
+        if not message:
+            raise HTTPException(status_code=422, detail="message is required")
+
+        pm = coordinator._process_manager
+        success = pm.send_message_to_agent(agent_id, message)
+        if not success:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Agent {agent_id} not found or has no stdin",
+            )
+
+        app.state.repository.append_event(
+            type="agent_message_sent",
+            agent_id=agent_id,
+            message=message[:200],
+        )
+        return {"success": True, "agent_id": agent_id}
+
+    @app.post("/api/agents/{agent_id}/interrupt")
+    async def interrupt_agent(agent_id: str, body: dict[str, Any] | None = None) -> dict:
+        """中断 Agent 进程（默认 SIGINT，可 force=true 强制 kill）。"""
+        body = body or {}
+        force = body.get("force", False)
+
+        coordinator = getattr(app.state, "coordinator", None)
+        if not coordinator:
+            raise HTTPException(status_code=503, detail="PMCoordinator 未配置")
+
+        pm = coordinator._process_manager
+
+        if force:
+            pm.force_kill(agent_id)
+        else:
+            pm.graceful_interrupt(agent_id)
+
+        app.state.repository.append_event(
+            type="agent_interrupted",
+            agent_id=agent_id,
+            force=force,
+        )
+        return {"success": True, "agent_id": agent_id, "force": force}
+
     # --- REST: 待审批列表 ---
 
     @app.get("/api/dashboard/pending-approvals")
