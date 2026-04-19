@@ -16,6 +16,8 @@ from typing import Optional, TYPE_CHECKING
 from dashboard.event_bus import EventBus
 from dashboard.models import Command
 from dashboard.state_repository import ProjectStateRepository
+from dashboard.silence_detector import SilenceDetector
+from dashboard.agent_process_manager import AgentProcessManager
 
 if TYPE_CHECKING:
     from agents.pool import AgentInstance
@@ -51,6 +53,78 @@ class PMCoordinator:
         self._exec_status: str = "idle"
         self._stop_event = threading.Event()
         self._exec_error: Optional[str] = None
+
+        # 静默检测：为每个 agent 角色创建检测器
+        self._silence_detectors: dict[str, SilenceDetector] = {}
+        self._setup_silence_detectors()
+
+        # Agent 进程管理
+        self._process_manager = AgentProcessManager()
+
+    def _setup_silence_detectors(self) -> None:
+        """为所有 agent 角色创建静默检测器。"""
+        from agents import AGENT_ROLES
+        from core.config import (
+            SILENCE_WARNING_THRESHOLD,
+            SILENCE_NOTIFY_THRESHOLD,
+            SILENCE_INTERVENTION_THRESHOLD,
+        )
+
+        for role in AGENT_ROLES:
+            detector = SilenceDetector(
+                agent_id=role,
+                warning_threshold=SILENCE_WARNING_THRESHOLD,
+                notify_threshold=SILENCE_NOTIFY_THRESHOLD,
+                intervention_threshold=SILENCE_INTERVENTION_THRESHOLD,
+                on_warning=self._on_silence_warning,
+                on_notify=self._on_silence_notify,
+                on_intervention=self._on_silence_intervention,
+            )
+            self._silence_detectors[role] = detector
+
+    def _on_silence_warning(self, agent_id: str, idle_seconds: float) -> None:
+        """静默 warning 回调。"""
+        self._event_bus.emit(
+            "agent_silence_warning",
+            agent_id=agent_id,
+            idle_seconds=int(idle_seconds),
+            message=f"{agent_id} 已静默 {int(idle_seconds)} 秒",
+        )
+
+    def _on_silence_notify(self, agent_id: str, idle_seconds: float) -> None:
+        """静默 notify 回调。"""
+        self._event_bus.emit(
+            "agent_silence_notify",
+            agent_id=agent_id,
+            idle_seconds=int(idle_seconds),
+            message=f"{agent_id} 已静默 {int(idle_seconds)} 秒，需要关注",
+        )
+
+    def _on_silence_intervention(self, agent_id: str, idle_seconds: float) -> None:
+        """静默 intervention 回调。"""
+        self._event_bus.emit(
+            "agent_silence_intervention",
+            agent_id=agent_id,
+            idle_seconds=int(idle_seconds),
+            message=f"{agent_id} 已静默 {int(idle_seconds)} 秒，需要 PM 干预",
+        )
+
+    def record_agent_activity(self, agent_id: str) -> None:
+        """记录 agent 活动，重置静默计时器。"""
+        detector = self._silence_detectors.get(agent_id)
+        if detector:
+            detector.record_activity()
+
+    def get_all_silence_status(self) -> dict[str, dict]:
+        """获取所有 agent 的静默检测状态。"""
+        return {
+            role: det.get_status()
+            for role, det in self._silence_detectors.items()
+        }
+
+    def get_process_manager(self) -> AgentProcessManager:
+        """返回 Agent 进程管理器。"""
+        return self._process_manager
 
     # --- 执行循环入口 ---
 
