@@ -15,6 +15,7 @@ from dashboard.models import (
     Event,
     ChatMessage,
     Snapshot,
+    ModuleAssignment,
 )
 
 
@@ -39,6 +40,7 @@ class ProjectStateRepository:
         self._commands: dict[str, Command] = {}
         self._events: list[Event] = []
         self._chat_history: list[ChatMessage] = []
+        self._module_assignments: dict[str, ModuleAssignment] = {}
         self._next_event_id = 0
         self._snapshot_version = 0
 
@@ -59,6 +61,7 @@ class ProjectStateRepository:
                 agents=list(self._agents.values()),
                 features=list(self._features.values()),
                 chat_history=list(self._chat_history),
+                module_assignments=list(self._module_assignments.values()),
             )
 
     # --- Agent ---
@@ -113,7 +116,16 @@ class ProjectStateRepository:
     def append_event(self, event: Event | None = None, *, type: str = "", **kwargs) -> Event:
         with self._lock:
             if event is None:
-                event = Event(type=type, **kwargs)
+                # Event 合法字段（payload 除外）
+                _valid_fields = {
+                    "schema_version", "event_id", "project_id", "run_id",
+                    "type", "timestamp", "caused_by_command_id", "payload",
+                }
+                payload = dict(kwargs.pop("payload", {}))
+                extra = {k: v for k, v in kwargs.items() if k not in _valid_fields}
+                payload.update(extra)
+                valid_kwargs = {k: v for k, v in kwargs.items() if k in _valid_fields}
+                event = Event(type=type, payload=payload, **valid_kwargs)
             self._next_event_id += 1
             event.event_id = self._next_event_id
             event.project_id = self._project_id
@@ -133,6 +145,34 @@ class ProjectStateRepository:
             self._chat_history.append(msg)
             self._save()
             return msg
+
+    # --- Module Assignment ---
+
+    def upsert_module_assignment(self, assignment: ModuleAssignment) -> ModuleAssignment:
+        with self._lock:
+            self._module_assignments[assignment.module_id] = assignment
+            self._save()
+            return assignment
+
+    def get_module_assignment(self, module_id: str) -> ModuleAssignment | None:
+        with self._lock:
+            return self._module_assignments.get(module_id)
+
+    def list_module_assignments(self, *, role: str | None = None) -> list[ModuleAssignment]:
+        with self._lock:
+            assignments = list(self._module_assignments.values())
+            if role:
+                assignments = [a for a in assignments if a.role == role]
+            return assignments
+
+    def list_pending_approvals(self) -> list[dict]:
+        """返回所有需要用户审批的条目（状态为 waiting_approval 的 agent 关联的命令）。"""
+        with self._lock:
+            approvals = []
+            for cmd in self._commands.values():
+                if cmd.status == "pending":
+                    approvals.append(cmd.to_dict())
+            return approvals
 
     # --- Workspace filtering (多实例隔离预留) ---
 
@@ -154,6 +194,7 @@ class ProjectStateRepository:
             "commands": [c.to_dict() for c in self._commands.values()],
             "events": [e.to_dict() for e in self._events],
             "chat_history": [m.to_dict() for m in self._chat_history],
+            "module_assignments": [m.to_dict() for m in self._module_assignments.values()],
             "next_event_id": self._next_event_id,
         }
         tmp_fd, tmp_path = tempfile.mkstemp(dir=self._base, suffix=".tmp")
@@ -177,4 +218,8 @@ class ProjectStateRepository:
         self._commands = {c["command_id"]: Command.from_dict(c) for c in state.get("commands", [])}
         self._events = [Event.from_dict(e) for e in state.get("events", [])]
         self._chat_history = [ChatMessage.from_dict(m) for m in state.get("chat_history", [])]
+        self._module_assignments = {
+            m["module_id"]: ModuleAssignment.from_dict(m)
+            for m in state.get("module_assignments", [])
+        }
         self._next_event_id = state.get("next_event_id", 0)
