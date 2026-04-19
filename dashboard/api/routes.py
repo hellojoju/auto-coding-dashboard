@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import subprocess
 from collections import deque
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -89,6 +88,7 @@ def create_dashboard_app(
     event_bus: EventBus,
     repository: ProjectStateRepository | None = None,
     coordinator: "PMCoordinator | None" = None,
+    product_manager: "ProductManager | None" = None,
 ) -> FastAPI:
     app = FastAPI(title="AI Dev Dashboard", lifespan=lifespan)
     app.add_middleware(
@@ -132,6 +132,9 @@ def create_dashboard_app(
 
     # 注入 PMCoordinator（可选）
     app.state.coordinator = coordinator
+
+    # 注入 ProductManager（可选，用于对话回复）
+    app.state.product_manager = product_manager
 
     # --- REST: 状态快照 ---
 
@@ -186,6 +189,7 @@ def create_dashboard_app(
             app.state.dashboard_state.chat_history,
             app.state.repository,
             app.state.broadcast_queue,
+            app.state.product_manager,
         )
 
         return {
@@ -429,82 +433,36 @@ def _generate_pm_response(
     chat_history: list[ChatMessage],
     repository: ProjectStateRepository,
     broadcast_queue: deque,
+    product_manager: "ProductManager | None" = None,
 ) -> ChatMessage | None:
-    """调用 Claude CLI 生成 PM 回复。"""
-    # 构建对话上下文
-    history_lines = []
-    for msg in chat_history:
-        role_label = "用户" if msg.role == "user" else "PM"
-        history_lines.append(f"{role_label}: {msg.content}")
+    """调用 ProductManager agent 生成 PM 回复。"""
+    if product_manager is None:
+        logger.warning("ProductManager 未配置，使用 fallback 回复")
+        pm_content = "PM 暂未就绪，请重试。"
+    else:
+        user_message = chat_history[-1].content if chat_history else ""
+        pm_content = product_manager.chat_response(user_message, chat_history, repository)
+        if not pm_content:
+            logger.error("ProductManager.chat_response 返回空结果")
+            pm_content = "PM 处理消息时出错，请重试。"
 
-    conversation_context = "\n".join(history_lines)
+    pm_msg = ChatMessage(
+        id=f"pm_{_now_iso()}",
+        role="pm",
+        content=pm_content,
+    )
 
-    prompt = f"""你是一个资深产品经理和技术团队 Team Leader。
-你正在管理一个软件开发项目，有多个子 Agent（前端开发、后端开发、数据库专家、QA 测试、安全审查、UI 设计、文档编写）听你指挥。
+    # 添加到 chat_history
+    chat_history.append(pm_msg)
 
-当前项目状态：
-- 你是唯一的 Team Leader，直接接受用户（甲方）的指令
-- 你需要分析用户需求，分解为可执行的任务
-- 每一步都要等待你的指令，由你来组织所有 Agent 工作
-- 如果涉及多个同职能 Agent，你要合理划分功能模块和接口
+    # 持久化到 Repository
+    repository.add_chat_message(pm_msg)
 
-以下是完整的对话历史：
-{conversation_context}
+    # 广播给 WebSocket 客户端
+    event = repository.append_event(
+        type="pm_response",
+        message=pm_content[:200],
+    )
+    _emit_to_ws(broadcast_queue, event)
 
-请你：
-1. 分析用户最新消息的意图
-2. 结合项目状态给出明确的回复
-3. 如果需要进一步分解任务，说明你的计划
-4. 回复要简洁、明确、可执行
-
-请直接回复用户（不要输出额外的格式或标记）："""
-
-    logger.info(f"Calling Claude CLI for PM response, prompt length: {len(prompt)}")
-
-    try:
-        result = subprocess.run(
-            ["claude", "-p", prompt, "--dangerously-skip-permissions"],
-            capture_output=True,
-            timeout=120,
-            cwd=str(Path("/tmp/dashboard_state")),
-        )
-
-        stderr_text = result.stderr.decode("utf-8", errors="replace")
-        stdout_text = result.stdout.decode("utf-8", errors="replace")
-
-        if result.returncode != 0:
-            logger.error(f"Claude CLI PM response failed (rc={result.returncode}): {stderr_text[:300]}")
-            pm_content = f"PM 处理消息时出错: {stderr_text[:200]}"
-        else:
-            # 清理输出，提取实际回复内容
-            pm_content = stdout_text.strip()
-            if not pm_content:
-                pm_content = "PM 收到你的消息，正在思考中..."
-
-        pm_msg = ChatMessage(
-            id=f"pm_{_now_iso()}",
-            role="pm",
-            content=pm_content,
-        )
-
-        # 添加到 chat_history
-        chat_history.append(pm_msg)
-
-        # 持久化到 Repository
-        repository.add_chat_message(pm_msg)
-
-        # 广播给 WebSocket 客户端
-        event = repository.append_event(
-            type="pm_response",
-            message=pm_content[:200],  # 截断避免过大
-        )
-        _emit_to_ws(broadcast_queue, event)
-
-        return pm_msg
-
-    except subprocess.TimeoutExpired:
-        logger.error("Claude CLI PM response timed out")
-        return None
-    except Exception:
-        logger.exception("Unexpected error in _generate_pm_response")
-        return None
+    return pm_msg
