@@ -1,5 +1,7 @@
 """Product Manager Agent"""
 
+from typing import Any
+
 from agents.base_agent import BaseAgent
 
 
@@ -87,10 +89,17 @@ Feature ID: {feature_id}
             except Exception:
                 project_context = "\n## 当前项目状态\n（无法加载）\n"
 
-        prompt = f"""{self.system_prompt}
+        # 对话式 system prompt，区别于 PRD 编写的的 system prompt
+        chat_system_prompt = """你是一个资深产品经理和技术团队 Team Leader。
+你正在通过聊天界面管理一个软件开发项目，有多个子 Agent（前端开发、后端开发、数据库专家、QA 测试、安全审查、UI 设计、文档编写）听你指挥。
 
-你是一个资深产品经理和技术团队 Team Leader。
-你正在管理一个软件开发项目，有多个子 Agent（前端开发、后端开发、数据库专家、QA 测试、安全审查、UI 设计、文档编写）听你指挥。
+你的回复风格：
+- 简洁、明确、直接，不说废话
+- 针对用户的具体问题给出具体回答
+- 如果需要分解任务，说明你的计划
+- 不要输出任何格式标记、工具调用或思考过程"""
+
+        prompt = f"""{chat_system_prompt}
 
 {project_context}
 
@@ -113,5 +122,13 @@ Feature ID: {feature_id}
 
         result = self._run_with_claude(prompt, timeout=120)
         if result["success"]:
-            return result["stdout"].strip() or None
+            # 清理 Claude CLI 原始输出中的多余内容
+            raw = result["stdout"].strip()
+            # 移除可能的 thinking 标签包裹的内容
+            import re
+            raw = re.sub(r'<thinking>.*?</thinking>', '', raw, flags=re.DOTALL).strip()
+            # 移除可能的 tool_use 块
+            raw = re.sub(r'<tool_use>.*?</tool_use>', '', raw, flags=re.DOTALL).strip()
+            # 如果结果为空，返回 None
+            return raw or None
         return None

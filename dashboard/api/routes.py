@@ -570,10 +570,16 @@ def _generate_pm_response(
     # 持久化到 Repository
     repository.add_chat_message(pm_msg)
 
-    # 广播给 WebSocket 客户端
+    # 广播给 WebSocket 客户端 — payload 必须包含完整 pm_response 对象
+    # 前端 store.ts applyEventToState 通过 event.payload.pm_response 路由到 chatHistory
     event = repository.append_event(
         type="pm_response",
-        message=pm_content[:200],
+        pm_response={
+            "id": pm_msg.id,
+            "content": pm_content,
+            "timestamp": pm_msg.timestamp,
+            "action_triggered": "",
+        },
     )
     _emit_to_ws(broadcast_queue, event)
 
