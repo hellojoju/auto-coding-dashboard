@@ -81,6 +81,9 @@ class ProjectStateRepository:
 
     def save_command(self, cmd: Command) -> Command:
         with self._lock:
+            if not cmd.command_id:
+                import uuid
+                cmd.command_id = str(uuid.uuid4())[:8]
             cmd.project_id = self._project_id
             cmd.run_id = self._run_id
             self._commands[cmd.command_id] = cmd
