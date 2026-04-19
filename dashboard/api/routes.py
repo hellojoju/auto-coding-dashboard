@@ -1,9 +1,11 @@
-"""Dashboard REST API 路由和 WebSocket 端点 — 接入 ProjectStateRepository + CommandProcessor。"""
+"""Dashboard REST API 路由和 WebSocket 端点 — 接入 ProjectStateRepository + CommandProcessor + CommandConsumer。"""
 
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections import deque
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Any
 
@@ -11,9 +13,18 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from dashboard.event_bus import EventBus
-from dashboard.models import ChatMessage, DashboardState
+from dashboard.models import ChatMessage, DashboardState, Event
 from dashboard.state_repository import ProjectStateRepository
 from dashboard.command_processor import CommandProcessor, InvalidTransition
+from dashboard.consumer import CommandConsumer
+
+logger = logging.getLogger(__name__)
+
+# 前端命令类型 → 后端期望类型映射
+CMD_TYPE_MAP = {
+    "approve_decision": "approve",
+    "reject_decision": "reject",
+}
 
 
 def _now_iso() -> str:
@@ -33,11 +44,49 @@ class DashboardAppState:
         self.broadcast_queue: deque[dict] = deque()
 
 
+def _emit_to_ws(broadcast_queue: deque, event: Event) -> None:
+    """将 Repository 事件推入 WebSocket 广播队列。"""
+    payload = {
+        "type": event.type,
+        "payload": event.payload,
+        "timestamp": event.timestamp or _now_iso(),
+    }
+    broadcast_queue.append(payload)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """启动 CommandConsumer 后台轮询循环。"""
+    consumer: CommandConsumer = app.state.consumer
+    stop_event = asyncio.Event()
+
+    async def consumer_loop() -> None:
+        while not stop_event.is_set():
+            try:
+                n = consumer.process_once()
+                if n > 0:
+                    logger.info(f"CommandConsumer processed {n} command(s)")
+            except Exception:
+                logger.exception("CommandConsumer error")
+            await asyncio.sleep(0.5)
+
+    task = asyncio.create_task(consumer_loop())
+    try:
+        yield
+    finally:
+        stop_event.set()
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+
 def create_dashboard_app(
     event_bus: EventBus,
     repository: ProjectStateRepository | None = None,
 ) -> FastAPI:
-    app = FastAPI(title="AI Dev Dashboard")
+    app = FastAPI(title="AI Dev Dashboard", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -50,7 +99,7 @@ def create_dashboard_app(
     app.state.connected_ws = state.connected_ws
     app.state.broadcast_queue = state.broadcast_queue
 
-    # 注入 Repository（如未提供则创建默认）
+    # 注入 Repository
     if repository is None:
         from pathlib import Path
         repository = ProjectStateRepository(
@@ -60,11 +109,22 @@ def create_dashboard_app(
         )
     app.state.repository = repository
 
-    # 注入 CommandProcessor
-    def on_event(event) -> None:
-        event_bus.emit(event.type, **event.payload)
+    # 注入 CommandProcessor — 事件统一通过 Repository 追加
+    def on_event(event_type: str, **kwargs: Any) -> None:
+        event = repository.append_event(type=event_type, **kwargs)
+        _emit_to_ws(app.state.broadcast_queue, event)
+        # 兼容旧 EventBus（如果外部还在监听）
+        event_bus.emit(event_type, **kwargs)
 
-    app.state.command_processor = CommandProcessor(on_event=on_event)
+    processor = CommandProcessor(on_event=on_event)
+    app.state.command_processor = processor
+
+    # 注入 CommandConsumer
+    app.state.consumer = CommandConsumer(
+        repository=repository,
+        processor=processor,
+        event_bus=event_bus,
+    )
 
     # --- REST: 状态快照 ---
 
@@ -109,35 +169,37 @@ def create_dashboard_app(
         msg = ChatMessage(id=f"chat_{_now_iso()}", role="user", content=content)
         app.state.dashboard_state.chat_history.append(msg)
         app.state.repository.add_chat_message(msg)
-        app.state.event_bus.emit("pm_decision", message=f"用户消息: {content}")
+        event = app.state.repository.append_event(
+            type="pm_decision", message=f"用户消息: {content}",
+        )
+        _emit_to_ws(app.state.broadcast_queue, event)
         return {"success": True, "message_id": msg.id}
 
-    # --- REST: 批准 ---
+    # --- REST: 批准（写为 pending，由 CommandConsumer 消费）---
 
     @app.post("/api/approve")
     async def post_approve(body: dict[str, Any] | None = None) -> dict:
         body = body or {}
         cmd = _create_command("approve_decision", body)
-        try:
-            app.state.command_processor.accept(cmd)
-        except InvalidTransition:
-            raise HTTPException(status_code=409, detail="Command cannot be accepted")
+        cmd.status = "pending"
         app.state.repository.save_command(cmd)
-        return {"success": True, "command_id": cmd.command_id}
+        app.state.repository.append_event(
+            type="command_created", command_id=cmd.command_id, cmd_type="approve",
+        )
+        return {"success": True, "command_id": cmd.command_id, "status": "pending"}
 
-    # --- REST: 驳回 ---
+    # --- REST: 驳回（写为 pending，由 CommandConsumer 消费）---
 
     @app.post("/api/reject")
     async def post_reject(body: dict[str, Any] | None = None) -> dict:
         body = body or {}
-        reason = body.get("reason", "")
         cmd = _create_command("reject_decision", body)
-        try:
-            app.state.command_processor.reject(cmd, reason=reason)
-        except InvalidTransition:
-            raise HTTPException(status_code=409, detail="Command cannot be rejected")
+        cmd.status = "pending"
         app.state.repository.save_command(cmd)
-        return {"success": True, "command_id": cmd.command_id}
+        app.state.repository.append_event(
+            type="command_created", command_id=cmd.command_id, cmd_type="reject",
+        )
+        return {"success": True, "command_id": cmd.command_id, "status": "pending"}
 
     # --- REST: 暂停 ---
 
@@ -150,7 +212,10 @@ def create_dashboard_app(
             if agent.id == agent_id:
                 agent.status = "paused"
                 repo.upsert_agent(agent)
-                app.state.event_bus.emit("agent_status_changed", agent_id=agent_id, message="paused")
+                event = repo.append_event(
+                    type="agent_status_changed", agent_id=agent_id, message="paused",
+                )
+                _emit_to_ws(app.state.broadcast_queue, event)
                 return {"success": True}
         raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
 
@@ -165,7 +230,10 @@ def create_dashboard_app(
             if agent.id == agent_id:
                 agent.status = "idle"
                 repo.upsert_agent(agent)
-                app.state.event_bus.emit("agent_status_changed", agent_id=agent_id, message="idle")
+                event = repo.append_event(
+                    type="agent_status_changed", agent_id=agent_id, message="idle",
+                )
+                _emit_to_ws(app.state.broadcast_queue, event)
                 return {"success": True}
         raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
 
@@ -174,7 +242,8 @@ def create_dashboard_app(
     @app.post("/api/retry")
     async def post_retry(body: dict[str, Any]) -> dict:
         feature_id = body.get("feature_id", "")
-        app.state.event_bus.emit("retry_feature", feature_id=feature_id)
+        event = app.state.repository.append_event(type="retry_feature", feature_id=feature_id)
+        _emit_to_ws(app.state.broadcast_queue, event)
         return {"success": True}
 
     # --- REST: 跳过 ---
@@ -182,7 +251,8 @@ def create_dashboard_app(
     @app.post("/api/skip")
     async def post_skip(body: dict[str, Any]) -> dict:
         feature_id = body.get("feature_id", "")
-        app.state.event_bus.emit("skip_feature", feature_id=feature_id)
+        event = app.state.repository.append_event(type="skip_feature", feature_id=feature_id)
+        _emit_to_ws(app.state.broadcast_queue, event)
         return {"success": True}
 
     # --- REST: 命令创建（新接口）---
@@ -190,6 +260,7 @@ def create_dashboard_app(
     @app.post("/api/dashboard/commands", status_code=202)
     async def create_command_endpoint(body: dict[str, Any]) -> dict:
         cmd = _create_command(body.get("type", ""), body)
+        cmd.status = "pending"
         app.state.repository.save_command(cmd)
         return {
             "schema_version": 1,
@@ -211,7 +282,6 @@ def create_dashboard_app(
         await ws.accept()
         app.state.connected_ws.add(ws)
         try:
-            # 发送欢迎 + 状态快照（对齐前端 WsCallbacks.onSnapshot 期望）
             snapshot = app.state.repository.load_snapshot()
             await ws.send_json({
                 "type": "hello",
@@ -222,7 +292,6 @@ def create_dashboard_app(
                 "features": [f.to_dict() for f in snapshot.features],
                 "chat_history": [m.to_dict() for m in snapshot.chat_history],
             })
-            # 保持连接，轮询广播队列
             while True:
                 try:
                     while app.state.broadcast_queue:
@@ -234,25 +303,17 @@ def create_dashboard_app(
         except WebSocketDisconnect:
             app.state.connected_ws.discard(ws)
 
-    # 注册广播钩子
-    original_emit = event_bus.emit
-
-    def emit_with_broadcast(event_type: str, **kwargs: Any) -> None:
-        original_emit(event_type, **kwargs)
-        payload = {"type": event_type, "payload": kwargs, "timestamp": _now_iso()}
-        app.state.broadcast_queue.append(payload)
-
-    event_bus.emit = emit_with_broadcast
-
     return app
 
 
 def _create_command(cmd_type: str, body: dict[str, Any]) -> Command:
     """从请求体创建 Command 对象。"""
     from dashboard.models import Command
+    # 类型映射：前端类型 → 后端类型
+    actual_type = CMD_TYPE_MAP.get(cmd_type, cmd_type)
     return Command(
         command_id=f"cmd_{_now_iso()}",
-        type=cmd_type,
+        type=actual_type,
         target_id=body.get("target_id", ""),
         payload=body.get("payload", {}),
         project_id=body.get("project_id", ""),

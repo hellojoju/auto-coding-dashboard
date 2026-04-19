@@ -65,6 +65,13 @@ class ProjectStateRepository:
 
     def upsert_agent(self, agent: AgentInstance) -> AgentInstance:
         with self._lock:
+            if agent.workspace_id:
+                existing = self._agents.get(agent.id)
+                if existing is not None and existing.workspace_id != agent.workspace_id:
+                    raise ValueError(
+                        f"Agent {agent.id} belongs to workspace '{existing.workspace_id}', "
+                        f"cannot write from workspace '{agent.workspace_id}'"
+                    )
             self._agents[agent.id] = agent
             self._save()
             return agent
@@ -73,6 +80,13 @@ class ProjectStateRepository:
 
     def upsert_feature(self, feature: Feature) -> Feature:
         with self._lock:
+            if feature.workspace_id:
+                existing = self._features.get(feature.id)
+                if existing is not None and existing.workspace_id != feature.workspace_id:
+                    raise ValueError(
+                        f"Feature {feature.id} belongs to workspace '{existing.workspace_id}', "
+                        f"cannot write from workspace '{feature.workspace_id}'"
+                    )
             self._features[feature.id] = feature
             self._save()
             return feature
