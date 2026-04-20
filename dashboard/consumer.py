@@ -45,16 +45,25 @@ class CommandConsumer:
 
     def _process_command(self, cmd: Command) -> None:
         """处理单条命令。"""
-        if cmd.type == "approve":
+        # 命令别名映射：前端发送类型 → 后端标准类型
+        command_aliases = {
+            "pause_run": "pause",
+            "resume_run": "resume",
+            "retry_feature": "retry",
+            "skip_feature": "skip",
+        }
+        cmd_type = command_aliases.get(cmd.type, cmd.type)
+
+        if cmd_type == "approve":
             self._processor.accept(cmd)
             self._processor.apply(cmd, {})
             self._repo.save_command(cmd)
             self._emit_event("command_applied", command_id=cmd.command_id)
-        elif cmd.type == "reject":
+        elif cmd_type == "reject":
             self._processor.reject(cmd, reason="rejected by PM")
             self._repo.save_command(cmd)
             self._emit_event("command_rejected", command_id=cmd.command_id)
-        elif cmd.type in ("pause", "resume", "retry", "skip"):
+        elif cmd_type in ("pause", "resume", "retry", "skip"):
             cmd.status = "applied"
             self._repo.save_command(cmd)
             self._emit_event("command_applied", command_id=cmd.command_id)
