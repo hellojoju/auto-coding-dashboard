@@ -118,11 +118,11 @@ def create_dashboard_app(
     app.state.repository = repository
 
     # 注入 CommandProcessor — 事件统一通过 Repository 追加
-    def on_event(event_type: str, **kwargs: Any) -> None:
-        event = repository.append_event(type=event_type, **kwargs)
-        _emit_to_ws(app.state.broadcast_queue, event)
+    def on_event(event: "Event") -> None:
+        repo_event = repository.append_event(type=event.type, payload=event.payload)
+        _emit_to_ws(app.state.broadcast_queue, repo_event)
         # 兼容旧 EventBus（如果外部还在监听）
-        event_bus.emit(event_type, **kwargs)
+        event_bus.emit(event.type, **event.payload)
 
     processor = CommandProcessor(on_event=on_event)
     app.state.command_processor = processor
