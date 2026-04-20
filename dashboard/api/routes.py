@@ -26,6 +26,10 @@ logger = logging.getLogger(__name__)
 CMD_TYPE_MAP = {
     "approve_decision": "approve",
     "reject_decision": "reject",
+    "pause_run": "pause",
+    "resume_run": "resume",
+    "retry_feature": "retry",
+    "skip_feature": "skip",
 }
 
 
