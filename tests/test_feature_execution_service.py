@@ -1,4 +1,5 @@
 """测试 FeatureExecutionService"""
+
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -6,76 +7,86 @@ import pytest
 from core.feature_execution_service import FeatureExecutionService
 
 
+def _make_feature(
+    feature_id: str = "feat-1",
+    description: str = "Test feature",
+    category: str = "backend",
+    priority: str = "P1",
+    test_steps: list | None = None,
+    dependencies: list | None = None,
+):
+    """Factory: 创建用于测试的 Feature mock 对象。"""
+    feature = MagicMock()
+    feature.id = feature_id
+    feature.description = description
+    feature.category = category
+    feature.priority = priority
+    feature.test_steps = test_steps or []
+    feature.dependencies = dependencies or []
+    return feature
+
+
 @pytest.fixture
 def service(tmp_path):
     mock_pm = MagicMock()
     mock_pm.project_dir = tmp_path
-    mock_pm._get_prd_summary.return_value = "Test PRD"
-    mock_pm._get_deps_context.return_value = {"deps": []}
     mock_pool = MagicMock()
     mock_tracker = MagicMock()
     return FeatureExecutionService(mock_pm, mock_pool, mock_tracker)
 
 
-def test_execute_feature_success(service):
+@pytest.mark.unit
+async def test_execute_feature_success(service):
     """测试 Agent 成功执行 Feature"""
-    feature = MagicMock()
-    feature.id = "feat-1"
-    feature.description = "Test feature"
-    feature.category = "backend"
-    feature.priority = "P1"
-    feature.test_steps = []
-    feature.dependencies = []
+    feature = _make_feature()
 
     mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
     mock_agent.execute = AsyncMock()
     mock_agent.execute.return_value = {
         "success": True,
         "files_changed": ["src/a.py"],
     }
 
-    result = service.execute(feature, mock_agent)
+    result = await service.execute(feature, mock_agent)
     assert result["success"] is True
     assert result["files_changed"] == ["src/a.py"]
 
 
-def test_execute_feature_failure(service):
+@pytest.mark.unit
+async def test_execute_feature_failure(service):
     """测试 Agent 执行失败"""
-    feature = MagicMock()
-    feature.id = "feat-1"
-    feature.description = "Test feature"
-    feature.category = "backend"
-    feature.priority = "P1"
-    feature.test_steps = []
-    feature.dependencies = []
+    feature = _make_feature()
 
     mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
     mock_agent.execute = AsyncMock()
     mock_agent.execute.side_effect = Exception("Connection error")
 
-    result = service.execute(feature, mock_agent)
+    result = await service.execute(feature, mock_agent)
     assert result["success"] is False
     assert "Connection error" in result["error"]
 
 
-def test_execute_feature_with_test_steps(service):
+@pytest.mark.unit
+async def test_execute_feature_with_test_steps(service):
     """测试带测试步骤的 Feature"""
-    feature = MagicMock()
-    feature.id = "feat-2"
-    feature.description = "Feature with tests"
-    feature.category = "backend"
-    feature.priority = "P0"
-    feature.test_steps = ["step1", "step2"]
-    feature.dependencies = []
+    feature = _make_feature(
+        feature_id="feat-2",
+        description="Feature with tests",
+        priority="P0",
+        test_steps=["step1", "step2"],
+    )
 
     mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
     mock_agent.execute = AsyncMock()
     mock_agent.execute.return_value = {
         "success": True,
         "files_changed": ["src/b.py", "tests/test_b.py"],
     }
 
-    result = service.execute(feature, mock_agent)
+    result = await service.execute(feature, mock_agent)
     assert result["success"] is True
     assert len(result["files_changed"]) == 2
 
@@ -84,41 +95,48 @@ def test_execute_feature_with_test_steps(service):
     assert call_args["test_steps"] == ["step1", "step2"]
 
 
-def test_execute_feature_empty_result(service):
+@pytest.mark.unit
+async def test_execute_feature_empty_result(service):
     """测试 Agent 返回空结果时的默认值处理"""
-    feature = MagicMock()
-    feature.id = "feat-3"
-    feature.description = "Empty result feature"
-    feature.category = "frontend"
-    feature.priority = "P2"
-    feature.test_steps = []
-    feature.dependencies = []
+    feature = _make_feature(
+        feature_id="feat-3",
+        description="Empty result feature",
+        category="frontend",
+        priority="P2",
+    )
 
     mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
     mock_agent.execute = AsyncMock()
     mock_agent.execute.return_value = {}
 
-    result = service.execute(feature, mock_agent)
+    result = await service.execute(feature, mock_agent)
     assert result["success"] is False
     assert result["files_changed"] == []
     assert result["error"] == ""
 
 
-def test_execute_feature_passes_context(service, tmp_path):
+@pytest.mark.unit
+async def test_execute_feature_passes_context(service, tmp_path):
     """验证执行上下文正确传递给 Agent"""
-    feature = MagicMock()
-    feature.id = "feat-4"
-    feature.description = "Context test"
-    feature.category = "database"
-    feature.priority = "P1"
-    feature.test_steps = ["verify schema"]
-    feature.dependencies = []
+    feature = _make_feature(
+        feature_id="feat-4",
+        description="Context test",
+        category="database",
+        test_steps=["verify schema"],
+    )
 
     mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
     mock_agent.execute = AsyncMock()
     mock_agent.execute.return_value = {"success": True, "files_changed": []}
 
-    service.execute(feature, mock_agent)
+    await service.execute(
+        feature,
+        mock_agent,
+        prd_summary="Test PRD",
+        dependencies_context={"deps": []},
+    )
 
     call_args = mock_agent.execute.call_args[0][0]
     assert call_args["feature_id"] == "feat-4"
@@ -128,3 +146,20 @@ def test_execute_feature_passes_context(service, tmp_path):
     assert call_args["project_dir"] == str(tmp_path)
     assert call_args["prd_summary"] == "Test PRD"
     assert call_args["dependencies_context"] == {"deps": []}
+
+
+@pytest.mark.unit
+async def test_execute_feature_default_context_is_empty(service):
+    """验证未传入 prd_summary/dependencies_context 时使用空默认值"""
+    feature = _make_feature()
+
+    mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
+    mock_agent.execute = AsyncMock()
+    mock_agent.execute.return_value = {"success": True, "files_changed": []}
+
+    await service.execute(feature, mock_agent)
+
+    call_args = mock_agent.execute.call_args[0][0]
+    assert call_args["prd_summary"] == ""
+    assert call_args["dependencies_context"] == {}
