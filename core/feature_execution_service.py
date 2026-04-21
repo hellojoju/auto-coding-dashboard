@@ -69,6 +69,9 @@ class FeatureExecutionService:
                     "dependencies_context": dependencies_context or {},
                 }
             )
+            if not isinstance(result, dict):
+                logger.error("Agent.execute() returned non-dict for %s: %r", feature.id, result)
+                return {"success": False, "files_changed": [], "error": "Agent returned non-dict result"}
             return {
                 "success": result.get("success", False),
                 "files_changed": result.get("files_changed", []),

@@ -163,3 +163,39 @@ async def test_execute_feature_default_context_is_empty(service):
     call_args = mock_agent.execute.call_args[0][0]
     assert call_args["prd_summary"] == ""
     assert call_args["dependencies_context"] == {}
+
+
+@pytest.mark.unit
+async def test_execute_feature_without_test_steps_attr(service):
+    """验证 Feature 没有 test_steps 属性时使用空列表 fallback"""
+    feature = MagicMock(spec=["id", "description", "category", "priority"])
+    feature.id = "feat-5"
+    feature.description = "No test steps"
+    feature.category = "backend"
+    feature.priority = "P2"
+    # 刻意不设置 test_steps 属性
+
+    mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
+    mock_agent.execute = AsyncMock()
+    mock_agent.execute.return_value = {"success": True, "files_changed": []}
+
+    await service.execute(feature, mock_agent)
+
+    call_args = mock_agent.execute.call_args[0][0]
+    assert call_args["test_steps"] == []
+
+
+@pytest.mark.unit
+async def test_execute_feature_agent_returns_none(service):
+    """验证 Agent 返回 None 时返回结构化错误"""
+    feature = _make_feature()
+
+    mock_agent = MagicMock()
+    mock_agent.workspace_path = "/workspace"
+    mock_agent.execute = AsyncMock()
+    mock_agent.execute.return_value = None
+
+    result = await service.execute(feature, mock_agent)
+    assert result["success"] is False
+    assert result["error"] == "Agent returned non-dict result"
