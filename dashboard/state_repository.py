@@ -86,15 +86,32 @@ class ProjectStateRepository:
 
     # --- Feature ---
 
-    def upsert_feature(self, feature: Feature) -> Feature:
+    def upsert_feature(self, feature: Feature, *, event_type: str = "") -> Feature:
         with self._lock:
+            existing = self._features.get(feature.id) if feature.id in self._features else None
             if feature.workspace_id:
-                existing = self._features.get(feature.id)
                 if existing is not None and existing.workspace_id != feature.workspace_id:
                     raise ValueError(
                         f"Feature {feature.id} belongs to workspace '{existing.workspace_id}', "
                         f"cannot write from workspace '{feature.workspace_id}'"
                     )
+            # 状态变更必须伴随事件
+            if existing is not None and existing.status != feature.status:
+                if not event_type:
+                    raise ValueError(
+                        f"Feature {feature.id} status changed from '{existing.status}' to "
+                        f"'{feature.status}' but no event_type provided. "
+                        "Every status change must be accompanied by an event."
+                    )
+                self._next_event_id += 1
+                evt = Event(
+                    event_id=self._next_event_id,
+                    project_id=self._project_id,
+                    run_id=self._run_id,
+                    type=event_type,
+                    payload={"feature_id": feature.id, "old_status": existing.status, "new_status": feature.status},
+                )
+                self._events.append(evt)
             self._features[feature.id] = feature
             self._save()
             return feature
@@ -110,6 +127,14 @@ class ProjectStateRepository:
             self._commands[cmd.command_id] = cmd
             self._save()
             return cmd
+
+    def get_command_by_idempotency_key(self, key: str) -> Command | None:
+        """通过幂等键查找命令。"""
+        with self._lock:
+            for cmd in self._commands.values():
+                if cmd.idempotency_key == key:
+                    return cmd
+            return None
 
     def get_command(self, command_id: str) -> Command | None:
         with self._lock:

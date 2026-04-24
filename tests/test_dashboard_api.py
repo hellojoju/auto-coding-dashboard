@@ -109,6 +109,42 @@ async def test_create_command_returns_202(client_with_repo):
     data = resp.json()
     assert data["status"] == "pending"
     assert "command_id" in data
+    assert data["was_duplicate"] is False
+
+
+async def test_create_command_idempotent(client_with_repo):
+    """相同 idempotency_key 的重复提交应返回相同 command_id。"""
+    key = "idempotent-test-key-001"
+    resp1 = await client_with_repo.post(
+        "/api/dashboard/commands",
+        json={"type": "approve_decision", "target_id": "pm", "idempotency_key": key},
+    )
+    assert resp1.status_code == 202
+    data1 = resp1.json()
+    assert data1["was_duplicate"] is False
+    cmd_id = data1["command_id"]
+
+    # 重复提交
+    resp2 = await client_with_repo.post(
+        "/api/dashboard/commands",
+        json={"type": "approve_decision", "target_id": "pm", "idempotency_key": key},
+    )
+    assert resp2.status_code == 202
+    data2 = resp2.json()
+    assert data2["command_id"] == cmd_id
+    assert data2["was_duplicate"] is True
+
+
+async def test_create_command_without_idempotency_key(client_with_repo):
+    """不带 idempotency_key 的命令正常创建。"""
+    resp = await client_with_repo.post(
+        "/api/dashboard/commands",
+        json={"type": "approve_decision", "target_id": "pm"},
+    )
+    assert resp.status_code == 202
+    data = resp.json()
+    assert "was_duplicate" in data
+    assert data["was_duplicate"] is False
 
 
 async def test_get_command_by_id(client_with_repo):
@@ -225,6 +261,47 @@ async def test_events_returns_list(client, event_bus):
     data = resp.json()
     assert isinstance(data, list)
     assert len(data) >= 1
+
+
+async def test_events_support_agent_filter(client_with_repo, repo):
+    repo.append_event(type="agent_status_changed", agent_id="backend-1", message="busy")
+    repo.append_event(type="agent_status_changed", agent_id="frontend-1", message="idle")
+    resp = await client_with_repo.get("/api/events", params={"agent_id": "backend-1"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "events" in data
+    assert len(data["events"]) == 1
+    assert data["events"][0]["agent_id"] == "backend-1"
+
+
+async def test_get_agent_status_returns_flattened_shape(client_with_repo, repo):
+    from dashboard.models import AgentInstance
+
+    repo.upsert_agent(AgentInstance(id="backend-1", role="backend", instance_number=1))
+    resp = await client_with_repo.get("/api/agents/backend-1/status")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["id"] == "backend-1"
+    assert data["role"] == "backend"
+    assert "agent" not in data
+
+
+async def test_list_blocking_issues_endpoint(client_with_repo, repo):
+    from dashboard.models import BlockingIssue
+
+    repo.create_blocking_issue(
+        BlockingIssue(
+            feature_id="F001",
+            issue_type="code_error",
+            detected_by="agent",
+            description="syntax error",
+        )
+    )
+    resp = await client_with_repo.get("/api/blocking-issues")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] == 1
+    assert data["issues"][0]["feature_id"] == "F001"
 
 
 # --- WebSocket /ws/dashboard ---
