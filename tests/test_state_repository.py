@@ -160,3 +160,35 @@ def test_repository_get_features_by_workspace(repo: ProjectStateRepository) -> N
     beta_features = repo.get_features_by_workspace("ws-beta")
     assert len(beta_features) == 1
     assert beta_features[0].id == "F002"
+
+
+# --- Command 公开查询方法 ---
+
+def test_list_pending_commands_returns_only_pending(repo: ProjectStateRepository) -> None:
+    repo.save_command(Command(command_id="cmd_1", type="approve", status="pending"))
+    repo.save_command(Command(command_id="cmd_2", type="approve", status="applied"))
+    repo.save_command(Command(command_id="cmd_3", type="reject", status="pending"))
+
+    pending = repo.list_pending_commands()
+    assert len(pending) == 2
+    assert all(c.status == "pending" for c in pending)
+
+
+def test_list_commands_by_status_filters_correctly(repo: ProjectStateRepository) -> None:
+    repo.save_command(Command(command_id="c1", type="approve", status="accepted"))
+    repo.save_command(Command(command_id="c2", type="approve", status="rejected"))
+    repo.save_command(Command(command_id="c3", type="approve", status="pending"))
+
+    results = repo.list_commands_by_status("accepted", "rejected")
+    assert len(results) == 2
+    ids = {c.command_id for c in results}
+    assert ids == {"c1", "c2"}
+
+
+def test_list_all_commands_returns_readonly_copy(repo: ProjectStateRepository) -> None:
+    repo.save_command(Command(command_id="c1", type="approve", status="pending"))
+    all_cmds = repo.list_all_commands()
+    assert len(all_cmds) == 1
+    # 修改返回列表不应影响 repo 内部状态
+    all_cmds.clear()
+    assert len(repo.list_all_commands()) == 1

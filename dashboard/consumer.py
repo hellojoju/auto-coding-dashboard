@@ -27,7 +27,7 @@ class CommandConsumer:
 
     def process_once(self) -> int:
         """消费一轮所有 pending 命令，返回实际处理的命令数。"""
-        pending = list(c for c in self._repo._commands.values() if c.status == "pending")
+        pending = self._repo.list_pending_commands()
         if not pending:
             return 0
 
@@ -47,6 +47,8 @@ class CommandConsumer:
         """处理单条命令。"""
         # 命令别名映射：前端发送类型 → 后端标准类型
         command_aliases = {
+            "approve_decision": "approve",
+            "reject_decision": "reject",
             "pause_run": "pause",
             "resume_run": "resume",
             "retry_feature": "retry",

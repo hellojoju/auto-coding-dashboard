@@ -6,6 +6,8 @@ import json
 import os
 import tempfile
 import threading
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 from dashboard.models import (
@@ -16,6 +18,7 @@ from dashboard.models import (
     ChatMessage,
     Snapshot,
     ModuleAssignment,
+    BlockingIssue,
 )
 
 
@@ -41,6 +44,7 @@ class ProjectStateRepository:
         self._events: list[Event] = []
         self._chat_history: list[ChatMessage] = []
         self._module_assignments: dict[str, ModuleAssignment] = {}
+        self._blocking_issues: dict[str, BlockingIssue] = {}
         self._next_event_id = 0
         self._snapshot_version = 0
 
@@ -62,6 +66,7 @@ class ProjectStateRepository:
                 features=list(self._features.values()),
                 chat_history=list(self._chat_history),
                 module_assignments=list(self._module_assignments.values()),
+                blocking_issues=list(self._blocking_issues.values()),
             )
 
     # --- Agent ---
@@ -99,7 +104,6 @@ class ProjectStateRepository:
     def save_command(self, cmd: Command) -> Command:
         with self._lock:
             if not cmd.command_id:
-                import uuid
                 cmd.command_id = str(uuid.uuid4())[:8]
             cmd.project_id = self._project_id
             cmd.run_id = self._run_id
@@ -165,6 +169,21 @@ class ProjectStateRepository:
                 assignments = [a for a in assignments if a.role == role]
             return assignments
 
+    def list_pending_commands(self) -> list[Command]:
+        """返回所有状态为 pending 的命令。"""
+        with self._lock:
+            return [c for c in self._commands.values() if c.status == "pending"]
+
+    def list_commands_by_status(self, *statuses: str) -> list[Command]:
+        """返回指定状态列表中的所有命令。"""
+        with self._lock:
+            return [c for c in self._commands.values() if c.status in statuses]
+
+    def list_all_commands(self) -> list[Command]:
+        """返回所有命令的只读副本。"""
+        with self._lock:
+            return list(self._commands.values())
+
     def list_pending_approvals(self) -> list[dict]:
         """返回所有需要用户审批的条目（状态为 waiting_approval 的 agent 关联的命令）。"""
         with self._lock:
@@ -173,6 +192,53 @@ class ProjectStateRepository:
                 if cmd.status == "pending":
                     approvals.append(cmd.to_dict())
             return approvals
+
+    # --- Blocking Issue ---
+
+    def create_blocking_issue(self, issue: BlockingIssue) -> BlockingIssue:
+        """创建阻塞问题，自动生成 issue_id。"""
+        if not issue.issue_type:
+            raise ValueError("issue_type is required")
+        if not issue.feature_id:
+            raise ValueError("feature_id is required")
+        with self._lock:
+            if not issue.issue_id:
+                issue.issue_id = str(uuid.uuid4())[:8]
+            self._blocking_issues[issue.issue_id] = issue
+            self._save()
+            return issue
+
+    def resolve_blocking_issue(self, issue_id: str, resolution: str) -> bool:
+        """标记阻塞问题为已解决。"""
+        with self._lock:
+            issue = self._blocking_issues.get(issue_id)
+            if issue is None:
+                return False
+            issue.resolved = True
+            issue.resolved_at = datetime.now(timezone.utc).isoformat()
+            issue.resolution = resolution
+            self._save()
+            return True
+
+    def get_blocking_issue(self, issue_id: str) -> BlockingIssue | None:
+        """按 ID 获取阻塞问题。"""
+        with self._lock:
+            return self._blocking_issues.get(issue_id)
+
+    def list_blocking_issues(
+        self,
+        *,
+        feature_id: str | None = None,
+        resolved: bool | None = None,
+    ) -> list[BlockingIssue]:
+        """列出阻塞问题，支持按 feature_id 和 resolved 状态过滤。"""
+        with self._lock:
+            issues = list(self._blocking_issues.values())
+            if feature_id is not None:
+                issues = [i for i in issues if i.feature_id == feature_id]
+            if resolved is not None:
+                issues = [i for i in issues if i.resolved == resolved]
+            return issues
 
     # --- Workspace filtering (多实例隔离预留) ---
 
@@ -195,6 +261,7 @@ class ProjectStateRepository:
             "events": [e.to_dict() for e in self._events],
             "chat_history": [m.to_dict() for m in self._chat_history],
             "module_assignments": [m.to_dict() for m in self._module_assignments.values()],
+            "blocking_issues": [i.to_dict() for i in self._blocking_issues.values()],
             "next_event_id": self._next_event_id,
         }
         tmp_fd, tmp_path = tempfile.mkstemp(dir=self._base, suffix=".tmp")
@@ -223,3 +290,7 @@ class ProjectStateRepository:
             for m in state.get("module_assignments", [])
         }
         self._next_event_id = state.get("next_event_id", 0)
+        self._blocking_issues = {
+            i["issue_id"]: BlockingIssue.from_dict(i)
+            for i in state.get("blocking_issues", [])
+        }

@@ -18,6 +18,9 @@ from dashboard.models import Command
 from dashboard.state_repository import ProjectStateRepository
 from dashboard.silence_detector import SilenceDetector
 from dashboard.agent_process_manager import AgentProcessManager
+from core.blocking_tracker import BlockingIssueType
+from core.blocking_tracker import BlockingTracker
+from core.execution_ledger import ExecutionStatus
 
 if TYPE_CHECKING:
     from agents.pool import AgentInstance
@@ -53,6 +56,10 @@ class PMCoordinator:
         self._exec_status: str = "idle"
         self._stop_event = threading.Event()
         self._exec_error: Optional[str] = None
+
+        # 统一 ProjectManager 与 Coordinator 的状态事实源
+        self._pm.repository = repository
+        self._pm.blocking_tracker = BlockingTracker(repository)
 
         # 静默检测：为每个 agent 角色创建检测器
         self._silence_detectors: dict[str, SilenceDetector] = {}
@@ -171,10 +178,17 @@ class PMCoordinator:
         from core.progress_logger import progress
 
         tracker = self._pm.feature_tracker
-        tracker.mark_in_progress(feature.id)
+        tracker.mark_in_progress(feature.id, instance_id="", workspace_path="")
+        self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
 
         if feature.assigned_to not in AGENT_ROLES:
-            tracker.mark_blocked(feature.id, f"未知角色: {feature.assigned_to}")
+            self._pm._mark_feature_blocked(
+                feature,
+                reason=f"未知角色: {feature.assigned_to}",
+                issue_type=BlockingIssueType.CODE_ERROR,
+                detected_by="coordinator",
+                context={"assigned_to": feature.assigned_to},
+            )
             return
 
         pool = self._pm.pool
@@ -186,21 +200,24 @@ class PMCoordinator:
 
         instance, agent = result_pair
         instance.current_task_id = feature.id
+        tracker.mark_in_progress(feature.id, instance_id=instance.instance_id, workspace_path=str(instance.workspace_path))
+        self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
+        self._pm._sync_agent_instance(instance, status="busy", current_feature=feature.id)
+        self._pm.execution_ledger.log_execution(
+            feature_id=feature.id,
+            status=ExecutionStatus.STARTED,
+            agent_id=instance.instance_id,
+        )
 
         try:
             import asyncio
 
-            result = asyncio.run(agent.execute({
-                "feature_id": feature.id,
-                "description": feature.description,
-                "category": feature.category,
-                "priority": feature.priority,
-                "test_steps": feature.test_steps,
-                "project_dir": str(self._pm.project_dir),
-                "workspace_dir": str(instance.workspace_path),
-                "prd_summary": self._pm._get_prd_summary(),
-                "dependencies_context": self._pm._get_deps_context(feature),
-            }))
+            result = asyncio.run(self._pm.feature_execution.execute(
+                feature,
+                agent,
+                prd_summary=self._pm._get_prd_summary(),
+                dependencies_context=self._pm._get_deps_context(feature),
+            ))
 
             task_success = result.get("success", False)
 
@@ -212,11 +229,23 @@ class PMCoordinator:
                 if approved:
                     # 用户审批通过 → 验收
                     tracker.mark_review(feature.id)
-                    passed = self._pm._verify_feature(feature)
+                    self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
+                    passed = self._pm.feature_verification.verify(feature)
                     if passed:
-                        tracker.mark_done(feature.id)
-                        self._pm._git_commit(f"feat: {feature.id} - {feature.description}")
+                        files_changed = result.get("files_changed") or []
+                        tracker.mark_done(feature.id, files_changed=files_changed)
+                        self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
+                        self._pm.execution_ledger.log_execution(
+                            feature_id=feature.id,
+                            status=ExecutionStatus.COMPLETED,
+                            agent_id=instance.instance_id,
+                            files_changed=files_changed,
+                        )
+                        self._pm.git_service.commit(f"feat: {feature.id} - {feature.description}")
                         pool.release(instance.instance_id, task_success=True)
+                        released = pool.get_instance(instance.instance_id)
+                        if released is not None:
+                            self._pm._sync_agent_instance(released, status=released.status, current_feature=None)
                         self._event_bus.emit("feature_done", feature_id=feature.id)
                     else:
                         retry_count = len(feature.error_log)
@@ -224,33 +253,81 @@ class PMCoordinator:
                             tracker.add_error(feature.id, "验收不通过，退回重做")
                             feature.status = "pending"
                             tracker._save()
-                            pool.release(instance.instance_id, task_success=False)
-                        else:
-                            tracker.mark_blocked(
-                                feature.id, f"验收不通过，已重试{MAX_RETRY_COUNT}次"
+                            self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
+                            self._pm.execution_ledger.log_execution(
+                                feature_id=feature.id,
+                                status=ExecutionStatus.RETRYING,
+                                agent_id=instance.instance_id,
+                                error="验收不通过，退回重做",
                             )
                             pool.release(instance.instance_id, task_success=False)
+                            released = pool.get_instance(instance.instance_id)
+                            if released is not None:
+                                self._pm._sync_agent_instance(released, status=released.status, current_feature=None)
+                        else:
+                            self._pm._mark_feature_blocked(
+                                feature,
+                                reason=f"验收不通过，已重试{MAX_RETRY_COUNT}次",
+                                issue_type=BlockingIssueType.CODE_ERROR,
+                                detected_by="verification",
+                                context={"stage": "verification"},
+                                agent_id=instance.instance_id,
+                            )
+                            pool.release(instance.instance_id, task_success=False)
+                            released = pool.get_instance(instance.instance_id)
+                            if released is not None:
+                                self._pm._sync_agent_instance(released, status=released.status, current_feature=None)
                 else:
                     # 用户驳回
                     tracker.add_error(feature.id, "PM 驳回：需求不符合预期")
                     feature.status = "pending"
                     tracker._save()
+                    self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
+                    self._pm.execution_ledger.log_execution(
+                        feature_id=feature.id,
+                        status=ExecutionStatus.RETRYING,
+                        agent_id=instance.instance_id,
+                        error="PM 驳回：需求不符合预期",
+                    )
                     pool.release(instance.instance_id, task_success=False)
+                    released = pool.get_instance(instance.instance_id)
+                    if released is not None:
+                        self._pm._sync_agent_instance(released, status=released.status, current_feature=None)
                     self._event_bus.emit("feature_rejected", feature_id=feature.id)
             else:
                 error = result.get("error", "未知错误")
                 tracker.add_error(feature.id, error)
                 retry_count = len(feature.error_log)
                 if retry_count >= MAX_RETRY_COUNT:
-                    tracker.mark_blocked(feature.id, f"执行失败{MAX_RETRY_COUNT}次: {error}")
+                    self._pm._mark_feature_blocked(
+                        feature,
+                        reason=f"执行失败{MAX_RETRY_COUNT}次: {error}",
+                        issue_type=self._pm._infer_blocking_issue_type(error),
+                        detected_by="agent",
+                        context={"error": error},
+                        agent_id=instance.instance_id,
+                    )
                 else:
                     feature.status = "pending"
                     tracker._save()
+                    self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
+                    self._pm.execution_ledger.log_execution(
+                        feature_id=feature.id,
+                        status=ExecutionStatus.RETRYING,
+                        agent_id=instance.instance_id,
+                        error=error,
+                    )
                 pool.release(instance.instance_id, task_success=False)
+                released = pool.get_instance(instance.instance_id)
+                if released is not None:
+                    self._pm._sync_agent_instance(released, status=released.status, current_feature=None)
 
         except Exception as e:
             tracker.add_error(feature.id, str(e))
             pool.release(instance.instance_id, task_success=False)
+            released = pool.get_instance(instance.instance_id)
+            if released is not None:
+                self._pm._sync_agent_instance(released, status=released.status, current_feature=None)
             raise
 
     # --- 审批闸门 ---
@@ -287,16 +364,20 @@ class PMCoordinator:
         """
         start = time.monotonic()
         poll_interval = 0.5  # 500ms
+        command_aliases = {
+            "approve_decision": "approve",
+            "reject_decision": "reject",
+        }
 
         while time.monotonic() - start < self._approval_timeout:
             # 查找针对此 feature/agent 的审批命令
-            for cmd in self._repo._commands.values():
-                if cmd.status in ("accepted", "rejected", "applied"):
-                    if cmd.target_id == feature_id or cmd.target_id == agent_id:
-                        if cmd.type == "approve" and cmd.status in ("accepted", "applied"):
-                            return True
-                        elif cmd.type == "reject" and cmd.status == "rejected":
-                            return False
+            for cmd in self._repo.list_commands_by_status("accepted", "rejected", "applied"):
+                if cmd.target_id == feature_id or cmd.target_id == agent_id:
+                    cmd_type = command_aliases.get(cmd.type, cmd.type)
+                    if cmd_type == "approve" and cmd.status in ("accepted", "applied"):
+                        return True
+                    elif cmd_type == "reject" and cmd.status == "rejected":
+                        return False
 
             time.sleep(poll_interval)
 
