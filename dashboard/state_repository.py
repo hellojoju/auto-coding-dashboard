@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import tempfile
@@ -95,12 +96,16 @@ class ProjectStateRepository:
                         f"Feature {feature.id} belongs to workspace '{existing.workspace_id}', "
                         f"cannot write from workspace '{feature.workspace_id}'"
                     )
-            # 状态变更必须伴随事件
-            if existing is not None and existing.status != feature.status:
+            # 状态变更必须伴随事件——在写入前捕获旧状态，避免
+            # 调用方就地修改同一对象导致引用相同的问题
+            old_status = existing.status if existing is not None else None
+            # 深拷贝后存储，隔离调用方的后续变更
+            stored = copy.deepcopy(feature)
+            if old_status is not None and old_status != stored.status:
                 if not event_type:
                     raise ValueError(
-                        f"Feature {feature.id} status changed from '{existing.status}' to "
-                        f"'{feature.status}' but no event_type provided. "
+                        f"Feature {feature.id} status changed from '{old_status}' to "
+                        f"'{stored.status}' but no event_type provided. "
                         "Every status change must be accompanied by an event."
                     )
                 self._next_event_id += 1
@@ -109,10 +114,10 @@ class ProjectStateRepository:
                     project_id=self._project_id,
                     run_id=self._run_id,
                     type=event_type,
-                    payload={"feature_id": feature.id, "old_status": existing.status, "new_status": feature.status},
+                    payload={"feature_id": feature.id, "old_status": old_status, "new_status": stored.status},
                 )
                 self._events.append(evt)
-            self._features[feature.id] = feature
+            self._features[feature.id] = stored
             self._save()
             return feature
 

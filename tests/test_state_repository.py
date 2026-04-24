@@ -66,7 +66,7 @@ def test_repository_update_feature_status(repo: ProjectStateRepository) -> None:
     repo.upsert_feature(feature)
     feature.status = "in_progress"
     feature.started_at = "2026-04-18T10:00:00"
-    repo.upsert_feature(feature)
+    repo.upsert_feature(feature, event_type="feature_updated")
     snapshot = repo.load_snapshot()
     assert snapshot.features[0].status == "in_progress"
 
@@ -192,3 +192,44 @@ def test_list_all_commands_returns_readonly_copy(repo: ProjectStateRepository) -
     # 修改返回列表不应影响 repo 内部状态
     all_cmds.clear()
     assert len(repo.list_all_commands()) == 1
+
+
+# --- upsert_feature 强制事件校验 ---
+
+def test_upsert_feature_requires_event_on_status_change(repo: ProjectStateRepository) -> None:
+    """状态变更时不传 event_type 应报错。"""
+    f = Feature(id="F001", category="auth", description="login", status="pending")
+    repo.upsert_feature(f)
+
+    f.status = "in_progress"
+    with pytest.raises(ValueError, match="no event_type provided"):
+        repo.upsert_feature(f)
+
+
+def test_upsert_feature_with_event_type_succeeds(repo: ProjectStateRepository) -> None:
+    """状态变更时传入 event_type 应成功，且事件已追加。"""
+    f = Feature(id="F001", category="auth", description="login", status="pending")
+    repo.upsert_feature(f)
+
+    f.status = "in_progress"
+    repo.upsert_feature(f, event_type="feature_updated")
+
+    events = repo.get_events_after(0)
+    assert any(e.type == "feature_updated" for e in events)
+    status_event = [e for e in events if e.type == "feature_updated"][0]
+    assert status_event.payload["feature_id"] == "F001"
+    assert status_event.payload["old_status"] == "pending"
+    assert status_event.payload["new_status"] == "in_progress"
+
+
+def test_upsert_feature_no_status_change_needs_no_event(repo: ProjectStateRepository) -> None:
+    """状态不变（仅改其他字段），不传 event_type 不应报错。"""
+    f = Feature(id="F001", category="auth", description="login", status="pending")
+    repo.upsert_feature(f)
+
+    f.description = "login with OAuth"
+    repo.upsert_feature(f)  # 不传 event_type
+
+    snapshot = repo.load_snapshot()
+    assert snapshot.features[0].description == "login with OAuth"
+    assert len(repo.get_events_after(0)) == 0
