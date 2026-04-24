@@ -22,16 +22,6 @@ from dashboard.consumer import CommandConsumer
 
 logger = logging.getLogger(__name__)
 
-# 前端命令类型 → 后端期望类型映射
-CMD_TYPE_MAP = {
-    "approve_decision": "approve",
-    "reject_decision": "reject",
-    "pause_run": "pause",
-    "resume_run": "resume",
-    "retry_feature": "retry",
-    "skip_feature": "skip",
-}
-
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -53,11 +43,43 @@ class DashboardAppState:
 def _emit_to_ws(broadcast_queue: deque, event: Event) -> None:
     """将 Repository 事件推入 WebSocket 广播队列。"""
     payload = {
+        "schema_version": event.schema_version,
+        "event_id": event.event_id,
+        "project_id": event.project_id,
+        "run_id": event.run_id,
         "type": event.type,
         "payload": event.payload,
         "timestamp": event.timestamp or _now_iso(),
+        "caused_by_command_id": event.caused_by_command_id,
     }
     broadcast_queue.append(payload)
+
+
+def _event_to_stream_item(event: Event) -> dict[str, Any]:
+    payload = event.payload or {}
+    event_agent_id = payload.get("agent_id") or payload.get("assigned_agent_id")
+    message = payload.get("message")
+    if not isinstance(message, str) or not message:
+        if event.type == "blocking_issue_created":
+            message = payload.get("description", "阻塞问题已创建")
+        elif event.type == "feature_updated":
+            message = f"Feature {payload.get('feature_id', '')} -> {payload.get('status', '')}".strip()
+        else:
+            message = event.type
+    severity = "info"
+    if "blocked" in event.type or "failed" in event.type or "error" in event.type:
+        severity = "error"
+    elif "warning" in event.type or "reject" in event.type:
+        severity = "warning"
+    return {
+        "id": str(event.event_id),
+        "timestamp": event.timestamp,
+        "type": event.type,
+        "agent_id": event_agent_id,
+        "feature_id": payload.get("feature_id"),
+        "message": message,
+        "severity": severity,
+    }
 
 
 @asynccontextmanager
@@ -107,6 +129,14 @@ def create_dashboard_app(
     app.state.connected_ws = state.connected_ws
     app.state.broadcast_queue = state.broadcast_queue
 
+    # 桥接 EventBus → WebSocket broadcast_queue（同时写入 Repository 持久化）
+    _original_emit = event_bus.emit
+    def _patched_emit(event_type: str, **kwargs: Any) -> None:
+        _original_emit(event_type, **kwargs)
+        stored_event = repository.append_event(type=event_type, payload=kwargs)
+        _emit_to_ws(state.broadcast_queue, stored_event)
+    event_bus.emit = _patched_emit
+
     # 注入 Repository
     if repository is None:
         from pathlib import Path
@@ -119,10 +149,10 @@ def create_dashboard_app(
 
     # 注入 CommandProcessor — 事件统一通过 Repository 追加
     def on_event(event: "Event") -> None:
-        repo_event = repository.append_event(type=event.type, payload=event.payload)
-        _emit_to_ws(app.state.broadcast_queue, repo_event)
-        # 兼容旧 EventBus（如果外部还在监听）
-        event_bus.emit(event.type, **event.payload)
+        stored_event = repository.append_event(type=event.type, payload=event.payload)
+        _emit_to_ws(state.broadcast_queue, stored_event)
+        # 写入 EventBus 历史与日志，但避免再次走补丁广播
+        _original_emit(event.type, **event.payload)
 
     processor = CommandProcessor(on_event=on_event)
     app.state.command_processor = processor
@@ -162,8 +192,24 @@ def create_dashboard_app(
     # --- REST: 事件列表 ---
 
     @app.get("/api/events")
-    async def get_events() -> list[dict]:
-        return app.state.event_bus.get_events()
+    async def get_events(
+        agent_id: str | None = None,
+        after_id: int = 0,
+        limit: int = 100,
+    ) -> list[dict] | dict:
+        if agent_id is None and after_id == 0:
+            return app.state.event_bus.get_events()
+
+        events = app.state.repository.get_events_after(after_id, limit=max(limit * 5, limit))
+        items: list[dict] = []
+        for event in events:
+            item = _event_to_stream_item(event)
+            if agent_id and item.get("agent_id") != agent_id:
+                continue
+            items.append(item)
+            if len(items) >= limit:
+                break
+        return {"events": items}
 
     @app.get("/api/dashboard/events")
     async def get_dashboard_events(after_event_id: int = 0, limit: int = 200) -> dict:
@@ -172,6 +218,21 @@ def create_dashboard_app(
             "project_id": app.state.repository._project_id,
             "events": [e.to_dict() for e in events],
         }
+
+    @app.get("/api/blocking-issues")
+    async def list_blocking_issues(feature_id: str | None = None, resolved: bool | None = None) -> dict:
+        issues = app.state.repository.list_blocking_issues(feature_id=feature_id, resolved=resolved)
+        return {
+            "issues": [issue.to_dict() for issue in issues],
+            "total": len(issues),
+        }
+
+    @app.get("/api/execution-ledger")
+    async def get_execution_ledger() -> dict:
+        ledger_file = app.state.repository._base.parent / "execution-plan.json"
+        if not ledger_file.exists():
+            return {"executions": [], "summary": {"total_executions": 0, "completed": 0, "failed": 0, "blocked": 0, "retrying": 0}}
+        return json.loads(ledger_file.read_text(encoding="utf-8"))
 
     # --- REST: 用户对话 ---
 
@@ -286,6 +347,17 @@ def create_dashboard_app(
 
     @app.post("/api/dashboard/commands", status_code=202)
     async def create_command_endpoint(body: dict[str, Any]) -> dict:
+        idempotency_key = body.get("idempotency_key", "")
+        if idempotency_key:
+            existing = app.state.repository.get_command_by_idempotency_key(idempotency_key)
+            if existing:
+                return {
+                    "schema_version": 1,
+                    "command_id": existing.command_id,
+                    "status": existing.status,
+                    "was_duplicate": True,
+                }
+
         cmd = _create_command(body.get("type", ""), body)
         cmd.status = "pending"
         app.state.repository.save_command(cmd)
@@ -293,6 +365,7 @@ def create_dashboard_app(
             "schema_version": 1,
             "command_id": cmd.command_id,
             "status": cmd.status,
+            "was_duplicate": False,
         }
 
     @app.get("/api/dashboard/commands/{command_id}")
@@ -422,8 +495,7 @@ def create_dashboard_app(
         if not agent:
             raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
 
-        result = {"agent": agent}
-
+        result = dict(agent)
         if coordinator:
             silence = coordinator.get_all_silence_status().get(agent_id)
             if silence:
@@ -514,6 +586,7 @@ def create_dashboard_app(
                 "features": [f.to_dict() for f in snapshot.features],
                 "chat_history": [m.to_dict() for m in snapshot.chat_history],
                 "module_assignments": [m.to_dict() for m in snapshot.module_assignments],
+                "blocking_issues": [i.to_dict() for i in snapshot.blocking_issues],
             })
             while True:
                 try:
@@ -530,18 +603,17 @@ def create_dashboard_app(
 
 
 def _create_command(cmd_type: str, body: dict[str, Any]) -> Command:
-    """从请求体创建 Command 对象。"""
+    """从请求体创建 Command 对象，支持幂等键。"""
     from dashboard.models import Command
-    # 类型映射：前端类型 → 后端类型
-    actual_type = CMD_TYPE_MAP.get(cmd_type, cmd_type)
     return Command(
         command_id=f"cmd_{_now_iso()}",
-        type=actual_type,
+        type=cmd_type,
         target_id=body.get("target_id", ""),
         payload=body.get("payload", {}),
         project_id=body.get("project_id", ""),
         run_id=body.get("run_id", ""),
         issued_at=_now_iso(),
+        idempotency_key=body.get("idempotency_key", ""),
     )
 
 

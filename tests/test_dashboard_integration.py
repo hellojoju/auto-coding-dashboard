@@ -241,6 +241,18 @@ async def test_scenario_chat_persistence(client, repo):
     assert messages[0].role == "user"
 
 
+# --- 场景 10b: EventBus 桥接事件也持久化到 Repository ---
+
+async def test_scenario_event_persistence_on_bridge(client, repo):
+    """通过 EventBus 桥接发送的事件也应出现在 Repository 中。"""
+    resp = await client.post("/api/chat", json={"content": "测试事件持久化"})
+    assert resp.status_code == 200
+
+    events = repo.get_events_after(0)
+    event_types = [e.type for e in events]
+    assert "pm_response" in event_types or "pm_decision" in event_types
+
+
 # --- 场景 11: 完整重连恢复 ---
 
 def test_scenario_reconnection_recovery(app, repo):
@@ -268,3 +280,54 @@ def test_scenario_reconnection_recovery(app, repo):
 
         dev = next(a for a in agents if a["id"] == "dev-1")
         assert dev["status"] == "idle"
+
+
+# --- 场景 12: 命令状态变更广播不重复 ---
+
+def test_scenario_no_duplicate_broadcast(event_bus, repo):
+    """通过 CommandProcessor 触发 on_event 后，同一条事件不应被广播两次。"""
+    app = create_dashboard_app(event_bus=event_bus, repository=repo)
+    client = TestClient(app)
+    with client.websocket_connect("/ws/dashboard") as ws:
+        # 收 hello
+        hello = ws.receive_json()
+        assert hello["type"] == "hello"
+
+        # 创建命令
+        cmd_data = {"type": "approve_decision", "target_id": "pm"}
+        cmd = Command(
+            command_id="cmd-no-dup",
+            project_id="integration_proj",
+            run_id="run_001",
+            type="approve_decision",
+            target_id="pm",
+            issued_by="user",
+        )
+        repo.save_command(cmd)
+
+        # 通过处理器接受命令（触发 on_event → event_bus.emit → 补丁推送到 WS）
+        processor = app.state.command_processor
+        processor.accept(cmd)
+
+        # 给 WebSocket 处理时间
+        time.sleep(0.3)
+
+        # 收集所有广播消息
+        received_events = []
+        while True:
+            try:
+                ws.settimeout(0.5)
+                msg = ws.receive_json()
+                received_events.append(msg)
+            except Exception:
+                break
+
+        # 统计每种事件类型的出现次数
+        event_type_counts: dict[str, int] = {}
+        for msg in received_events:
+            t = msg.get("type", "unknown")
+            event_type_counts[t] = event_type_counts.get(t, 0) + 1
+
+        # 每种事件类型最多出现一次
+        for event_type, count in event_type_counts.items():
+            assert count == 1, f"Event '{event_type}' was broadcast {count} times (expected 1)"
