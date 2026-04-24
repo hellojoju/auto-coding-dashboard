@@ -1,15 +1,15 @@
 """Agents包 - 各角色AI工程师"""
 
-from agents.base_agent import BaseAgent
-from agents.backend_dev import BackendDeveloper
-from agents.frontend_dev import FrontendDeveloper
-from agents.qa_tester import QATester
-from agents.product_manager import ProductManager
-from agents.ui_designer import UIDesigner
-from agents.database_expert import DatabaseExpert
-from agents.security_reviewer import SecurityReviewer
-from agents.docs_writer import DocsWriter
 from agents.architect import Architect
+from agents.backend_dev import BackendDeveloper
+from agents.base_agent import BaseAgent
+from agents.database_expert import DatabaseExpert
+from agents.docs_writer import DocsWriter
+from agents.frontend_dev import FrontendDeveloper
+from agents.product_manager import ProductManager
+from agents.qa_tester import QATester
+from agents.security_reviewer import SecurityReviewer
+from agents.ui_designer import UIDesigner
 
 # 角色 -> Agent类 映射
 AGENT_REGISTRY = {
@@ -46,7 +46,8 @@ def get_agent(role: str, project_dir):
     return agent_cls(project_dir)
 
 
-from agents.pool import AgentPool, AgentInstance
+from agents.pool import AgentInstance, AgentPool  # noqa: E402, I001
+
 
 __all__ = [
     "BaseAgent",

@@ -4,7 +4,7 @@ import json
 import threading
 from collections import deque
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -12,15 +12,28 @@ from typing import Any
 @dataclass
 class Event:
     type: str
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     data: dict = field(default_factory=dict)
 
     @staticmethod
     def now_iso() -> str:
-        return datetime.now(timezone.utc).isoformat()
+        return datetime.now(UTC).isoformat()
 
     def to_dict(self) -> dict:
         return {"type": self.type, "timestamp": self.timestamp, **self.data}
+
+
+class AgentEventTypes:
+    """Agent 集群事件类型常量。"""
+    AGENT_STATUS_CHANGED = "agent_status_changed"        # Agent 状态变更
+    AGENT_ACTIVITY = "agent_activity"                     # Agent 活动更新
+    AGENT_SILENCE_WARNING = "agent_silence_warning"       # 静默警告
+    AGENT_SILENCE_NOTIFY = "agent_silence_notify"         # 静默通知
+    AGENT_SILENCE_INTERVENTION = "agent_silence_intervention"  # 静默干预
+    TOOL_CALL = "tool_call"                               # 工具调用
+    TOOL_OUTPUT = "tool_output"                           # 工具输出
+    PM_COORDINATOR_START = "pm_coordinator_start"         # 协调器启动
+    PM_COORDINATOR_STOP = "pm_coordinator_stop"           # 协调器停止
 
 
 class EventBus:
@@ -60,7 +73,7 @@ class EventBus:
         if not self._log_file or not self._log_file.exists():
             return []
         lines = self._log_file.read_text(encoding="utf-8").strip().split("\n")
-        lines = [l for l in lines if l.strip()]
+        lines = [ln for ln in lines if ln.strip()]
         recent = lines[-n:]
         events = []
         for line in recent:

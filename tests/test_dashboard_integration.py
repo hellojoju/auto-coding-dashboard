@@ -1,22 +1,21 @@
 """Dashboard V2 集成场景测试 — 快照 + 命令 + 事件 + 重连。"""
 
 import time
-import pytest
-from httpx import AsyncClient, ASGITransport
-from fastapi.testclient import TestClient
 from pathlib import Path
 
+import pytest
+from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
+
 from dashboard.api.routes import create_dashboard_app
+from dashboard.command_processor import InvalidTransitionError
 from dashboard.event_bus import EventBus
-from dashboard.state_repository import ProjectStateRepository
 from dashboard.models import (
     AgentInstance,
-    Feature,
-    ChatMessage,
     Command,
-    Event,
+    Feature,
 )
-from dashboard.command_processor import CommandProcessor, InvalidTransition
+from dashboard.state_repository import ProjectStateRepository
 
 
 @pytest.fixture
@@ -196,7 +195,7 @@ async def test_scenario_invalid_transition(client, repo):
     cmd = repo.get_command(cmd_id)
 
     processor = client._transport.app.state.command_processor
-    with pytest.raises(InvalidTransition):
+    with pytest.raises(InvalidTransitionError):
         processor.apply(cmd, result={"message": "should not work"})
 
 
@@ -294,7 +293,6 @@ def test_scenario_no_duplicate_broadcast(event_bus, repo):
         assert hello["type"] == "hello"
 
         # 创建命令
-        cmd_data = {"type": "approve_decision", "target_id": "pm"}
         cmd = Command(
             command_id="cmd-no-dup",
             project_id="integration_proj",

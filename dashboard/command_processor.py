@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from dashboard.models import Command, Event
 
 
-class InvalidTransition(ValueError):
+class InvalidTransitionError(ValueError):
     """非法的命令状态转换。"""
 
 
@@ -52,7 +53,7 @@ class CommandProcessor:
     def _transition(self, cmd: Command, new_status: str) -> None:
         allowed = VALID_TRANSITIONS.get(cmd.status, set())
         if new_status not in allowed:
-            raise InvalidTransition(
+            raise InvalidTransitionError(
                 f"Invalid transition: {cmd.status} -> {new_status}"
             )
         cmd.status = new_status

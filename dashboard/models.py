@@ -1,12 +1,12 @@
 """Dashboard 数据模型：AgentInstance, Feature, Command, Event, Snapshot, ChatMessage, DashboardState。"""
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 @dataclass
@@ -349,7 +349,8 @@ class DashboardState:
 class BlockingIssue:
     """阻塞问题，作为一等公民对象。"""
     issue_id: str = ""
-    issue_type: str = ""  # missing_env, missing_credentials, external_service_down, dependency_not_met, code_error, resource_exhausted
+    issue_type: str = ""  # missing_env, missing_credentials, external_service_down, \
+    # dependency_not_met, code_error, resource_exhausted
     feature_id: str = ""
     detected_by: str = ""  # coordinator, agent, verification
     detected_at: str = field(default_factory=_now_iso)

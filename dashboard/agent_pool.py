@@ -2,7 +2,6 @@
 
 from dashboard.models import AgentInstance
 
-
 # 实例上限
 MAX_INSTANCES = {
     "backend": 3,

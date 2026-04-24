@@ -1,12 +1,14 @@
 """Dashboard REST API 和 WebSocket 路由测试。"""
 
-import json
-import pytest
-from httpx import AsyncClient, ASGITransport
 from pathlib import Path
+
+import pytest
+from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
+
 from dashboard.api.routes import create_dashboard_app
 from dashboard.event_bus import EventBus
-from dashboard.models import AgentInstance, DashboardState
+from dashboard.models import AgentInstance
 
 
 @pytest.fixture
@@ -308,12 +310,9 @@ async def test_list_blocking_issues_endpoint(client_with_repo, repo):
 
 async def test_websocket_connect_and_receive_event(app, event_bus):
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test") as _client:  # noqa: F841
         # TestClient for WebSocket
         pass  # WebSocket 测试需要 TestClient，下面单独测
-
-
-from fastapi.testclient import TestClient
 
 
 def test_websocket_connection(app):

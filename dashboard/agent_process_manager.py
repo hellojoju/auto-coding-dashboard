@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import signal
 import subprocess
-import logging
 from dataclasses import dataclass
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +16,8 @@ class AgentProcess:
     agent_id: str
     role: str
     command: list[str]
-    process: Optional[subprocess.Popen] = None
-    working_dir: Optional[str] = None
+    process: subprocess.Popen | None = None
+    working_dir: str | None = None
 
 
 class AgentProcessManager:
@@ -32,7 +31,7 @@ class AgentProcessManager:
         agent_id: str,
         role: str,
         command: list[str],
-        working_dir: Optional[str] = None,
+        working_dir: str | None = None,
     ) -> None:
         """注册 Agent 到管理器。"""
         self._agents[agent_id] = AgentProcess(

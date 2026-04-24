@@ -8,18 +8,18 @@ import os
 import tempfile
 import threading
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dashboard.models import (
     AgentInstance,
-    Feature,
+    BlockingIssue,
+    ChatMessage,
     Command,
     Event,
-    ChatMessage,
-    Snapshot,
+    Feature,
     ModuleAssignment,
-    BlockingIssue,
+    Snapshot,
 )
 
 
@@ -90,12 +90,11 @@ class ProjectStateRepository:
     def upsert_feature(self, feature: Feature, *, event_type: str = "") -> Feature:
         with self._lock:
             existing = self._features.get(feature.id) if feature.id in self._features else None
-            if feature.workspace_id:
-                if existing is not None and existing.workspace_id != feature.workspace_id:
-                    raise ValueError(
-                        f"Feature {feature.id} belongs to workspace '{existing.workspace_id}', "
-                        f"cannot write from workspace '{feature.workspace_id}'"
-                    )
+            if feature.workspace_id and existing is not None and existing.workspace_id != feature.workspace_id:
+                raise ValueError(
+                    f"Feature {feature.id} belongs to workspace '{existing.workspace_id}', "
+                    f"cannot write from workspace '{feature.workspace_id}'"
+                )
             # 状态变更必须伴随事件——在写入前捕获旧状态，避免
             # 调用方就地修改同一对象导致引用相同的问题
             old_status = existing.status if existing is not None else None
@@ -245,7 +244,7 @@ class ProjectStateRepository:
             if issue is None:
                 return False
             issue.resolved = True
-            issue.resolved_at = datetime.now(timezone.utc).isoformat()
+            issue.resolved_at = datetime.now(UTC).isoformat()
             issue.resolution = resolution
             self._save()
             return True
@@ -308,7 +307,7 @@ class ProjectStateRepository:
         state_file = self._base / "state.json"
         if not state_file.exists():
             return
-        with open(state_file, "r") as f:
+        with open(state_file) as f:
             state = json.load(f)
         self._agents = {a["id"]: AgentInstance.from_dict(a) for a in state.get("agents", [])}
         self._features = {f["id"]: Feature.from_dict(f) for f in state.get("features", [])}

@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-import time
-import threading
 import logging
-from typing import Any, Callable, Optional
+import threading
+import time
+from collections.abc import Callable
 
 from core.config import (
-    SILENCE_WARNING_THRESHOLD,
-    SILENCE_NOTIFY_THRESHOLD,
-    SILENCE_INTERVENTION_THRESHOLD,
     AGENT_POLL_INTERVAL,
+    SILENCE_INTERVENTION_THRESHOLD,
+    SILENCE_NOTIFY_THRESHOLD,
+    SILENCE_WARNING_THRESHOLD,
 )
 
 logger = logging.getLogger(__name__)
@@ -23,9 +23,9 @@ class SilenceDetector:
     def __init__(
         self,
         agent_id: str,
-        on_warning: Optional[Callable[[str, int], None]] = None,
-        on_notify: Optional[Callable[[str, int], None]] = None,
-        on_intervention: Optional[Callable[[str, int], None]] = None,
+        on_warning: Callable[[str, int], None] | None = None,
+        on_notify: Callable[[str, int], None] | None = None,
+        on_intervention: Callable[[str, int], None] | None = None,
         warning_threshold: float = SILENCE_WARNING_THRESHOLD,
         notify_threshold: float = SILENCE_NOTIFY_THRESHOLD,
         intervention_threshold: float = SILENCE_INTERVENTION_THRESHOLD,
@@ -35,7 +35,7 @@ class SilenceDetector:
         self._lock = threading.Lock()
         self._last_activity = time.monotonic()
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._current_level = "active"  # active | warning | notify | intervention
         self._activity_reset = False  # 标记 record_activity 是否被调用
 

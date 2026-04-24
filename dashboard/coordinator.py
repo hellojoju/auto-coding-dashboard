@@ -10,21 +10,19 @@ from __future__ import annotations
 import logging
 import threading
 import time
-from pathlib import Path
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-from dashboard.event_bus import EventBus
-from dashboard.models import Command
-from dashboard.state_repository import ProjectStateRepository
-from dashboard.silence_detector import SilenceDetector
-from dashboard.agent_process_manager import AgentProcessManager
-from core.blocking_tracker import BlockingIssueType
-from core.blocking_tracker import BlockingTracker
+from core.blocking_tracker import BlockingIssueType, BlockingTracker
+from core.config import MAX_RETRY_COUNT
 from core.execution_ledger import ExecutionStatus
+from dashboard.agent_process_manager import AgentProcessManager
+from dashboard.event_bus import EventBus
+from dashboard.silence_detector import SilenceDetector
+from dashboard.state_repository import ProjectStateRepository
 
 if TYPE_CHECKING:
     from agents.pool import AgentInstance
-    from core.feature_tracker import Feature, FeatureTracker
+    from core.feature_tracker import Feature
     from core.project_manager import ProjectManager
 
 logger = logging.getLogger(__name__)
@@ -43,7 +41,7 @@ class PMCoordinator:
 
     def __init__(
         self,
-        project_manager: "ProjectManager",
+        project_manager: ProjectManager,
         repository: ProjectStateRepository,
         event_bus: EventBus,
         approval_timeout: float = 3600.0,  # 审批超时 1 小时
@@ -52,10 +50,10 @@ class PMCoordinator:
         self._repo = repository
         self._event_bus = event_bus
         self._approval_timeout = approval_timeout
-        self._exec_thread: Optional[threading.Thread] = None
+        self._exec_thread: threading.Thread | None = None
         self._exec_status: str = "idle"
         self._stop_event = threading.Event()
-        self._exec_error: Optional[str] = None
+        self._exec_error: str | None = None
 
         # 统一 ProjectManager 与 Coordinator 的状态事实源
         self._pm.repository = repository
@@ -72,9 +70,9 @@ class PMCoordinator:
         """为所有 agent 角色创建静默检测器。"""
         from agents import AGENT_ROLES
         from core.config import (
-            SILENCE_WARNING_THRESHOLD,
-            SILENCE_NOTIFY_THRESHOLD,
             SILENCE_INTERVENTION_THRESHOLD,
+            SILENCE_NOTIFY_THRESHOLD,
+            SILENCE_WARNING_THRESHOLD,
         )
 
         for role in AGENT_ROLES:
@@ -172,10 +170,9 @@ class PMCoordinator:
 
     # --- 带审批的单步执行 ---
 
-    def _execute_with_approval(self, feature: "Feature") -> None:
+    def _execute_with_approval(self, feature: Feature) -> None:
         """执行单个 feature，完成后暂停等待审批。"""
         from agents import AGENT_ROLES
-        from core.progress_logger import progress
 
         tracker = self._pm.feature_tracker
         tracker.mark_in_progress(feature.id, instance_id="", workspace_path="")
@@ -200,7 +197,10 @@ class PMCoordinator:
 
         instance, agent = result_pair
         instance.current_task_id = feature.id
-        tracker.mark_in_progress(feature.id, instance_id=instance.instance_id, workspace_path=str(instance.workspace_path))
+        tracker.mark_in_progress(
+            feature.id, instance_id=instance.instance_id,
+            workspace_path=str(instance.workspace_path),
+        )
         self._pm._sync_feature_to_repository(feature, event_type="feature_updated")
         self._pm._sync_agent_instance(instance, status="busy", current_feature=feature.id)
         self._pm.execution_ledger.log_execution(
@@ -332,7 +332,7 @@ class PMCoordinator:
 
     # --- 审批闸门 ---
 
-    def _request_approval(self, instance: "AgentInstance", feature: "Feature") -> None:
+    def _request_approval(self, instance: AgentInstance, feature: Feature) -> None:
         """写入 waiting_approval 状态，通知前端。"""
         # 同步 Agent 状态到 Repository
         from dashboard.models import AgentInstance as DashboardAgent
@@ -396,7 +396,10 @@ class PMCoordinator:
             dashboard_agent = DashboardAgent(
                 id=agent_dict["instance_id"],
                 role=agent_dict["role"],
-                instance_number=int(agent_dict["instance_id"].split("-")[-1]) if "-" in agent_dict["instance_id"] else 1,
+                instance_number=(
+                    int(agent_dict["instance_id"].split("-")[-1])
+                    if "-" in agent_dict["instance_id"] else 1
+                ),
                 status=agent_dict["status"],
                 workspace_id=agent_dict["workspace_id"],
                 workspace_path=agent_dict["workspace_path"],

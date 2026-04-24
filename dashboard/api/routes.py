@@ -6,25 +6,28 @@ import asyncio
 import json
 import logging
 from collections import deque
-from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any
+from contextlib import asynccontextmanager, suppress
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+if TYPE_CHECKING:
+    from agents.product_manager import ProductManager
+    from dashboard.coordinator import PMCoordinator
+
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
+from dashboard.command_processor import CommandProcessor
+from dashboard.consumer import CommandConsumer
 from dashboard.event_bus import EventBus
 from dashboard.models import ChatMessage, Command, DashboardState, Event, ModuleAssignment
 from dashboard.state_repository import ProjectStateRepository
-from dashboard.command_processor import CommandProcessor, InvalidTransition
-from dashboard.consumer import CommandConsumer
 
 logger = logging.getLogger(__name__)
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _make_state() -> DashboardState:
@@ -104,17 +107,15 @@ async def lifespan(app: FastAPI):
     finally:
         stop_event.set()
         task.cancel()
-        try:
+        with suppress(asyncio.CancelledError):
             await task
-        except asyncio.CancelledError:
-            pass
 
 
 def create_dashboard_app(
     event_bus: EventBus,
     repository: ProjectStateRepository | None = None,
-    coordinator: "PMCoordinator | None" = None,
-    product_manager: "ProductManager | None" = None,
+    coordinator: "PMCoordinator | None" = None,  # noqa: UP037
+    product_manager: "ProductManager | None" = None,  # noqa: UP037
 ) -> FastAPI:
     app = FastAPI(title="AI Dev Dashboard", lifespan=lifespan)
     app.add_middleware(
@@ -148,7 +149,7 @@ def create_dashboard_app(
     app.state.repository = repository
 
     # 注入 CommandProcessor — 事件统一通过 Repository 追加
-    def on_event(event: "Event") -> None:
+    def on_event(event: Event) -> None:
         stored_event = repository.append_event(type=event.type, payload=event.payload)
         _emit_to_ws(state.broadcast_queue, stored_event)
         # 写入 EventBus 历史与日志，但避免再次走补丁广播
@@ -231,7 +232,13 @@ def create_dashboard_app(
     async def get_execution_ledger() -> dict:
         ledger_file = app.state.repository._base.parent / "execution-plan.json"
         if not ledger_file.exists():
-            return {"executions": [], "summary": {"total_executions": 0, "completed": 0, "failed": 0, "blocked": 0, "retrying": 0}}
+            return {
+                "executions": [],
+                "summary": {
+                    "total_executions": 0, "completed": 0,
+                    "failed": 0, "blocked": 0, "retrying": 0,
+                },
+            }
         return json.loads(ledger_file.read_text(encoding="utf-8"))
 
     # --- REST: 用户对话 ---
@@ -593,8 +600,8 @@ def create_dashboard_app(
                     while app.state.broadcast_queue:
                         payload = app.state.broadcast_queue.popleft()
                         await ws.send_json(payload)
-                    msg = await asyncio.wait_for(ws.receive_text(), timeout=0.1)
-                except asyncio.TimeoutError:
+                    msg = await asyncio.wait_for(ws.receive_text(), timeout=0.1)  # noqa: F841
+                except TimeoutError:
                     continue
         except WebSocketDisconnect:
             app.state.connected_ws.discard(ws)
@@ -621,7 +628,7 @@ def _generate_pm_response(
     chat_history: list[ChatMessage],
     repository: ProjectStateRepository,
     broadcast_queue: deque,
-    product_manager: "ProductManager | None" = None,
+    product_manager: ProductManager | None = None,
 ) -> ChatMessage | None:
     """调用 ProductManager agent 生成 PM 回复。"""
     if product_manager is None:

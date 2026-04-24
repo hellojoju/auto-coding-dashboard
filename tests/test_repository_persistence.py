@@ -1,11 +1,11 @@
 """ProjectStateRepository 文件持久化测试 — 验证重启后状态不丢失。"""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
+from dashboard.models import AgentInstance, ChatMessage, Command, Feature
 from dashboard.state_repository import ProjectStateRepository
-from dashboard.models import (
-    AgentInstance, Feature, Command, Event, ChatMessage
-)
 
 
 @pytest.fixture

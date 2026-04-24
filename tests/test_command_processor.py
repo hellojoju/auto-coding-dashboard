@@ -1,7 +1,8 @@
 """CommandProcessor 命令状态机测试。"""
 
 import pytest
-from dashboard.command_processor import CommandProcessor, InvalidTransition
+
+from dashboard.command_processor import CommandProcessor, InvalidTransitionError
 from dashboard.models import Command
 
 
@@ -45,7 +46,7 @@ def test_command_transitions_pending_to_cancelled() -> None:
 def test_invalid_transition_raises() -> None:
     cmd = Command(command_id="cmd_005", type="noop", status="applied")
     processor = CommandProcessor()
-    with pytest.raises(InvalidTransition):
+    with pytest.raises(InvalidTransitionError):
         processor.accept(cmd)
 
 

@@ -1,9 +1,9 @@
 """Agent基类 - 所有角色的统一接口"""
 
-from abc import ABC, abstractmethod
 import subprocess
-from typing import Any, Optional
+from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Any
 
 from core.config import PROMPTS_DIR
 from core.progress_logger import progress
@@ -17,8 +17,13 @@ class BaseAgent(ABC):
     event_bus: Any = None  # 由 ProjectManager 注入
 
     def __init__(self, project_dir: Path):
-        self.project_dir = project_dir
+        self.project_dir = Path(project_dir)  # 确保是 Path 对象
         self.system_prompt = self._load_prompt()
+
+    @property
+    def workspace_path(self) -> str:
+        """供 FeatureExecutionService 读取的工作目录"""
+        return str(self.project_dir)
 
     def _report_status(self, status: str, feature_id: str = "", message: str = "", **extra: Any) -> None:
         """上报执行状态到 EventBus（如果已注入）。"""
@@ -57,10 +62,14 @@ class BaseAgent(ABC):
         """
         ...
 
-    async def execute(self, task: dict) -> dict:
+    async def execute(self, task: dict, workspace_dir: Path | None = None) -> dict:
         """
         执行任务。默认实现：构建 prompt → 调用 Claude CLI → 解析结果。
         子类一般只需覆盖 _build_prompt()。
+
+        Args:
+            task: 任务字典
+            workspace_dir: 可选的工作目录，AgentPool 传入隔离的 workspace，不传则使用 project_dir
         """
         feature_id = task.get("feature_id", "unknown")
         description = task.get("description", "")[:100]
@@ -68,9 +77,9 @@ class BaseAgent(ABC):
         self._report_status("running", feature_id=feature_id, message=f"开始执行: {description}")
 
         prompt = self._build_prompt(task)
-        result = self._run_with_claude(prompt)
+        result = self._run_with_claude(prompt, workspace_dir=workspace_dir)
 
-        files_changed = self._extract_files_changed()
+        files_changed = self._extract_files_changed(workspace_dir=workspace_dir)
 
         if result["success"]:
             self._report_status("completed", feature_id=feature_id, message="任务执行完成")
@@ -116,19 +125,21 @@ class BaseAgent(ABC):
             self._log(f"git commit 失败: {e.stderr.decode()}")
             return False
 
-    def _run_with_claude(self, prompt: str, timeout: int = 600) -> dict:
+    def _run_with_claude(self, prompt: str, timeout: int = 600, workspace_dir: Path | None = None) -> dict:
         """
-        通过Claude CLI执行任务。
+        通过 Claude CLI 执行任务。
 
         Args:
-            prompt: 完整的prompt（包含system prompt + task description）
-            timeout: 超时时间（秒），默认10分钟
+            prompt: 完整的 prompt（包含 system prompt + task description）
+            timeout: 超时时间（秒），默认 10 分钟
+            workspace_dir: 工作目录，不传则使用 self.project_dir
 
         Returns:
             {"success": bool, "stdout": str, "stderr": str, "error": str (optional)}
         """
         # 写入临时任务文件，方便调试和追溯
-        tasks_dir = self.project_dir / ".tasks"
+        target_dir = workspace_dir or self.project_dir
+        tasks_dir = target_dir / ".tasks"
         tasks_dir.mkdir(exist_ok=True)
         import tempfile
         with tempfile.NamedTemporaryFile(
@@ -139,18 +150,21 @@ class BaseAgent(ABC):
             delete=False,
         ) as f:
             f.write(prompt)
-            task_file = f.name
+            _task_file = f.name
 
         cmd = [
             "claude",
             "-p", prompt,
-            "--allowedTools", "Read,Write,Edit,Bash,Glob,Grep",
+            "--dangerously-skip-permissions",
         ]
+
+        cwd = workspace_dir or self.project_dir
+        self._log(f"claude -p 执行目录: {cwd}")
 
         try:
             result = subprocess.run(
                 cmd,
-                cwd=self.project_dir,
+                cwd=cwd,
                 capture_output=True,
                 timeout=timeout,
             )
@@ -173,12 +187,13 @@ class BaseAgent(ABC):
             self._log("claude CLI未找到")
             return {"success": False, "error": "claude CLI未找到，请先安装Claude Code CLI"}
 
-    def _extract_files_changed(self) -> list[str]:
+    def _extract_files_changed(self, workspace_dir: Path | None = None) -> list[str]:
         """通过 git diff 检测本次执行修改了哪些文件"""
+        cwd = workspace_dir or self.project_dir
         try:
             result = subprocess.run(
                 ["git", "diff", "--name-only", "HEAD"],
-                cwd=self.project_dir,
+                cwd=cwd,
                 capture_output=True,
                 text=True,
                 check=True,
