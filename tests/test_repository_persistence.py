@@ -78,7 +78,7 @@ def test_feature_update_persists(repo: ProjectStateRepository, base_dir: Path) -
     repo.upsert_feature(feature)
     feature.status = "in_progress"
     feature.started_at = "2026-04-18T10:00:00"
-    repo.upsert_feature(feature)
+    repo.upsert_feature(feature, event_type="feature_updated")
 
     restarted = ProjectStateRepository(
         base_dir=base_dir,
