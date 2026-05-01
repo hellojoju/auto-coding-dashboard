@@ -5,9 +5,13 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
+import re
 from collections import deque
 from contextlib import asynccontextmanager, suppress
+from dataclasses import asdict
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -16,12 +20,15 @@ if TYPE_CHECKING:
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 
 from dashboard.command_processor import CommandProcessor
 from dashboard.consumer import CommandConsumer
 from dashboard.event_bus import EventBus
 from dashboard.models import ChatMessage, Command, DashboardState, Event, ModuleAssignment
 from dashboard.state_repository import ProjectStateRepository
+from ralph.repository import RalphRepository
+from ralph.schema.work_unit import WorkUnitStatus
 
 logger = logging.getLogger(__name__)
 
@@ -116,6 +123,7 @@ def create_dashboard_app(
     repository: ProjectStateRepository | None = None,
     coordinator: "PMCoordinator | None" = None,  # noqa: UP037
     product_manager: "ProductManager | None" = None,  # noqa: UP037
+    ralph_repository: RalphRepository | None = None,
 ) -> FastAPI:
     app = FastAPI(title="AI Dev Dashboard", lifespan=lifespan)
     app.add_middleware(
@@ -130,6 +138,12 @@ def create_dashboard_app(
     app.state.connected_ws = state.connected_ws
     app.state.broadcast_queue = state.broadcast_queue
 
+    # 注入 RalphRepository
+    if ralph_repository is None:
+        ralph_dir = Path(os.environ.get("RALPH_DIR", ".ralph"))
+        ralph_repository = RalphRepository(ralph_dir)
+    app.state.ralph_repository = ralph_repository
+
     # 桥接 EventBus → WebSocket broadcast_queue（同时写入 Repository 持久化）
     _original_emit = event_bus.emit
     def _patched_emit(event_type: str, **kwargs: Any) -> None:
@@ -140,7 +154,6 @@ def create_dashboard_app(
 
     # 注入 Repository
     if repository is None:
-        from pathlib import Path
         repository = ProjectStateRepository(
             base_dir=Path("/tmp/dashboard_state"),
             project_id="default",
@@ -606,7 +619,395 @@ def create_dashboard_app(
         except WebSocketDisconnect:
             app.state.connected_ws.discard(ws)
 
+    # --- Ralph API: 只读端点 ---
+
+    @app.get("/api/ralph/health")
+    async def ralph_health() -> dict:
+        """Ralph 系统健康检查。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        work_units = ralph_repo.list_work_units()
+        return {
+            "status": "healthy",
+            "work_units_count": len(work_units),
+            "timestamp": _now_iso(),
+        }
+
+    @app.get("/api/ralph/work-units")
+    async def ralph_list_work_units(status: str | None = None) -> dict:
+        """列出所有 WorkUnit，支持状态过滤。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        filter_status = None
+        if status:
+            try:
+                filter_status = WorkUnitStatus(status)
+            except ValueError as err:
+                raise HTTPException(status_code=400, detail=f"Invalid status: {status}") from err
+        units = ralph_repo.list_work_units(status=filter_status)
+        return {
+            "work_units": [_serialize_work_unit(u) for u in units],
+            "total": len(units),
+        }
+
+    @app.get("/api/ralph/work-units/{work_id}")
+    async def ralph_get_work_unit(work_id: str) -> dict:
+        """获取单个 WorkUnit 详情。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        unit = ralph_repo.get_work_unit(work_id)
+        if unit is None:
+            raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
+        return _serialize_work_unit(unit)
+
+    @app.get("/api/ralph/evidence/{work_id}")
+    async def ralph_list_evidence(work_id: str) -> dict:
+        """获取指定 WorkUnit 的证据列表。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        # 验证 work_id 存在
+        unit = ralph_repo.get_work_unit(work_id)
+        if unit is None:
+            raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
+        evidence_list = ralph_repo.list_evidence(work_id=work_id)
+        return {
+            "work_id": work_id,
+            "evidence": [asdict(e) for e in evidence_list],
+            "total": len(evidence_list),
+        }
+
+    @app.get("/api/ralph/evidence/{work_id}/{file_path:path}")
+    async def ralph_get_evidence_file(work_id: str, file_path: str) -> PlainTextResponse:
+        """获取证据文件内容（带安全验证）。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+
+        # 验证 work_id 存在
+        unit = ralph_repo.get_work_unit(work_id)
+        if unit is None:
+            raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
+
+        # 安全验证：防止路径遍历攻击
+        # 1. 拒绝包含 .. 的路径（在解析前检查原始路径）
+        if ".." in file_path:
+            raise HTTPException(status_code=403, detail="Invalid file path: path traversal detected")
+
+        # 2. 拒绝绝对路径
+        if file_path.startswith("/"):
+            raise HTTPException(status_code=403, detail="Invalid file path: absolute paths not allowed")
+
+        # 3. 构建完整路径并解析为绝对路径
+        evidence_dir = ralph_repo._evidence_dir
+        try:
+            requested_path = (evidence_dir / file_path).resolve()
+        except (ValueError, OSError) as err:
+            raise HTTPException(status_code=403, detail="Invalid file path") from err
+
+        evidence_dir_resolved = evidence_dir.resolve()
+
+        # 4. 确保文件在 evidence 目录内
+        try:
+            requested_path.relative_to(evidence_dir_resolved)
+        except ValueError as err:
+            raise HTTPException(status_code=403, detail="Access denied: path outside evidence directory") from err
+
+        # 4. 检查文件是否存在
+        if not requested_path.exists() or not requested_path.is_file():
+            raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
+
+        # 5. 读取文件内容，大文件截断
+        content = requested_path.read_text(encoding="utf-8", errors="replace")
+        truncated = False
+        max_size = 100 * 1024  # 100KB
+        if len(content) > max_size:
+            content = content[:max_size] + "\n\n[TRUNCATED: file exceeds 100KB limit]"
+            truncated = True
+
+        # 6. 敏感信息 redaction
+        content = _redact_sensitive_content(content)
+
+        headers = {"X-Truncated": "true" if truncated else "false"}
+        return PlainTextResponse(content, headers=headers)
+
+    @app.get("/api/ralph/reviews/{work_id}")
+    async def ralph_list_reviews(work_id: str) -> dict:
+        """获取指定 WorkUnit 的审查结果。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        # 验证 work_id 存在
+        unit = ralph_repo.get_work_unit(work_id)
+        if unit is None:
+            raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
+        reviews = ralph_repo.list_reviews(work_id=work_id)
+        return {
+            "work_id": work_id,
+            "reviews": [ralph_repo._serialize_review(r) for r in reviews],
+            "total": len(reviews),
+        }
+
+    @app.get("/api/ralph/blockers")
+    async def ralph_list_blockers(work_id: str | None = None, resolved: bool | None = None) -> dict:
+        """获取所有阻塞项，支持过滤。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        blockers = ralph_repo.list_blockers(work_id=work_id, resolved=resolved)
+        return {
+            "blockers": [asdict(b) for b in blockers],
+            "total": len(blockers),
+        }
+
+    @app.get("/api/ralph/pending-actions")
+    async def ralph_pending_actions() -> dict:
+        """获取待处理审批/干预项汇总。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        repo: ProjectStateRepository = app.state.repository
+
+        # 获取需要人工干预的 WorkUnit（blocked 状态）
+        blocked_units = ralph_repo.list_work_units(status=WorkUnitStatus.BLOCKED)
+        needs_rework_units = ralph_repo.list_work_units(status=WorkUnitStatus.NEEDS_REWORK)
+        needs_review_units = ralph_repo.list_work_units(status=WorkUnitStatus.NEEDS_REVIEW)
+
+        # 获取失败的 Command
+        failed_commands = [c for c in repo.list_all_commands() if c.status == "failed"]
+
+        actions = []
+
+        # 添加 blocked WorkUnit 为待处理项
+        for unit in blocked_units:
+            blockers = ralph_repo.list_blockers(work_id=unit.work_id, resolved=False)
+            for blocker in blockers:
+                actions.append({
+                    "action_id": f"blocker_{blocker.blocker_id}",
+                    "type": "blocker_resolution",
+                    "work_id": unit.work_id,
+                    "reason": blocker.reason,
+                    "blocker_type": blocker.blocker_type,
+                    "created_at": "",  # Blocker 没有 created_at 字段
+                })
+
+        # 添加 needs_rework 为待处理项
+        for unit in needs_rework_units:
+            actions.append({
+                "action_id": f"rework_{unit.work_id}",
+                "type": "rework_required",
+                "work_id": unit.work_id,
+                "reason": f"WorkUnit {unit.work_id} 需要返工",
+                "created_at": "",
+            })
+
+        # 添加 needs_review 为待处理项（人工可以干预）
+        for unit in needs_review_units:
+            actions.append({
+                "action_id": f"review_{unit.work_id}",
+                "type": "review_pending",
+                "work_id": unit.work_id,
+                "reason": f"WorkUnit {unit.work_id} 等待审查",
+                "created_at": "",
+            })
+
+        # 添加失败的 Command
+        for cmd in failed_commands:
+            actions.append({
+                "action_id": f"cmd_failed_{cmd.command_id}",
+                "type": "command_failed",
+                "work_id": cmd.target_id,
+                "reason": cmd.result.get("error", "Command execution failed"),
+                "command_id": cmd.command_id,
+                "created_at": cmd.issued_at,
+            })
+
+        return {
+            "actions": actions,
+            "total": len(actions),
+            "summary": {
+                "blocked": len(blocked_units),
+                "needs_rework": len(needs_rework_units),
+                "needs_review": len(needs_review_units),
+                "failed_commands": len(failed_commands),
+            },
+        }
+
+    @app.get("/api/ralph/transitions/{work_id}")
+    async def ralph_get_transitions(work_id: str) -> dict:
+        """获取 WorkUnit 状态转换历史。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        # 验证 work_id 存在
+        unit = ralph_repo.get_work_unit(work_id)
+        if unit is None:
+            raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
+        transitions = ralph_repo.get_transitions(work_id=work_id)
+        return {
+            "work_id": work_id,
+            "transitions": transitions,
+            "total": len(transitions),
+        }
+
+    @app.get("/api/ralph/summary")
+    async def ralph_summary() -> dict:
+        """获取 Ralph 运行概览统计。"""
+        ralph_repo: RalphRepository = app.state.ralph_repository
+        all_units = ralph_repo.list_work_units()
+
+        status_counts = {status.value: 0 for status in WorkUnitStatus}
+        for unit in all_units:
+            status_counts[unit.status.value] += 1
+
+        # 计算成功率（accepted / (accepted + failed + needs_rework)）
+        terminal_count = status_counts["accepted"] + status_counts["failed"] + status_counts["needs_rework"]
+        success_rate = 0.0
+        if terminal_count > 0:
+            success_rate = status_counts["accepted"] / terminal_count * 100
+
+        # 获取未解决的 blockers
+        unresolved_blockers = ralph_repo.list_blockers(resolved=False)
+
+        return {
+            "total_work_units": len(all_units),
+            "status_counts": status_counts,
+            "success_rate_percent": round(success_rate, 1),
+            "unresolved_blockers": len(unresolved_blockers),
+            "timestamp": _now_iso(),
+        }
+
+    # --- Ralph API: Command 端点 ---
+
+    @app.post("/api/ralph/commands")
+    async def ralph_create_command(body: dict[str, Any]) -> dict:
+        """创建 Ralph Command（带幂等键）。"""
+        repo: ProjectStateRepository = app.state.repository
+
+        # 检查幂等键
+        idempotency_key = body.get("idempotency_key", "")
+        if idempotency_key:
+            existing = repo.get_command_by_idempotency_key(idempotency_key)
+            if existing:
+                return {
+                    "success": True,
+                    "command_id": existing.command_id,
+                    "status": existing.status,
+                    "was_duplicate": True,
+                }
+
+        # 验证必需字段
+        cmd_type = body.get("type", "")
+        if not cmd_type:
+            raise HTTPException(status_code=422, detail="type is required")
+
+        # 创建 Command
+        cmd = Command(
+            command_id=f"ralph_cmd_{_now_iso()}",
+            type=cmd_type,
+            target_id=body.get("work_id", ""),
+            payload=body.get("payload", {}),
+            project_id=body.get("project_id", ""),
+            run_id=body.get("run_id", ""),
+            issued_at=_now_iso(),
+            idempotency_key=idempotency_key,
+            status="pending",
+        )
+
+        repo.save_command(cmd)
+
+        return {
+            "success": True,
+            "command_id": cmd.command_id,
+            "status": cmd.status,
+            "was_duplicate": False,
+        }
+
+    @app.get("/api/ralph/commands/{command_id}")
+    async def ralph_get_command(command_id: str) -> dict:
+        """查询 Command 状态。"""
+        repo: ProjectStateRepository = app.state.repository
+        cmd = repo.get_command(command_id)
+        if cmd is None:
+            raise HTTPException(status_code=404, detail=f"Command {command_id} not found")
+        return cmd.to_dict()
+
+    @app.post("/api/ralph/commands/{command_id}/cancel")
+    async def ralph_cancel_command(command_id: str) -> dict:
+        """取消待处理的 Command。"""
+        repo: ProjectStateRepository = app.state.repository
+        cmd = repo.get_command(command_id)
+        if cmd is None:
+            raise HTTPException(status_code=404, detail=f"Command {command_id} not found")
+
+        # 只能取消 pending 状态的 Command
+        if cmd.status != "pending":
+            raise HTTPException(
+                status_code=409,
+                detail=f"Cannot cancel command with status: {cmd.status}",
+            )
+
+        cmd.status = "cancelled"
+        cmd.updated_at = _now_iso()
+        repo.save_command(cmd)
+
+        return {
+            "success": True,
+            "command_id": cmd.command_id,
+            "status": cmd.status,
+        }
+
     return app
+
+
+def _serialize_work_unit(unit: Any) -> dict:
+    """序列化 WorkUnit 为字典。"""
+    from dataclasses import asdict
+
+    from ralph.schema.work_unit import WorkUnit
+
+    if not isinstance(unit, WorkUnit):
+        return {}
+
+    data = asdict(unit)
+    data["status"] = unit.status.value
+
+    # 序列化嵌套对象
+    if unit.task_harness:
+        data["task_harness"] = asdict(unit.task_harness)
+    if unit.context_pack:
+        data["context_pack"] = asdict(unit.context_pack)
+    if unit.evidence:
+        data["evidence"] = [asdict(e) for e in unit.evidence]
+    if unit.review_result:
+        data["review_result"] = _serialize_review_result(unit.review_result)
+
+    return data
+
+
+def _serialize_review_result(review: Any) -> dict:
+    """序列化 ReviewResult 为字典。"""
+    from dataclasses import asdict
+
+    return asdict(review)
+
+
+def _redact_sensitive_content(content: str) -> str:
+    """Redact 敏感信息如 API keys、密码等。"""
+    # Redact API keys
+    content = re.sub(
+        r'(api[_-]?key["\']?\s*[:=]\s*)["\']?[a-zA-Z0-9_\-]{16,}["\']?',
+        r'\1***REDACTED***',
+        content,
+        flags=re.IGNORECASE,
+    )
+    # Redact passwords
+    content = re.sub(
+        r'(password["\']?\s*[:=]\s*)["\'][^"\']+["\']',
+        r'\1"***REDACTED***"',
+        content,
+        flags=re.IGNORECASE,
+    )
+    # Redact secrets
+    content = re.sub(
+        r'(secret["\']?\s*[:=]\s*)["\'][^"\']+["\']',
+        r'\1"***REDACTED***"',
+        content,
+        flags=re.IGNORECASE,
+    )
+    # Redact tokens
+    content = re.sub(
+        r'(token["\']?\s*[:=]\s*)["\'][^"\']+["\']',
+        r'\1"***REDACTED***"',
+        content,
+        flags=re.IGNORECASE,
+    )
+    return content
 
 
 def _create_command(cmd_type: str, body: dict[str, Any]) -> Command:
