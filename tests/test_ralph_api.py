@@ -76,8 +76,7 @@ async def test_ralph_list_work_units_empty(client):
     resp = await client.get("/api/ralph/work-units")
     assert resp.status_code == 200
     data = resp.json()
-    assert data["work_units"] == []
-    assert data["total"] == 0
+    assert data == []
 
 
 async def test_ralph_list_work_units_with_data(app, ralph_repo):
@@ -97,9 +96,9 @@ async def test_ralph_list_work_units_with_data(app, ralph_repo):
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         resp = await client.get("/api/ralph/work-units")
         data = resp.json()
-        assert data["total"] == 1
-        assert data["work_units"][0]["work_id"] == "W-001"
-        assert data["work_units"][0]["status"] == "ready"
+        assert len(data) == 1
+        assert data[0]["work_id"] == "W-001"
+        assert data[0]["status"] == "ready"
 
 
 async def test_ralph_list_work_units_with_status_filter(app, ralph_repo):
@@ -130,14 +129,14 @@ async def test_ralph_list_work_units_with_status_filter(app, ralph_repo):
         # 过滤 accepted
         resp = await client.get("/api/ralph/work-units", params={"status": "accepted"})
         data = resp.json()
-        assert data["total"] == 1
-        assert data["work_units"][0]["work_id"] == "W-001"
+        assert len(data) == 1
+        assert data[0]["work_id"] == "W-001"
 
         # 过滤 blocked
         resp = await client.get("/api/ralph/work-units", params={"status": "blocked"})
         data = resp.json()
-        assert data["total"] == 1
-        assert data["work_units"][0]["work_id"] == "W-002"
+        assert len(data) == 1
+        assert data[0]["work_id"] == "W-002"
 
 
 async def test_ralph_list_work_units_invalid_status(client):
@@ -205,9 +204,9 @@ async def test_ralph_list_evidence_success(app, ralph_repo):
         resp = await client.get("/api/ralph/evidence/W-001")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["work_id"] == "W-001"
-        assert data["total"] == 1
-        assert data["evidence"][0]["evidence_id"] == "EV-001"
+        assert isinstance(data, list)
+        assert len(data) == 1
+        assert data[0]["file_name"] == "diff.txt"
 
 
 async def test_ralph_list_evidence_work_unit_not_found(client):
@@ -364,9 +363,9 @@ async def test_ralph_list_reviews_success(app, ralph_repo):
         resp = await client.get("/api/ralph/reviews/W-001")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["work_id"] == "W-001"
-        assert data["total"] == 1
-        assert data["reviews"][0]["conclusion"] == "通过"
+        assert isinstance(data, list)
+        assert len(data) == 1
+        assert data[0]["conclusion"] == "通过"
 
 
 async def test_ralph_list_reviews_work_unit_not_found(client):
@@ -404,18 +403,20 @@ async def test_ralph_list_blockers(app, ralph_repo):
         # 列出所有 blockers
         resp = await client.get("/api/ralph/blockers")
         data = resp.json()
-        assert data["total"] == 1
-        assert data["blockers"][0]["blocker_id"] == "B-001"
+        assert isinstance(data, list)
+        assert len(data) == 1
+        assert data[0]["category"] == "dependency"
+        assert data[0]["reason"] == "依赖未完成"
 
         # 按 work_id 过滤
         resp = await client.get("/api/ralph/blockers", params={"work_id": "W-001"})
         data = resp.json()
-        assert data["total"] == 1
+        assert len(data) == 1
 
         # 按 resolved 过滤
         resp = await client.get("/api/ralph/blockers", params={"resolved": "false"})
         data = resp.json()
-        assert data["total"] == 1
+        assert len(data) == 1
 
 
 # --- GET /api/ralph/pending-actions ---
@@ -449,8 +450,8 @@ async def test_ralph_pending_actions(app, ralph_repo, repo):
         resp = await client.get("/api/ralph/pending-actions")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["total"] >= 1
-        assert data["summary"]["blocked"] >= 1
+        assert isinstance(data, list)
+        assert len(data) >= 1
 
 
 # --- GET /api/ralph/transitions/{work_id} ---
@@ -477,8 +478,8 @@ async def test_ralph_get_transitions(app, ralph_repo):
         resp = await client.get("/api/ralph/transitions/W-001")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["work_id"] == "W-001"
-        assert data["total"] >= 1
+        assert isinstance(data, list)
+        assert len(data) >= 1
 
 
 async def test_ralph_get_transitions_work_unit_not_found(client):
@@ -521,7 +522,7 @@ async def test_ralph_summary(app, ralph_repo):
 async def test_ralph_create_command_success(client):
     resp = await client.post(
         "/api/ralph/commands",
-        json={"type": "start_run", "payload": {"test": True}},
+        json={"command_type": "start_run", "payload": {"test": True}},
     )
     assert resp.status_code == 200
     data = resp.json()
@@ -542,7 +543,7 @@ async def test_ralph_create_command_idempotent(client, repo):
     # 第一次创建
     resp1 = await client.post(
         "/api/ralph/commands",
-        json={"type": "execute_work_unit", "work_id": "W-001", "idempotency_key": key},
+        json={"command_type": "execute_work_unit", "target_id": "W-001", "idempotency_key": key},
     )
     assert resp1.status_code == 200
     data1 = resp1.json()
@@ -552,7 +553,7 @@ async def test_ralph_create_command_idempotent(client, repo):
     # 重复创建（相同 idempotency_key）
     resp2 = await client.post(
         "/api/ralph/commands",
-        json={"type": "execute_work_unit", "work_id": "W-001", "idempotency_key": key},
+        json={"command_type": "execute_work_unit", "target_id": "W-001", "idempotency_key": key},
     )
     assert resp2.status_code == 200
     data2 = resp2.json()
@@ -567,7 +568,7 @@ async def test_ralph_get_command_success(client):
     # 先创建 Command
     create_resp = await client.post(
         "/api/ralph/commands",
-        json={"type": "test_command"},
+        json={"command_type": "test_command"},
     )
     cmd_id = create_resp.json()["command_id"]
 
@@ -591,7 +592,7 @@ async def test_ralph_cancel_command_success(client):
     # 先创建 Command
     create_resp = await client.post(
         "/api/ralph/commands",
-        json={"type": "test_command"},
+        json={"command_type": "test_command"},
     )
     cmd_id = create_resp.json()["command_id"]
 
@@ -616,7 +617,7 @@ async def test_ralph_cancel_command_wrong_status(client):
     # 先创建 Command
     create_resp = await client.post(
         "/api/ralph/commands",
-        json={"type": "test_command"},
+        json={"command_type": "test_command"},
     )
     cmd_id = create_resp.json()["command_id"]
 

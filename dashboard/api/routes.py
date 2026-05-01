@@ -633,7 +633,7 @@ def create_dashboard_app(
         }
 
     @app.get("/api/ralph/work-units")
-    async def ralph_list_work_units(status: str | None = None) -> dict:
+    async def ralph_list_work_units(status: str | None = None) -> list[dict]:
         """列出所有 WorkUnit，支持状态过滤。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
         filter_status = None
@@ -643,10 +643,7 @@ def create_dashboard_app(
             except ValueError as err:
                 raise HTTPException(status_code=400, detail=f"Invalid status: {status}") from err
         units = ralph_repo.list_work_units(status=filter_status)
-        return {
-            "work_units": [_serialize_work_unit(u) for u in units],
-            "total": len(units),
-        }
+        return [_serialize_work_unit(u) for u in units]
 
     @app.get("/api/ralph/work-units/{work_id}")
     async def ralph_get_work_unit(work_id: str) -> dict:
@@ -658,7 +655,7 @@ def create_dashboard_app(
         return _serialize_work_unit(unit)
 
     @app.get("/api/ralph/evidence/{work_id}")
-    async def ralph_list_evidence(work_id: str) -> dict:
+    async def ralph_list_evidence(work_id: str) -> list[dict]:
         """获取指定 WorkUnit 的证据列表。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
         # 验证 work_id 存在
@@ -666,11 +663,7 @@ def create_dashboard_app(
         if unit is None:
             raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
         evidence_list = ralph_repo.list_evidence(work_id=work_id)
-        return {
-            "work_id": work_id,
-            "evidence": [asdict(e) for e in evidence_list],
-            "total": len(evidence_list),
-        }
+        return [_serialize_evidence(e) for e in evidence_list]
 
     @app.get("/api/ralph/evidence/{work_id}/{file_path:path}")
     async def ralph_get_evidence_file(work_id: str, file_path: str) -> PlainTextResponse:
@@ -725,7 +718,7 @@ def create_dashboard_app(
         return PlainTextResponse(content, headers=headers)
 
     @app.get("/api/ralph/reviews/{work_id}")
-    async def ralph_list_reviews(work_id: str) -> dict:
+    async def ralph_list_reviews(work_id: str) -> list[dict]:
         """获取指定 WorkUnit 的审查结果。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
         # 验证 work_id 存在
@@ -733,24 +726,17 @@ def create_dashboard_app(
         if unit is None:
             raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
         reviews = ralph_repo.list_reviews(work_id=work_id)
-        return {
-            "work_id": work_id,
-            "reviews": [ralph_repo._serialize_review(r) for r in reviews],
-            "total": len(reviews),
-        }
+        return [ralph_repo._serialize_review(r) for r in reviews]
 
     @app.get("/api/ralph/blockers")
-    async def ralph_list_blockers(work_id: str | None = None, resolved: bool | None = None) -> dict:
+    async def ralph_list_blockers(work_id: str | None = None, resolved: bool | None = None) -> list[dict]:
         """获取所有阻塞项，支持过滤。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
         blockers = ralph_repo.list_blockers(work_id=work_id, resolved=resolved)
-        return {
-            "blockers": [asdict(b) for b in blockers],
-            "total": len(blockers),
-        }
+        return [_serialize_blocker(b) for b in blockers]
 
     @app.get("/api/ralph/pending-actions")
-    async def ralph_pending_actions() -> dict:
+    async def ralph_pending_actions() -> list[dict]:
         """获取待处理审批/干预项汇总。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
         repo: ProjectStateRepository = app.state.repository
@@ -809,19 +795,10 @@ def create_dashboard_app(
                 "created_at": cmd.issued_at,
             })
 
-        return {
-            "actions": actions,
-            "total": len(actions),
-            "summary": {
-                "blocked": len(blocked_units),
-                "needs_rework": len(needs_rework_units),
-                "needs_review": len(needs_review_units),
-                "failed_commands": len(failed_commands),
-            },
-        }
+        return actions
 
     @app.get("/api/ralph/transitions/{work_id}")
-    async def ralph_get_transitions(work_id: str) -> dict:
+    async def ralph_get_transitions(work_id: str) -> list[dict]:
         """获取 WorkUnit 状态转换历史。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
         # 验证 work_id 存在
@@ -829,11 +806,7 @@ def create_dashboard_app(
         if unit is None:
             raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
         transitions = ralph_repo.get_transitions(work_id=work_id)
-        return {
-            "work_id": work_id,
-            "transitions": transitions,
-            "total": len(transitions),
-        }
+        return transitions
 
     @app.get("/api/ralph/summary")
     async def ralph_summary() -> dict:
@@ -881,16 +854,16 @@ def create_dashboard_app(
                     "was_duplicate": True,
                 }
 
-        # 验证必需字段
-        cmd_type = body.get("type", "")
+        # 验证必需字段 (前端使用 command_type 而非 type)
+        cmd_type = body.get("command_type", "")
         if not cmd_type:
-            raise HTTPException(status_code=422, detail="type is required")
+            raise HTTPException(status_code=422, detail="command_type is required")
 
-        # 创建 Command
+        # 创建 Command (前端使用 target_id 而非 work_id)
         cmd = Command(
             command_id=f"ralph_cmd_{_now_iso()}",
             type=cmd_type,
-            target_id=body.get("work_id", ""),
+            target_id=body.get("target_id", ""),
             payload=body.get("payload", {}),
             project_id=body.get("project_id", ""),
             run_id=body.get("run_id", ""),
@@ -975,6 +948,54 @@ def _serialize_review_result(review: Any) -> dict:
     from dataclasses import asdict
 
     return asdict(review)
+
+
+def _serialize_evidence(evidence: Any) -> dict:
+    """序列化 Evidence 为前端期望的格式。
+
+    前端期望字段: file_name, file_type, size_bytes
+    后端存储字段: evidence_id, work_id, evidence_type, file_path, description, created_at
+    """
+    from pathlib import Path
+
+    file_path = evidence.file_path
+    file_name = Path(file_path).name if file_path else ""
+
+    # 从 file_path 推断 file_type
+    file_type = "unknown"
+    if file_path:
+        ext = Path(file_path).suffix.lower()
+        if ext in (".txt", ".md", ".rst"):
+            file_type = "text"
+        elif ext in (".py", ".js", ".ts", ".java", ".go", ".rs", ".cpp", ".c", ".h"):
+            file_type = "code"
+        elif ext in (".json", ".yaml", ".yml", ".xml"):
+            file_type = "config"
+        elif ext in (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"):
+            file_type = "image"
+        elif ext in (".log"):
+            file_type = "log"
+        elif ext in (".diff", ".patch"):
+            file_type = "diff"
+
+    return {
+        "file_name": file_name,
+        "file_type": file_type,
+        "size_bytes": 0,  # 暂时无法获取，设为 0
+    }
+
+
+def _serialize_blocker(blocker: Any) -> dict:
+    """序列化 Blocker 为前端期望的格式。
+
+    前端期望字段: category, reason, created_at
+    后端存储字段: blocker_id, work_id, reason, blocker_type, resolution, resolved
+    """
+    return {
+        "category": blocker.blocker_type,
+        "reason": blocker.reason,
+        "created_at": "",  # Blocker 没有 created_at 字段
+    }
 
 
 def _redact_sensitive_content(content: str) -> str:
