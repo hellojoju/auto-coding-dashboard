@@ -60,6 +60,8 @@ class Feature:
     assigned_to: str = ""
     assigned_instance: str = ""
     status: str = "pending"  # pending|in_progress|review|done|blocked
+    passes: bool = False
+    test_steps: list[str] = field(default_factory=list)
     dependencies: list[str] = field(default_factory=list)
     workspace_id: str = ""
     files_changed: list[str] = field(default_factory=list)
@@ -78,6 +80,8 @@ class Feature:
             "assigned_to": self.assigned_to,
             "assigned_instance": self.assigned_instance,
             "status": self.status,
+            "passes": self.passes,
+            "test_steps": self.test_steps,
             "dependencies": self.dependencies,
             "workspace_id": self.workspace_id,
             "files_changed": self.files_changed,
@@ -97,6 +101,8 @@ class Feature:
             assigned_to=data.get("assigned_to", ""),
             assigned_instance=data.get("assigned_instance", ""),
             status=data.get("status", "pending"),
+            passes=data.get("passes", False),
+            test_steps=data.get("test_steps", []),
             dependencies=data.get("dependencies", []),
             workspace_id=data.get("workspace_id", ""),
             files_changed=data.get("files_changed", []),

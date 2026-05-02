@@ -180,10 +180,10 @@ async def test_state_returns_empty_snapshot(client):
 
 
 async def test_state_returns_agents_after_update(client):
-    # 先通过内部接口添加 agent
+    # 先通过 Repository 添加 agent
     app = client._transport.app
-    state = app.state.dashboard_state
-    state.agents.append(AgentInstance(id="backend-1", role="backend", instance_number=1))
+    repo = app.state.repository
+    repo.upsert_agent(AgentInstance(id="backend-1", role="backend", instance_number=1))
     resp = await client.get("/api/state")
     data = resp.json()
     assert len(data["agents"]) == 1

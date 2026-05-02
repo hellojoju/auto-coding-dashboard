@@ -1,4 +1,9 @@
-"""EventBus: 内存队列 + 文件持久化，用于 Dashboard 实时推送。"""
+"""EventBus: 内存队列 + 文件持久化，用于 Dashboard 实时推送。
+
+Phase 3 重构后，EventBus 仅保留内存广播队列功能。
+当提供 repository 时，emit() 将事件写入 Repository 持久化，
+同时推入内存队列供 WebSocket 消费。
+"""
 
 import json
 import threading
@@ -6,7 +11,10 @@ from collections import deque
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from dashboard.state_repository import ProjectStateRepository
 
 
 @dataclass
@@ -37,23 +45,40 @@ class AgentEventTypes:
 
 
 class EventBus:
-    """线程安全的事件总线，支持内存队列 + 文件追加写入。"""
+    """线程安全的事件总线，支持内存队列 + 文件追加写入。
 
-    def __init__(self, log_file: Path | None = None, max_queue: int = 1000):
+    Phase 3: 当 repository 已提供时，emit() 同时写入 Repository（持久化）
+    和内存队列（WebSocket 广播）；否则回退到仅文件写入（向后兼容）。
+    """
+
+    def __init__(
+        self,
+        log_file: Path | None = None,
+        max_queue: int = 1000,
+        repository: "ProjectStateRepository | None" = None,
+    ):
         self._lock = threading.Lock()
         self._queue: deque[dict] = deque(maxlen=max_queue)
         self._log_file = log_file
+        self._repository = repository
         # 项目初始化时清空日志
         if self._log_file and self._log_file.exists():
             self.clear_log()
 
     def emit(self, event_type: str, **kwargs: Any) -> None:
-        """发布事件到内存队列并追加到日志文件。"""
+        """发布事件到内存队列，并根据配置写入 Repository 或日志文件。"""
         event = Event(type=event_type, data=kwargs)
-        payload = json.dumps(event.to_dict(), ensure_ascii=False)
+        event_dict = event.to_dict()
+
         with self._lock:
-            self._queue.append(event.to_dict())
-            if self._log_file:
+            self._queue.append(event_dict)
+
+            if self._repository is not None:
+                # 写入 Repository 持久化（Phase 3 统一事件流）
+                self._repository.append_event(type=event_type, payload=kwargs)
+            elif self._log_file:
+                # 向后兼容：直接写入日志文件
+                payload = json.dumps(event_dict, ensure_ascii=False)
                 self._log_file.parent.mkdir(parents=True, exist_ok=True)
                 with open(self._log_file, "a", encoding="utf-8") as f:
                     f.write(payload + "\n")

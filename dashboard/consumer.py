@@ -16,16 +16,16 @@ logger = logging.getLogger(__name__)
 
 # Ralph 命令类型集合
 RALPH_COMMAND_TYPES = {
+    "prepare_work_unit",
+    "execute_work_unit",
+    "retry_work_unit",
+    "cancel_work_unit",
+    "expand_scope",
     "accept_review",
     "request_rework",
     "override_accept",
-    "expand_scope",
-    "scope_expansion_confirm",
+    "resolve_blocker",
     "dangerous_op_confirm",
-    "review_dispute_resolve",
-    "missing_dep_resolve",
-    "execution_error_handle",
-    "manual_intervention",
 }
 
 
@@ -38,11 +38,13 @@ class CommandConsumer:
         processor: CommandProcessor,
         event_bus: EventBus,
         ralph_handler: RalphCommandHandler | None = None,
+        ralph_engine: Any | None = None,
     ) -> None:
         self._repo = repository
         self._processor = processor
         self._event_bus = event_bus
         self._ralph_handler = ralph_handler
+        self._ralph_engine = ralph_engine
 
     def process_once(self) -> int:
         """消费一轮所有 pending 命令，返回实际处理的命令数。"""
@@ -88,7 +90,7 @@ class CommandConsumer:
         elif cmd_type == "reject":
             self._processor.reject(cmd, reason="rejected by PM")
             self._repo.save_command(cmd)
-            self._emit_event("command_rejected", command_id=cmd.command_id)
+            self._emit_event("command_failed", command_id=cmd.command_id, error="rejected by PM")
         elif cmd_type in ("pause", "resume", "retry", "skip"):
             cmd.status = "applied"
             self._repo.save_command(cmd)
@@ -106,7 +108,7 @@ class CommandConsumer:
             project_dir = getattr(self._repo, "_base", None)
             if project_dir:
                 ralph_dir = Path(project_dir) / ".ralph"
-                self._ralph_handler = RalphCommandHandler(ralph_dir)
+                self._ralph_handler = RalphCommandHandler(ralph_dir, engine=self._ralph_engine)
             else:
                 logger.error("无法确定 Ralph 目录，无法处理 Ralph 命令: %s", cmd_type)
                 cmd.status = "failed"

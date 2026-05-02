@@ -2,10 +2,9 @@
 
 import signal
 import subprocess
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock
 
-import pytest
-from dashboard.agent_process_manager import AgentProcess, AgentProcessManager
+from dashboard.agent_process_manager import AgentProcessManager
 
 
 def _make_manager() -> AgentProcessManager:

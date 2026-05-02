@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import logging
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
+from core.verification_result import ExecutionResult
 
 if TYPE_CHECKING:
     from agents.pool import AgentPool
@@ -77,11 +80,35 @@ class FeatureExecutionService:
             if not isinstance(result, dict):
                 logger.error("Agent.execute() returned non-dict for %s: %r", feature.id, result)
                 return {"success": False, "files_changed": [], "error": "Agent returned non-dict result"}
+
+            files_changed = result.get("files_changed", [])
+            diff_stat = self._collect_diff_stat(ws_dir)
+
             return {
                 "success": result.get("success", False),
-                "files_changed": result.get("files_changed", []),
+                "files_changed": files_changed,
                 "error": result.get("error", ""),
+                "diff_stat": diff_stat,
+                "work_id": feature.id,
+                "status": "completed" if result.get("success") else "failed",
             }
         except Exception as e:
             logger.error("Feature execution error for %s: %s", feature.id, e)
-            return {"success": False, "files_changed": [], "error": str(e)}
+            return {"success": False, "files_changed": [], "error": str(e), "status": "failed", "work_id": feature.id}
+
+    @staticmethod
+    def _collect_diff_stat(workspace_dir: Path | None) -> str:
+        """收集 git diff --stat 作为执行证据。"""
+        if workspace_dir is None:
+            return ""
+        try:
+            result = subprocess.run(
+                ["git", "diff", "--stat", "HEAD"],
+                cwd=workspace_dir,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return result.stdout.strip()
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+            return ""

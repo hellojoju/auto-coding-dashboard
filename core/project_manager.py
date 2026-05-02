@@ -12,6 +12,7 @@ import contextlib
 import json
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -23,12 +24,12 @@ from core.config import (
     MAX_RETRY_COUNT,
 )
 from core.execution_ledger import ExecutionLedger, ExecutionStatus
+from core.permission_guard import PERMISSION_RULES_PROMPT, PermissionGuard
 from core.feature_execution_service import FeatureExecutionService
 from core.feature_tracker import Feature, FeatureTracker
 from core.feature_verification_service import FeatureVerificationService
 from core.git_service import GitService
 from core.progress_logger import progress
-from core.task_queue import TaskQueue
 
 if TYPE_CHECKING:
     from dashboard.state_repository import ProjectStateRepository
@@ -52,16 +53,18 @@ class ProjectManager:
 
     def __init__(self, project_dir: Path):
         self.project_dir = project_dir
+        self.permission_guard = PermissionGuard(self.project_dir)
         self._configure_project_paths()
-        self.feature_tracker = FeatureTracker(self.project_dir / "data" / "features.json")
-        self.task_queue = TaskQueue(self.project_dir / "data" / "tasks.db")
+        self.repository = self._create_repository()
+        self.feature_tracker = FeatureTracker(
+            repository=self.repository,
+        )
         self.pool = AgentPool(base_workspace=project_dir / "workspaces")
         self._initialized = False
         self.feature_execution = FeatureExecutionService(self, self.pool, self.feature_tracker)
         self.feature_verification = FeatureVerificationService(self.project_dir)
         self.git_service = GitService(self.project_dir)
         self.execution_ledger = ExecutionLedger(self.project_dir / "data" / "execution-plan.json")
-        self.repository = self._create_repository()
         self.blocking_tracker = BlockingTracker(self.repository)
         self._ensure_all_roles()
         self._restore_state()
@@ -83,20 +86,9 @@ class ProjectManager:
         )
 
     def _restore_state(self) -> None:
-        """从已有文件恢复项目状态（如果存在）。"""
-        prd_file = self.project_dir / "data" / "prd.md"
-        features_file = self.project_dir / "data" / "features.json"
-        if prd_file.exists() and features_file.exists():
-            try:
-                if not self.feature_tracker.all_features():
-                    features_data = json.loads(features_file.read_text(encoding="utf-8"))
-                    features = [Feature.from_dict(f) for f in features_data]
-                    self.feature_tracker.bulk_add(features)
-                self._sync_all_features_to_repository()
-                self._initialized = True
-            except Exception:
-                # 如果解析失败，保持未初始化状态
-                pass
+        """从 Repository 已有状态恢复（如果存在）。"""
+        if self.repository.list_features():
+            self._initialized = True
 
     def initialize_project(self, user_request: str) -> str:
         """
@@ -128,14 +120,9 @@ class ProjectManager:
         prd_file = project_data / "prd.md"
         prd_file.write_text(prd_summary, encoding="utf-8")
 
-        # 保存Features
-        features_file = project_data / "features.json"
-        features_data = [f.to_dict() for f in features]
-        features_file.write_text(json.dumps(features_data, indent=2, ensure_ascii=False), encoding="utf-8")
-
-        # 导入Features
-        self.feature_tracker.bulk_add(features)
-        self._sync_all_features_to_repository()
+        # 导入Features — 直接写入 Repository
+        for f in features:
+            self.repository.upsert_feature(f)
 
         progress.log(f"PRD生成完成，分解为 {len(features)} 个features")
         self._initialized = True
@@ -178,7 +165,6 @@ class ProjectManager:
     def _execute_feature(self, feature: Feature) -> None:
         """执行单个feature"""
         self.feature_tracker.mark_in_progress(feature.id)
-        self._sync_feature_to_repository(feature, event_type="feature_updated")
 
         # 校验角色是否合法
         if feature.assigned_to not in AGENT_ROLES:
@@ -195,10 +181,10 @@ class ProjectManager:
         # 从 AgentPool 获取可用实例（支持多实例并发）
         result_pair = self.pool.acquire(feature.assigned_to)
         if result_pair is None:
-            # 无可用实例，标记为待重试
-            feature.status = "pending"
-            self.feature_tracker._save()
-            self._sync_feature_to_repository(feature, event_type="feature_updated")
+            self.feature_tracker.mark_blocked(
+                feature.id,
+                reason="无可用实例",
+            )
             self._log(f"无可用 {feature.assigned_to} 实例，{feature.id} 待重试")
             return
 
@@ -209,7 +195,6 @@ class ProjectManager:
             instance_id=instance.instance_id,
             workspace_path=str(instance.workspace_path),
         )
-        self._sync_feature_to_repository(feature, event_type="feature_updated")
         self._sync_agent_instance(instance, status="busy", current_feature=feature.id)
         self.execution_ledger.log_execution(
             feature_id=feature.id,
@@ -240,7 +225,6 @@ class ProjectManager:
                 if isinstance(workspace_dir, str):
                     workspace_dir = Path(workspace_dir)
                 self.feature_tracker.mark_review(feature.id)
-                self._sync_feature_to_repository(feature, event_type="feature_updated")
                 passed = self.feature_verification.verify(feature, workspace_dir=workspace_dir)
 
                 if passed:
@@ -253,7 +237,6 @@ class ProjectManager:
 
                     files_changed = result.get("files_changed") or []
                     self.feature_tracker.mark_done(feature.id, files_changed=files_changed)
-                    self._sync_feature_to_repository(feature, event_type="feature_updated")
                     self.execution_ledger.log_execution(
                         feature_id=feature.id,
                         status=ExecutionStatus.COMPLETED,
@@ -265,9 +248,11 @@ class ProjectManager:
                     retry_count = len(feature.error_log)
                     if retry_count < MAX_RETRY_COUNT:
                         self.feature_tracker.add_error(feature.id, "验收不通过，退回重做")
-                        feature.status = "pending"
-                        self.feature_tracker._save()
-                        self._sync_feature_to_repository(feature, event_type="feature_updated")
+                        # 通过 Repository 直接更新状态为 pending（重试）
+                        existing = self.repository.get_feature(feature.id)
+                        if existing:
+                            existing.status = "pending"
+                            self.repository.upsert_feature(existing, event_type="feature_updated")
                         self.execution_ledger.log_execution(
                             feature_id=feature.id,
                             status=ExecutionStatus.RETRYING,
@@ -298,9 +283,10 @@ class ProjectManager:
                         agent_id=instance.instance_id,
                     )
                 else:
-                    feature.status = "pending"
-                    self.feature_tracker._save()
-                    self._sync_feature_to_repository(feature, event_type="feature_updated")
+                    existing = self.repository.get_feature(feature.id)
+                    if existing:
+                        existing.status = "pending"
+                        self.repository.upsert_feature(existing, event_type="feature_updated")
                     self.execution_ledger.log_execution(
                         feature_id=feature.id,
                         status=ExecutionStatus.RETRYING,
@@ -355,38 +341,6 @@ class ProjectManager:
     def _build_task_description(self, feature: Feature) -> str:
         """构建任务描述，包含上下文（保留用于日志和调试）"""
         return f"Feature {feature.id} ({feature.category}): {feature.description}"
-
-    def _dashboard_feature_from_core(self, feature: Feature):
-        from dashboard.models import Feature as DashboardFeature
-
-        workspace_id = feature.workspace_path or ""
-        if workspace_id.startswith("<MagicMock"):
-            workspace_id = ""
-
-        return DashboardFeature(
-            id=feature.id,
-            category=feature.category,
-            description=feature.description,
-            priority=feature.priority,
-            assigned_to=feature.assigned_to,
-            assigned_instance=feature.assigned_instance,
-            status=feature.status,
-            dependencies=list(feature.dependencies),
-            workspace_id=workspace_id,
-            files_changed=list(feature.files_changed),
-            started_at=feature.started_at or "",
-            completed_at=feature.completed_at or "",
-            error_log=list(feature.error_log),
-            blocking_issues=list(feature.blocking_issues),
-        )
-
-    def _sync_feature_to_repository(self, feature: Feature, *, event_type: str | None = None) -> None:
-        dashboard_feature = self._dashboard_feature_from_core(feature)
-        self.repository.upsert_feature(dashboard_feature, event_type=event_type or "")
-
-    def _sync_all_features_to_repository(self) -> None:
-        for feature in self.feature_tracker.all_features():
-            self._sync_feature_to_repository(feature)
 
     def _sync_agent_instance(
         self,
@@ -493,14 +447,12 @@ class ProjectManager:
         )
         if issue.issue_id not in feature.blocking_issues:
             feature.blocking_issues.append(issue.issue_id)
-            self.feature_tracker._save()
         self.execution_ledger.log_execution(
             feature_id=feature.id,
             status=ExecutionStatus.BLOCKED,
             agent_id=agent_id,
             error=reason,
         )
-        self._sync_feature_to_repository(feature, event_type="feature_updated")
         self.repository.append_event(
             type="blocking_issue_created",
             feature_id=feature.id,
@@ -584,7 +536,7 @@ class ProjectManager:
 
             if file_path.endswith(".py"):
                 result = subprocess.run(
-                    ["python", "-m", "py_compile", str(full_path)],
+                    [sys.executable, "-m", "py_compile", str(full_path)],
                     capture_output=True,
                     timeout=10,
                 )
@@ -666,8 +618,16 @@ JSON结构：
 确保features按合理的执行顺序排列，依赖关系正确。
 **只执行一个操作：将JSON写入 {output_file}，不要输出任何其他内容。**"""
 
+        # 执行前安全检查
+        pre_check = self.permission_guard.check_prompt(prompt)
+        if not pre_check.allowed:
+            violations = [v.detail for v in pre_check.blocked_violations]
+            raise RuntimeError(f"PRD generation blocked by permission guard: {violations}")
+
+        full_prompt = prompt + "\n\n" + PERMISSION_RULES_PROMPT
+
         result = subprocess.run(
-            ["claude", "-p", prompt, "--dangerously-skip-permissions"],
+            ["claude", "-p", full_prompt, "--permission-mode", "acceptEdits"],
             capture_output=True,
             timeout=300,
             cwd=str(self.project_dir),
@@ -757,7 +717,6 @@ JSON结构：
         return {
             "initialized": self._initialized,
             "features": self.feature_tracker.summary(),
-            "tasks": self.task_queue.stats(),
             "progress": self.feature_tracker.summary(),
         }
 

@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from dashboard.consumer import CommandConsumer
 from dashboard.command_processor import CommandProcessor
+from dashboard.consumer import CommandConsumer
 from dashboard.event_bus import EventBus
+from dashboard.models import Command
 from dashboard.state_repository import ProjectStateRepository
-from dashboard.models import Command, Event
 
 
 @pytest.fixture

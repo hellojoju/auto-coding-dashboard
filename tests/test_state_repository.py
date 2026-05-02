@@ -1,11 +1,11 @@
 """ProjectStateRepository 读写一致性和快照测试。"""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
+from dashboard.models import AgentInstance, ChatMessage, Command, Event, Feature
 from dashboard.state_repository import ProjectStateRepository
-from dashboard.models import (
-    AgentInstance, Feature, Command, Event, ChatMessage, Snapshot
-)
 
 
 @pytest.fixture

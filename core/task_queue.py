@@ -1,7 +1,14 @@
-"""任务队列 - SQLite-backed任务管理"""
+"""任务队列 - SQLite-backed任务管理
+
+.. deprecated::
+    Phase 3 重构后，TaskQueue 不再被 ProjectManager 使用。
+    Feature 状态和命令由 ProjectStateRepository 统一管理。
+    本模块仅保留以兼容可能的外部引用，将在未来版本中移除。
+"""
 
 import json
 import sqlite3
+import warnings
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
@@ -18,9 +25,18 @@ class TaskStatus(Enum):
 
 
 class TaskQueue:
-    """基于SQLite的任务队列"""
+    """基于SQLite的任务队列。
+
+    .. deprecated::
+        不再被 ProjectManager 使用。Feature 状态由 ProjectStateRepository 管理。
+    """
 
     def __init__(self, db_path: Path | None = None):
+        warnings.warn(
+            "TaskQueue is deprecated. Use ProjectStateRepository for feature state management.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self._db = db_path or TASK_DB
         self._init_db()
 

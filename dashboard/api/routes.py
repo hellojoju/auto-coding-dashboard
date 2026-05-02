@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import re
+import tempfile
 from collections import deque
 from contextlib import asynccontextmanager, suppress
 from dataclasses import asdict
@@ -25,8 +26,9 @@ from fastapi.responses import PlainTextResponse
 from dashboard.command_processor import CommandProcessor
 from dashboard.consumer import CommandConsumer
 from dashboard.event_bus import EventBus
-from dashboard.models import ChatMessage, Command, DashboardState, Event, ModuleAssignment
+from dashboard.models import ChatMessage, Command, Event, ModuleAssignment
 from dashboard.state_repository import ProjectStateRepository
+from ralph.report_generator import ReportGenerator
 from ralph.repository import RalphRepository
 from ralph.schema.work_unit import WorkUnitStatus
 
@@ -37,15 +39,10 @@ def _now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def _make_state() -> DashboardState:
-    return DashboardState()
-
-
-class DashboardAppState:
-    """存储在 app.state 中的可变看板状态。"""
+class _DashboardAppState:
+    """存储在 app.state 中的 WebSocket 连接和广播队列。"""
 
     def __init__(self) -> None:
-        self.dashboard_state = _make_state()
         self.connected_ws: set[WebSocket] = set()
         self.broadcast_queue: deque[dict] = deque()
 
@@ -124,6 +121,7 @@ def create_dashboard_app(
     coordinator: "PMCoordinator | None" = None,  # noqa: UP037
     product_manager: "ProductManager | None" = None,  # noqa: UP037
     ralph_repository: RalphRepository | None = None,
+    ralph_engine: Any = None,  # WorkUnitEngine | None
 ) -> FastAPI:
     app = FastAPI(title="AI Dev Dashboard", lifespan=lifespan)
     app.add_middleware(
@@ -132,11 +130,10 @@ def create_dashboard_app(
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    state = DashboardAppState()
-    app.state.dashboard_state = state.dashboard_state
+    app_state = _DashboardAppState()
+    app.state.connected_ws = app_state.connected_ws
+    app.state.broadcast_queue = app_state.broadcast_queue
     app.state.event_bus = event_bus
-    app.state.connected_ws = state.connected_ws
-    app.state.broadcast_queue = state.broadcast_queue
 
     # 注入 RalphRepository
     if ralph_repository is None:
@@ -144,29 +141,42 @@ def create_dashboard_app(
         ralph_repository = RalphRepository(ralph_dir)
     app.state.ralph_repository = ralph_repository
 
-    # 桥接 EventBus → WebSocket broadcast_queue（同时写入 Repository 持久化）
-    _original_emit = event_bus.emit
-    def _patched_emit(event_type: str, **kwargs: Any) -> None:
-        _original_emit(event_type, **kwargs)
-        stored_event = repository.append_event(type=event_type, payload=kwargs)
-        _emit_to_ws(state.broadcast_queue, stored_event)
-    event_bus.emit = _patched_emit
+    # 注入 WorkUnitEngine（如果未提供则从 project_dir 初始化）
+    if ralph_engine is None:
+        project_dir_env = os.environ.get("PROJECT_DIR")
+        if project_dir_env:
+            from ralph.work_unit_engine import WorkUnitEngine
+
+            ralph_engine = WorkUnitEngine(Path(project_dir_env))
+    app.state.ralph_engine = ralph_engine
+
+    # 注入 ReportGenerator
+    report_generator = ReportGenerator(ralph_repository._ralph_dir)
+    app.state.report_generator = report_generator
 
     # 注入 Repository
     if repository is None:
+        _tmp_dir = tempfile.mkdtemp(prefix="dashboard_state_")
         repository = ProjectStateRepository(
-            base_dir=Path("/tmp/dashboard_state"),
+            base_dir=Path(_tmp_dir),
             project_id="default",
             run_id="",
         )
     app.state.repository = repository
 
+    # 桥接 EventBus → WebSocket broadcast_queue
+    # EventBus 只负责内存队列（保持向后兼容），Repository 持久化在桥接层显式完成
+    _original_emit = event_bus.emit
+    def _wrapped_emit(event_type: str, **kwargs: Any) -> None:
+        _original_emit(event_type, **kwargs)
+        stored_event = repository.append_event(type=event_type, payload=kwargs)
+        _emit_to_ws(app.state.broadcast_queue, stored_event)
+    event_bus.emit = _wrapped_emit
+
     # 注入 CommandProcessor — 事件统一通过 Repository 追加
     def on_event(event: Event) -> None:
         stored_event = repository.append_event(type=event.type, payload=event.payload)
-        _emit_to_ws(state.broadcast_queue, stored_event)
-        # 写入 EventBus 历史与日志，但避免再次走补丁广播
-        _original_emit(event.type, **event.payload)
+        _emit_to_ws(app.state.broadcast_queue, stored_event)
 
     processor = CommandProcessor(on_event=on_event)
     app.state.command_processor = processor
@@ -188,13 +198,14 @@ def create_dashboard_app(
 
     @app.get("/api/state")
     async def get_state() -> dict:
-        s = app.state.dashboard_state
+        """从 Repository 加载统一状态快照。"""
+        snapshot = app.state.repository.load_snapshot()
         return {
-            "project_name": s.project_name,
-            "agents": [a.to_dict() for a in s.agents],
-            "features": s.features,
-            "events": s.events,
-            "chat_history": [m.to_dict() for m in s.chat_history],
+            "project_name": snapshot.project_name,
+            "agents": [a.to_dict() for a in snapshot.agents],
+            "features": [f.to_dict() for f in snapshot.features],
+            "events": [e.to_dict() for e in app.state.repository.get_events_after(0, limit=200)],
+            "chat_history": [m.to_dict() for m in snapshot.chat_history],
         }
 
     @app.get("/api/dashboard/state")
@@ -262,7 +273,6 @@ def create_dashboard_app(
         if not content:
             raise HTTPException(status_code=422, detail="content is required")
         msg = ChatMessage(id=f"chat_{_now_iso()}", role="user", content=content)
-        app.state.dashboard_state.chat_history.append(msg)
         app.state.repository.add_chat_message(msg)
         event = app.state.repository.append_event(
             type="pm_decision", message=f"用户消息: {content}",
@@ -271,7 +281,6 @@ def create_dashboard_app(
 
         # 调用 PM 生成回复
         pm_response = _generate_pm_response(
-            app.state.dashboard_state.chat_history,
             app.state.repository,
             app.state.broadcast_queue,
             app.state.product_manager,
@@ -654,7 +663,7 @@ def create_dashboard_app(
             raise HTTPException(status_code=404, detail=f"WorkUnit {work_id} not found")
         return _serialize_work_unit(unit)
 
-    @app.get("/api/ralph/evidence/{work_id}")
+    @app.get("/api/ralph/work-units/{work_id}/evidence")
     async def ralph_list_evidence(work_id: str) -> list[dict]:
         """获取指定 WorkUnit 的证据列表。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
@@ -665,7 +674,7 @@ def create_dashboard_app(
         evidence_list = ralph_repo.list_evidence(work_id=work_id)
         return [_serialize_evidence(e) for e in evidence_list]
 
-    @app.get("/api/ralph/evidence/{work_id}/{file_path:path}")
+    @app.get("/api/ralph/work-units/{work_id}/evidence/{file_path:path}")
     async def ralph_get_evidence_file(work_id: str, file_path: str) -> PlainTextResponse:
         """获取证据文件内容（带安全验证）。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
@@ -717,7 +726,7 @@ def create_dashboard_app(
         headers = {"X-Truncated": "true" if truncated else "false"}
         return PlainTextResponse(content, headers=headers)
 
-    @app.get("/api/ralph/reviews/{work_id}")
+    @app.get("/api/ralph/work-units/{work_id}/reviews")
     async def ralph_list_reviews(work_id: str) -> list[dict]:
         """获取指定 WorkUnit 的审查结果。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
@@ -757,10 +766,10 @@ def create_dashboard_app(
             for blocker in blockers:
                 actions.append({
                     "action_id": f"blocker_{blocker.blocker_id}",
-                    "type": "blocker_resolution",
+                    "action_type": "missing_dep",
                     "work_id": unit.work_id,
-                    "reason": blocker.reason,
-                    "blocker_type": blocker.blocker_type,
+                    "description": blocker.reason,
+                    "context": {"blocker_type": blocker.blocker_type},
                     "created_at": "",  # Blocker 没有 created_at 字段
                 })
 
@@ -768,9 +777,10 @@ def create_dashboard_app(
         for unit in needs_rework_units:
             actions.append({
                 "action_id": f"rework_{unit.work_id}",
-                "type": "rework_required",
+                "action_type": "execution_error",
                 "work_id": unit.work_id,
-                "reason": f"WorkUnit {unit.work_id} 需要返工",
+                "description": f"WorkUnit {unit.work_id} 需要返工",
+                "context": {},
                 "created_at": "",
             })
 
@@ -778,9 +788,10 @@ def create_dashboard_app(
         for unit in needs_review_units:
             actions.append({
                 "action_id": f"review_{unit.work_id}",
-                "type": "review_pending",
+                "action_type": "review_dispute",
                 "work_id": unit.work_id,
-                "reason": f"WorkUnit {unit.work_id} 等待审查",
+                "description": f"WorkUnit {unit.work_id} 等待审查",
+                "context": {},
                 "created_at": "",
             })
 
@@ -788,16 +799,16 @@ def create_dashboard_app(
         for cmd in failed_commands:
             actions.append({
                 "action_id": f"cmd_failed_{cmd.command_id}",
-                "type": "command_failed",
+                "action_type": "execution_error",
                 "work_id": cmd.target_id,
-                "reason": cmd.result.get("error", "Command execution failed"),
-                "command_id": cmd.command_id,
+                "description": cmd.result.get("error", "Command execution failed"),
+                "context": {"command_id": cmd.command_id},
                 "created_at": cmd.issued_at,
             })
 
         return actions
 
-    @app.get("/api/ralph/transitions/{work_id}")
+    @app.get("/api/ralph/work-units/{work_id}/transitions")
     async def ralph_get_transitions(work_id: str) -> list[dict]:
         """获取 WorkUnit 状态转换历史。"""
         ralph_repo: RalphRepository = app.state.ralph_repository
@@ -915,6 +926,75 @@ def create_dashboard_app(
             "status": cmd.status,
         }
 
+    @app.get("/api/ralph/commands")
+    async def ralph_list_commands(status: str | None = None) -> list[dict]:
+        """列出所有 Command，支持 status 过滤。"""
+        repo: ProjectStateRepository = app.state.repository
+        commands = repo.list_all_commands()
+        if status:
+            commands = [c for c in commands if c.status == status]
+        return [c.to_dict() for c in commands]
+
+    # --- Ralph API: 报告端点 ---
+
+    @app.get("/api/ralph/reports")
+    async def ralph_list_reports() -> list[dict]:
+        """列出所有已生成的报告。"""
+        gen: ReportGenerator = app.state.report_generator
+        reports = gen.list_reports()
+        return [
+            {
+                "name": r.name,
+                "size_bytes": r.stat().st_size,
+                "created_at": _now_iso(),
+            }
+            for r in reports
+        ]
+
+    @app.post("/api/ralph/reports/generate")
+    async def ralph_generate_report(body: dict[str, Any] | None = None) -> dict:
+        """生成中文研发报告。"""
+        body = body or {}
+        title = body.get("title", "研发报告")
+        filename = body.get("filename", "report.md")
+
+        gen: ReportGenerator = app.state.report_generator
+        content = gen.generate(title=title)
+        path = gen.save(content, filename)
+
+        return {
+            "success": True,
+            "name": path.name,
+            "path": str(path),
+            "content": content,
+        }
+
+    @app.get("/api/ralph/reports/{name:path}")
+    async def ralph_get_report(name: str) -> dict:
+        """获取单个报告内容。"""
+        gen: ReportGenerator = app.state.report_generator
+        reports_dir = gen._ralph_dir / "reports"
+
+        # 安全验证：防止路径遍历
+        if ".." in name or name.startswith("/"):
+            raise HTTPException(status_code=403, detail="Invalid report name")
+
+        report_path = (reports_dir / name).resolve()
+        try:
+            report_path.relative_to(reports_dir.resolve())
+        except ValueError as err:
+            raise HTTPException(status_code=403, detail="Access denied: path outside reports directory") from err
+
+        if not report_path.is_file():
+            raise HTTPException(status_code=404, detail=f"Report {name} not found")
+
+        content = report_path.read_text(encoding="utf-8")
+        return {
+            "name": report_path.name,
+            "content": content,
+            "size_bytes": report_path.stat().st_size,
+        }
+
     return app
 
 
@@ -953,7 +1033,7 @@ def _serialize_review_result(review: Any) -> dict:
 def _serialize_evidence(evidence: Any) -> dict:
     """序列化 Evidence 为前端期望的格式。
 
-    前端期望字段: file_name, file_type, size_bytes
+    前端期望字段: evidence_id, work_id, file_name, file_type, size_bytes, created_at
     后端存储字段: evidence_id, work_id, evidence_type, file_path, description, created_at
     """
     from pathlib import Path
@@ -961,40 +1041,45 @@ def _serialize_evidence(evidence: Any) -> dict:
     file_path = evidence.file_path
     file_name = Path(file_path).name if file_path else ""
 
-    # 从 file_path 推断 file_type
-    file_type = "unknown"
+    # 从 file_path 推断 file_type（对齐前端 Evidence.file_type 枚举）
+    file_type = "other"
     if file_path:
         ext = Path(file_path).suffix.lower()
-        if ext in (".txt", ".md", ".rst"):
-            file_type = "text"
-        elif ext in (".py", ".js", ".ts", ".java", ".go", ".rs", ".cpp", ".c", ".h"):
-            file_type = "code"
-        elif ext in (".json", ".yaml", ".yml", ".xml"):
-            file_type = "config"
-        elif ext in (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"):
-            file_type = "image"
+        if ext in (".diff", ".patch"):
+            file_type = "diff"
         elif ext in (".log"):
             file_type = "log"
-        elif ext in (".diff", ".patch"):
-            file_type = "diff"
+        elif ext in (".txt", ".md", ".rst"):
+            file_type = "test_output"
+        elif ext in (".py", ".js", ".ts", ".java", ".go", ".rs", ".cpp", ".c", ".h"):
+            file_type = "other"
+        elif ext in (".json", ".yaml", ".yml", ".xml"):
+            file_type = "other"
+        elif ext in (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"):
+            file_type = "screenshot"
 
     return {
+        "evidence_id": evidence.evidence_id,
+        "work_id": evidence.work_id,
         "file_name": file_name,
         "file_type": file_type,
         "size_bytes": 0,  # 暂时无法获取，设为 0
+        "created_at": evidence.created_at,
     }
 
 
 def _serialize_blocker(blocker: Any) -> dict:
     """序列化 Blocker 为前端期望的格式。
 
-    前端期望字段: category, reason, created_at
-    后端存储字段: blocker_id, work_id, reason, blocker_type, resolution, resolved
+    前端期望字段: blocker_id, work_id, reason, category, created_at, resolved
     """
     return {
+        "blocker_id": blocker.blocker_id,
+        "work_id": blocker.work_id,
         "category": blocker.blocker_type,
         "reason": blocker.reason,
         "created_at": "",  # Blocker 没有 created_at 字段
+        "resolved": blocker.resolved,
     }
 
 
@@ -1047,12 +1132,15 @@ def _create_command(cmd_type: str, body: dict[str, Any]) -> Command:
 
 
 def _generate_pm_response(
-    chat_history: list[ChatMessage],
     repository: ProjectStateRepository,
     broadcast_queue: deque,
     product_manager: ProductManager | None = None,
 ) -> ChatMessage | None:
     """调用 ProductManager agent 生成 PM 回复。"""
+    # 从 Repository 获取 chat history
+    snapshot = repository.load_snapshot()
+    chat_history = snapshot.chat_history
+
     if product_manager is None:
         logger.warning("ProductManager 未配置，使用 fallback 回复")
         pm_content = "PM 暂未就绪，请重试。"
@@ -1069,14 +1157,10 @@ def _generate_pm_response(
         content=pm_content,
     )
 
-    # 添加到 chat_history
-    chat_history.append(pm_msg)
-
     # 持久化到 Repository
     repository.add_chat_message(pm_msg)
 
-    # 广播给 WebSocket 客户端 — payload 必须包含完整 pm_response 对象
-    # 前端 store.ts applyEventToState 通过 event.payload.pm_response 路由到 chatHistory
+    # 广播给 WebSocket 客户端
     event = repository.append_event(
         type="pm_response",
         pm_response={

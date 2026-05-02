@@ -174,7 +174,7 @@ async def test_ralph_get_work_unit_not_found(client):
     assert resp.status_code == 404
 
 
-# --- GET /api/ralph/evidence/{work_id} ---
+# --- GET /api/ralph/work-units/{work_id}/evidence ---
 
 
 async def test_ralph_list_evidence_success(app, ralph_repo):
@@ -201,7 +201,7 @@ async def test_ralph_list_evidence_success(app, ralph_repo):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        resp = await client.get("/api/ralph/evidence/W-001")
+        resp = await client.get("/api/ralph/work-units/W-001/evidence")
         assert resp.status_code == 200
         data = resp.json()
         assert isinstance(data, list)
@@ -210,11 +210,11 @@ async def test_ralph_list_evidence_success(app, ralph_repo):
 
 
 async def test_ralph_list_evidence_work_unit_not_found(client):
-    resp = await client.get("/api/ralph/evidence/NONEXISTENT")
+    resp = await client.get("/api/ralph/work-units/NONEXISTENT/evidence")
     assert resp.status_code == 404
 
 
-# --- GET /api/ralph/evidence/{work_id}/{file_path} ---
+# --- GET /api/ralph/work-units/{work_id}/evidence/{file_path} ---
 
 
 async def test_ralph_get_evidence_file_success(app, ralph_repo, tmp_path):
@@ -236,7 +236,7 @@ async def test_ralph_get_evidence_file_success(app, ralph_repo, tmp_path):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        resp = await client.get("/api/ralph/evidence/W-001/W-001/diff.txt")
+        resp = await client.get("/api/ralph/work-units/W-001/evidence/W-001/diff.txt")
         assert resp.status_code == 200
         assert resp.text == "diff content here"
         assert resp.headers["X-Truncated"] == "false"
@@ -258,7 +258,7 @@ async def test_ralph_get_evidence_file_path_traversal(app, ralph_repo, tmp_path)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # 尝试路径遍历 - 使用 %2E 编码来绕过 Starlette 的路径规范化
         # %2E = . 所以 %2E%2E = ..
-        resp = await client.get("/api/ralph/evidence/W-001/%2E%2E/%2E%2E/%2E%2E/etc/passwd")
+        resp = await client.get("/api/ralph/work-units/W-001/evidence/%2E%2E/%2E%2E/%2E%2E/etc/passwd")
         assert resp.status_code == 403
 
 
@@ -276,7 +276,7 @@ async def test_ralph_get_evidence_file_not_found(app, ralph_repo):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        resp = await client.get("/api/ralph/evidence/W-001/nonexistent.txt")
+        resp = await client.get("/api/ralph/work-units/W-001/evidence/nonexistent.txt")
         assert resp.status_code == 404
 
 
@@ -300,7 +300,7 @@ async def test_ralph_get_evidence_file_truncation(app, ralph_repo):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        resp = await client.get("/api/ralph/evidence/W-001/W-001/large.txt")
+        resp = await client.get("/api/ralph/work-units/W-001/evidence/W-001/large.txt")
         assert resp.status_code == 200
         assert resp.headers["X-Truncated"] == "true"
         assert "TRUNCATED" in resp.text
@@ -325,7 +325,7 @@ async def test_ralph_get_evidence_file_redaction(app, ralph_repo):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        resp = await client.get("/api/ralph/evidence/W-001/W-001/config.txt")
+        resp = await client.get("/api/ralph/work-units/W-001/evidence/W-001/config.txt")
         assert resp.status_code == 200
         assert "***REDACTED***" in resp.text
         assert "sk-1234567890abcdef" not in resp.text
@@ -360,7 +360,7 @@ async def test_ralph_list_reviews_success(app, ralph_repo):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        resp = await client.get("/api/ralph/reviews/W-001")
+        resp = await client.get("/api/ralph/work-units/W-001/reviews")
         assert resp.status_code == 200
         data = resp.json()
         assert isinstance(data, list)
@@ -369,7 +369,7 @@ async def test_ralph_list_reviews_success(app, ralph_repo):
 
 
 async def test_ralph_list_reviews_work_unit_not_found(client):
-    resp = await client.get("/api/ralph/reviews/NONEXISTENT")
+    resp = await client.get("/api/ralph/work-units/NONEXISTENT/reviews")
     assert resp.status_code == 404
 
 
@@ -475,7 +475,7 @@ async def test_ralph_get_transitions(app, ralph_repo):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        resp = await client.get("/api/ralph/transitions/W-001")
+        resp = await client.get("/api/ralph/work-units/W-001/transitions")
         assert resp.status_code == 200
         data = resp.json()
         assert isinstance(data, list)
@@ -483,7 +483,7 @@ async def test_ralph_get_transitions(app, ralph_repo):
 
 
 async def test_ralph_get_transitions_work_unit_not_found(client):
-    resp = await client.get("/api/ralph/transitions/NONEXISTENT")
+    resp = await client.get("/api/ralph/work-units/NONEXISTENT/transitions")
     assert resp.status_code == 404
 
 
@@ -629,3 +629,159 @@ async def test_ralph_cancel_command_wrong_status(client):
     # 再次取消应该失败
     resp = await client.post(f"/api/ralph/commands/{cmd_id}/cancel")
     assert resp.status_code == 409
+
+
+# --- GET /api/ralph/commands ---
+
+
+async def test_ralph_list_commands_empty(client):
+    """没有 Command 时返回空列表。"""
+    resp = await client.get("/api/ralph/commands")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data == []
+
+
+async def test_ralph_list_commands_with_data(client):
+    """创建多个 Command 后列出所有。"""
+    # 创建几个不同状态的 Command
+    await client.post(
+        "/api/ralph/commands",
+        json={"command_type": "start_run"},
+    )
+    await client.post(
+        "/api/ralph/commands",
+        json={"command_type": "execute_work_unit", "target_id": "W-001"},
+    )
+
+    resp = await client.get("/api/ralph/commands")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data) >= 2
+    assert all("command_id" in cmd for cmd in data)
+    assert all("type" in cmd for cmd in data)
+    assert all("status" in cmd for cmd in data)
+
+
+async def test_ralph_list_commands_with_status_filter(client):
+    """按 status 过滤 Command 列表。"""
+    # 创建 pending 命令
+    create_resp = await client.post(
+        "/api/ralph/commands",
+        json={"command_type": "execute_work_unit", "target_id": "W-001"},
+    )
+    cmd_id = create_resp.json()["command_id"]
+
+    # 取消一个命令使其状态变为 cancelled
+    await client.post(f"/api/ralph/commands/{cmd_id}/cancel")
+
+    # 创建另一个 pending 命令
+    await client.post(
+        "/api/ralph/commands",
+        json={"command_type": "start_run"},
+    )
+
+    # 只过滤 pending
+    resp = await client.get("/api/ralph/commands", params={"status": "pending"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert all(c["status"] == "pending" for c in data)
+    assert len(data) >= 1
+
+    # 只过滤 cancelled
+    resp = await client.get("/api/ralph/commands", params={"status": "cancelled"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert all(c["status"] == "cancelled" for c in data)
+    assert len(data) >= 1
+
+
+# --- GET /api/ralph/reports ---
+
+
+async def test_ralph_list_reports_empty(client):
+    """没有报告时返回空列表。"""
+    resp = await client.get("/api/ralph/reports")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data == []
+
+
+async def test_ralph_list_reports_after_generate(client):
+    """生成报告后 list 应包含该报告。"""
+    # 先生成报告
+    gen_resp = await client.post(
+        "/api/ralph/reports/generate",
+        json={"title": "测试报告", "filename": "test_report.md"},
+    )
+    assert gen_resp.status_code == 200
+    assert gen_resp.json()["success"] is True
+
+    # 列出报告
+    resp = await client.get("/api/ralph/reports")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data) == 1
+    assert data[0]["name"] == "test_report.md"
+    assert "size_bytes" in data[0]
+
+
+# --- POST /api/ralph/reports/generate ---
+
+
+async def test_ralph_generate_report_default_title(client):
+    """使用默认标题生成报告。"""
+    resp = await client.post("/api/ralph/reports/generate", json={})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["success"] is True
+    assert data["name"] == "report.md"
+    assert "content" in data
+    assert "# 研发报告" in data["content"]
+
+
+async def test_ralph_generate_report_custom_title(client):
+    """使用自定义标题生成报告。"""
+    resp = await client.post(
+        "/api/ralph/reports/generate",
+        json={"title": "周报", "filename": "weekly.md"},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["success"] is True
+    assert data["name"] == "weekly.md"
+    assert "# 周报" in data["content"]
+
+
+# --- GET /api/ralph/reports/{name} ---
+
+
+async def test_ralph_get_report_success(client):
+    """获取存在的报告。"""
+    # 先生成报告
+    gen_resp = await client.post(
+        "/api/ralph/reports/generate",
+        json={"title": "项目总结", "filename": "summary.md"},
+    )
+    assert gen_resp.status_code == 200
+
+    # 获取报告
+    resp = await client.get("/api/ralph/reports/summary.md")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["name"] == "summary.md"
+    assert "# 项目总结" in data["content"]
+    assert "size_bytes" in data
+
+
+async def test_ralph_get_report_not_found(client):
+    """获取不存在的报告返回 404。"""
+    resp = await client.get("/api/ralph/reports/nonexistent.md")
+    assert resp.status_code == 404
+
+
+async def test_ralph_get_report_path_traversal(client):
+    """防止路径遍历攻击。"""
+    # 使用 %2E%2E 编码绕过 Starlette 的路径规范化
+    resp = await client.get("/api/ralph/reports/%2E%2E/%2E%2E/etc/passwd")
+    assert resp.status_code == 403

@@ -87,6 +87,63 @@ class ProjectStateRepository:
 
     # --- Feature ---
 
+    def get_feature(self, feature_id: str) -> Feature | None:
+        """按 ID 获取单个 Feature。"""
+        with self._lock:
+            return self._features.get(feature_id)
+
+    def list_features(self, *, status: str | None = None) -> list[Feature]:
+        """列出所有 Feature，支持按 status 过滤。"""
+        with self._lock:
+            features = list(self._features.values())
+            if status is not None:
+                features = [f for f in features if f.status == status]
+            return features
+
+    def get_next_ready_feature(self) -> Feature | None:
+        """获取下一个可执行的 Feature：依赖全部 done，优先级最高。"""
+        with self._lock:
+            candidates = []
+            for f in self._features.values():
+                if f.status != "pending":
+                    continue
+                deps_met = all(
+                    self._features.get(dep_id) and self._features[dep_id].status == "done"
+                    for dep_id in f.dependencies
+                )
+                if deps_met:
+                    candidates.append(f)
+            if not candidates:
+                return None
+            candidates.sort(key=lambda f: int(f.priority[1]) if len(f.priority) > 1 and f.priority[1:].isdigit() else 9)
+            return candidates[0]
+
+    def feature_summary(self) -> dict:
+        """返回 Feature 统计摘要。"""
+        with self._lock:
+            features = list(self._features.values())
+            total = len(features)
+            done = sum(1 for f in features if f.status == "done")
+            in_progress = sum(1 for f in features if f.status == "in_progress")
+            blocked = sum(1 for f in features if f.status == "blocked")
+            pending = sum(1 for f in features if f.status == "pending")
+            passing = sum(1 for f in features if getattr(f, "passes", False))
+            return {
+                "total": total,
+                "done": done,
+                "in_progress": in_progress,
+                "blocked": blocked,
+                "pending": pending,
+                "passing": passing,
+            }
+
+    def all_features_done(self) -> bool:
+        """所有 Feature 是否都已完成。"""
+        with self._lock:
+            if not self._features:
+                return False
+            return all(f.status == "done" for f in self._features.values())
+
     def upsert_feature(self, feature: Feature, *, event_type: str = "") -> Feature:
         with self._lock:
             existing = self._features.get(feature.id) if feature.id in self._features else None

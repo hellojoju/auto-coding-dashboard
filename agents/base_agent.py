@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from core.config import PROMPTS_DIR
+from core.permission_guard import PERMISSION_RULES_PROMPT, PermissionGuard
 from core.progress_logger import progress
 
 
@@ -19,6 +20,7 @@ class BaseAgent(ABC):
     def __init__(self, project_dir: Path):
         self.project_dir = Path(project_dir)  # 确保是 Path 对象
         self.system_prompt = self._load_prompt()
+        self.permission_guard = PermissionGuard(self.project_dir)
 
     @property
     def workspace_path(self) -> str:
@@ -77,9 +79,38 @@ class BaseAgent(ABC):
         self._report_status("running", feature_id=feature_id, message=f"开始执行: {description}")
 
         prompt = self._build_prompt(task)
+
+        # 执行前安全检查：扫描 prompt 中的危险命令
+        pre_check = self.permission_guard.check_prompt(prompt)
+        if not pre_check.allowed:
+            violations = [v.detail for v in pre_check.blocked_violations]
+            self._log(f"安全检查阻塞: {violations}")
+            self._report_status("blocked", feature_id=feature_id, message=f"安全阻塞: {violations}")
+            return {
+                "success": False,
+                "message": f"安全检查阻塞: {violations}",
+                "files_changed": [],
+                "needs_review": False,
+                "error": f"Permission blocked: {violations}",
+            }
+
         result = self._run_with_claude(prompt, workspace_dir=workspace_dir)
 
         files_changed = self._extract_files_changed(workspace_dir=workspace_dir)
+
+        # 执行后安全检查：扫描 git diff 检测越界修改和批量删除
+        post_check = self.permission_guard.check_diff(workspace_dir)
+        if not post_check.allowed:
+            violations = [v.detail for v in post_check.blocked_violations]
+            self._log(f"执行后安全检查阻塞: {violations}")
+            self._report_status("blocked", feature_id=feature_id, message=f"执行后安全阻塞: {violations}")
+            return {
+                "success": False,
+                "message": f"执行后安全检查阻塞: {violations}",
+                "files_changed": files_changed,
+                "needs_review": False,
+                "error": f"Post-execution permission blocked: {violations}",
+            }
 
         if result["success"]:
             self._report_status("completed", feature_id=feature_id, message="任务执行完成")
@@ -152,10 +183,13 @@ class BaseAgent(ABC):
             f.write(prompt)
             _task_file = f.name
 
+        # 注入权限规则到 prompt 尾部
+        full_prompt = prompt + "\n\n" + PERMISSION_RULES_PROMPT
+
         cmd = [
             "claude",
-            "-p", prompt,
-            "--dangerously-skip-permissions",
+            "-p", full_prompt,
+            "--permission-mode", "acceptEdits",
         ]
 
         cwd = workspace_dir or self.project_dir

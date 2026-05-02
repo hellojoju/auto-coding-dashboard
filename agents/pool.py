@@ -7,11 +7,10 @@ PM 通过 AgentPool 分配任务，而非直接 get_agent()。
 from __future__ import annotations
 
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
-from agents import AGENT_REGISTRY, AGENT_ROLES, BaseAgent
+from agents import AGENT_REGISTRY, BaseAgent
 
 
 @dataclass
@@ -22,7 +21,7 @@ class AgentInstance:
     role: str                 # 如 "backend", "frontend"
     workspace_id: str         # 唯一 workspace 标识
     workspace_path: Path      # 工作目录
-    status: str = "idle"      # idle | busy | error | stopped
+    status: str = "idle"      # idle | busy | error | stopped | paused | waiting_approval | waiting_pm
     current_task_id: str = ""
     total_tasks_completed: int = 0
 

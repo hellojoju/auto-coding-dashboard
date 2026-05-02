@@ -199,10 +199,10 @@ class TestRalphCommandHandler:
         resolved_blocker = handler._repository.get_blocker("block-1")
         assert resolved_blocker.resolved is True
 
-    def test_handle_execution_error_retry(
+    def test_handle_retry_work_unit(
         self, handler: RalphCommandHandler, sample_work_unit: WorkUnit
     ) -> None:
-        """execution_error_handle 的 retry 动作应将失败状态转为 ready。"""
+        """retry_work_unit 命令应将失败状态转为 ready。"""
         handler._repository.save_work_unit(sample_work_unit)
         handler._repository.transition(
             sample_work_unit.work_id, WorkUnitStatus.READY, actor_role="scheduler"
@@ -215,9 +215,9 @@ class TestRalphCommandHandler:
         )
 
         cmd = Command(
-            type="execution_error_handle",
+            type="retry_work_unit",
             target_id=sample_work_unit.work_id,
-            payload={"action": "retry", "reason": "修复后重试"},
+            payload={"reason": "修复后重试"},
         )
         result = handler.handle(cmd)
 

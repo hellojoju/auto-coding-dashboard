@@ -1,7 +1,9 @@
 """SilenceDetector 测试。"""
 
 import time
+
 import pytest
+
 from dashboard.silence_detector import SilenceDetector
 
 

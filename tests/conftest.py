@@ -6,7 +6,6 @@ import pytest
 
 from core.feature_tracker import Feature, FeatureTracker
 from core.progress_logger import ProgressLogger
-from core.task_queue import TaskQueue
 
 
 @pytest.fixture
@@ -33,15 +32,6 @@ def progress_logger(tmp_data_dir):
     with patch("core.progress_logger.PROGRESS_FILE", log_file):
         logger = ProgressLogger()
         yield logger
-
-
-@pytest.fixture
-def task_queue(tmp_data_dir):
-    """TaskQueue with patched db path"""
-    db_path = tmp_data_dir / "tasks.db"
-    with patch("core.task_queue.TASK_DB", db_path):
-        queue = TaskQueue()
-        yield queue
 
 
 @pytest.fixture

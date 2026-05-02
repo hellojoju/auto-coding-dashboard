@@ -1,9 +1,11 @@
 """Event sequencing：event_id 单调递增和断线补发测试。"""
 
-import pytest
 from pathlib import Path
-from dashboard.state_repository import ProjectStateRepository
+
+import pytest
+
 from dashboard.models import Event
+from dashboard.state_repository import ProjectStateRepository
 
 
 @pytest.fixture

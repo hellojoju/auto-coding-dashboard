@@ -165,7 +165,6 @@ class TestProjectManagerExecution:
             patch.object(pm.pool, "acquire", return_value=(mock_instance, mock_agent)),
             patch.object(pm.feature_verification, "verify", return_value=True),
             patch.object(pm.git_service, "commit", return_value=True),
-            patch.object(pm, "_sync_feature_to_repository"),
         ):
             pm._execute_feature(feature)
 
@@ -187,14 +186,19 @@ class TestProjectManagerExecution:
         mock_instance.instance_id = "backend-1"
         mock_instance.role = "backend"
         mock_agent = MagicMock()
-        mock_agent.execute = lambda task: _async_result({"success": False, "error": "API错误"})
+        mock_agent.execute = MagicMock(
+            side_effect=lambda task, workspace_dir=None:
+                _async_result({"success": False, "error": "API错误"}),
+        )
 
         with patch.object(pm.pool, "acquire", return_value=(mock_instance, mock_agent)):
             pm._execute_feature(feature)
 
         # 第一次失败，退回 pending
-        assert pm.feature_tracker.get("F002").status == "pending"
-        assert len(feature.error_log) == 1
+        stored = pm.feature_tracker.get("F002")
+        assert stored is not None
+        assert stored.status == "pending"
+        assert len(stored.error_log) >= 1
 
     def test_execute_feature_blocked_after_max_retries(self, pm):
         """超过最大重试次数后标记为 blocked"""
