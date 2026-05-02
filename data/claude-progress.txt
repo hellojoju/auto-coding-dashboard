@@ -1,0 +1,1797 @@
+[2026-04-18 09:25:21] F001 完成: 用户注册
+[2026-04-18 09:25:21] F001 完成: 注册
+[2026-04-18 09:25:21] F002 开始开发: 登录
+[2026-04-18 09:25:21] 批量导入 5 个features
+[2026-04-18 10:02:27] F001 完成: 用户注册
+[2026-04-18 10:02:27] F001 完成: 注册
+[2026-04-18 10:02:27] F002 开始开发: 登录
+[2026-04-18 10:02:27] 批量导入 5 个features
+[2026-04-18 14:17:03] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:17:03] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:17:03] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:17:03] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:17:03] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:17:03] [backend] claude CLI未找到
+[2026-04-18 14:17:03] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:17:03] [backend] 任务执行超时(600秒)
+[2026-04-18 14:17:03] [backend] git commit: test: commit message
+[2026-04-18 14:17:04] [backend] git commit 失败: 
+[2026-04-18 14:17:04] F001 完成: 用户注册
+[2026-04-18 14:17:04] F001 完成: 注册
+[2026-04-18 14:17:04] F002 开始开发: 登录
+[2026-04-18 14:17:04] 批量导入 5 个features
+[2026-04-18 14:21:50] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:21:50] [backend] 任务执行失败: done
+[2026-04-18 14:21:50] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:21:50] [backend] claude CLI未找到
+[2026-04-18 14:21:50] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:21:50] [backend] 任务执行超时(600秒)
+[2026-04-18 14:21:50] [backend] git commit: test: commit message
+[2026-04-18 14:21:50] [backend] git commit 失败: 
+[2026-04-18 14:21:50] F001 完成: 用户注册
+[2026-04-18 14:21:50] F001 完成: 注册
+[2026-04-18 14:21:50] F002 开始开发: 登录
+[2026-04-18 14:21:50] 批量导入 5 个features
+[2026-04-18 14:22:41] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:22:41] [backend] 任务执行失败: done
+[2026-04-18 14:22:41] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:22:41] [backend] claude CLI未找到
+[2026-04-18 14:22:41] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:22:41] [backend] 任务执行超时(600秒)
+[2026-04-18 14:22:41] [backend] git commit: test: commit message
+[2026-04-18 14:22:41] [backend] git commit 失败: 
+[2026-04-18 14:22:41] F001 完成: 用户注册
+[2026-04-18 14:22:41] F001 完成: 注册
+[2026-04-18 14:22:41] F002 开始开发: 登录
+[2026-04-18 14:22:41] 批量导入 5 个features
+[2026-04-18 14:24:07] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:24:07] [backend] 任务执行失败: done
+[2026-04-18 14:24:07] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:24:07] [backend] claude CLI未找到
+[2026-04-18 14:24:07] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:24:07] [backend] 任务执行超时(600秒)
+[2026-04-18 14:24:07] [backend] git commit: test: commit message
+[2026-04-18 14:24:07] [backend] git commit 失败: 
+[2026-04-18 14:24:07] F001 完成: 用户注册
+[2026-04-18 14:24:07] F001 完成: 注册
+[2026-04-18 14:24:07] F002 开始开发: 登录
+[2026-04-18 14:24:07] 批量导入 5 个features
+[2026-04-18 14:26:02] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:26:02] [backend] 任务执行失败: done
+[2026-04-18 14:26:02] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:26:02] [backend] claude CLI未找到
+[2026-04-18 14:26:02] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:26:02] [backend] 任务执行超时(600秒)
+[2026-04-18 14:26:02] [backend] git commit: test: commit message
+[2026-04-18 14:26:02] [backend] git commit 失败: 
+[2026-04-18 14:28:41] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:28:41] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:28:41] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:28:41] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:28:41] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:28:41] [backend] claude CLI未找到
+[2026-04-18 14:28:41] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:28:41] [backend] 任务执行超时(600秒)
+[2026-04-18 14:28:41] [backend] git commit: test: commit message
+[2026-04-18 14:28:41] [backend] git commit 失败: 
+[2026-04-18 14:28:59] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:28:59] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:28:59] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:28:59] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:28:59] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:28:59] [backend] claude CLI未找到
+[2026-04-18 14:28:59] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:28:59] [backend] 任务执行超时(600秒)
+[2026-04-18 14:28:59] [backend] git commit: test: commit message
+[2026-04-18 14:28:59] [backend] git commit 失败: 
+[2026-04-18 14:28:59] F001 完成: 用户注册
+[2026-04-18 14:28:59] F001 完成: 注册
+[2026-04-18 14:28:59] F002 开始开发: 登录
+[2026-04-18 14:28:59] 批量导入 5 个features
+[2026-04-18 14:32:53] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:32:53] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:32:53] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:32:53] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:32:53] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:32:53] [backend] claude CLI未找到
+[2026-04-18 14:32:53] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:32:53] [backend] 任务执行超时(600秒)
+[2026-04-18 14:32:53] [backend] git commit: test: commit message
+[2026-04-18 14:32:53] [backend] git commit 失败: 
+[2026-04-18 14:32:53] F001 完成: 用户注册
+[2026-04-18 14:32:53] F001 完成: 注册
+[2026-04-18 14:32:53] F002 开始开发: 登录
+[2026-04-18 14:32:53] 批量导入 5 个features
+[2026-04-18 14:35:21] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 14:35:21] git仓库初始化完成
+[2026-04-18 14:35:46] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 14:35:46] git仓库初始化完成
+[2026-04-18 14:37:55] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:37:55] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:37:55] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:37:55] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:37:55] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:37:55] [backend] claude CLI未找到
+[2026-04-18 14:37:55] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:37:55] [backend] 任务执行超时(600秒)
+[2026-04-18 14:37:55] [backend] git commit: test: commit message
+[2026-04-18 14:37:55] [backend] git commit 失败: 
+[2026-04-18 14:37:55] F001 完成: 用户注册
+[2026-04-18 14:37:55] F001 完成: 注册
+[2026-04-18 14:37:55] F002 开始开发: 登录
+[2026-04-18 14:37:55] 批量导入 5 个features
+[2026-04-18 14:42:42] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:42:42] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:42:42] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:42:42] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:42:42] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:42:42] [backend] claude CLI未找到
+[2026-04-18 14:42:42] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:42:42] [backend] 任务执行超时(600秒)
+[2026-04-18 14:42:42] [backend] git commit: test: commit message
+[2026-04-18 14:42:42] [backend] git commit 失败: 
+[2026-04-18 14:42:42] F001 完成: 用户注册
+[2026-04-18 14:42:42] F001 完成: 注册
+[2026-04-18 14:42:42] F002 开始开发: 登录
+[2026-04-18 14:42:42] 批量导入 5 个features
+[2026-04-18 14:43:06] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:43:06] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:43:06] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:43:06] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:43:06] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:43:06] [backend] claude CLI未找到
+[2026-04-18 14:43:06] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:43:06] [backend] 任务执行超时(600秒)
+[2026-04-18 14:43:06] [backend] git commit: test: commit message
+[2026-04-18 14:43:06] [backend] git commit 失败: 
+[2026-04-18 14:43:06] F001 完成: 用户注册
+[2026-04-18 14:43:06] F001 完成: 注册
+[2026-04-18 14:43:06] F002 开始开发: 登录
+[2026-04-18 14:43:06] 批量导入 5 个features
+[2026-04-18 14:43:43] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 14:43:43] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 14:43:43] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 14:43:43] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 14:43:43] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 14:43:43] [backend] claude CLI未找到
+[2026-04-18 14:43:43] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 14:43:43] [backend] 任务执行超时(600秒)
+[2026-04-18 14:43:43] [backend] git commit: test: commit message
+[2026-04-18 14:43:43] [backend] git commit 失败: 
+[2026-04-18 14:43:43] F001 完成: 用户注册
+[2026-04-18 14:43:43] F001 完成: 注册
+[2026-04-18 14:43:43] F002 开始开发: 登录
+[2026-04-18 14:43:43] 批量导入 5 个features
+[2026-04-18 14:46:03] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 14:46:03] git仓库初始化完成
+[2026-04-18 14:50:22] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 14:50:22] git仓库初始化完成
+[2026-04-18 15:20:19] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 15:20:19] git仓库初始化完成
+[2026-04-18 15:23:22] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 15:23:22] git仓库初始化完成
+[2026-04-18 15:25:25] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 15:25:25] git仓库初始化完成
+[2026-04-18 15:33:30] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 15:33:30] git仓库初始化完成
+[2026-04-18 15:35:27] 批量导入 12 个features
+[2026-04-18 15:35:27] PRD生成完成，分解为 12 个features
+[2026-04-18 15:37:11] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 15:37:12] git仓库初始化完成
+[2026-04-18 15:37:49] 批量导入 11 个features
+[2026-04-18 15:37:49] PRD生成完成，分解为 11 个features
+[2026-04-18 15:39:04] 项目启动: 写一个 FastAPI 的 TODO 清单应用，支持增删改查
+[2026-04-18 15:39:04] git仓库初始化完成
+[2026-04-18 15:39:57] 批量导入 11 个features
+[2026-04-18 15:39:57] PRD生成完成，分解为 11 个features
+[2026-04-18 16:58:08] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 16:58:08] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 16:58:08] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 16:58:08] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 16:58:08] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 16:58:08] [backend] claude CLI未找到
+[2026-04-18 16:58:08] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 16:58:08] [backend] 任务执行超时(600秒)
+[2026-04-18 16:58:08] [backend] git commit: test: commit message
+[2026-04-18 16:58:08] [backend] git commit 失败: 
+[2026-04-18 16:58:08] F001 完成: 用户注册
+[2026-04-18 16:58:08] F001 完成: 注册
+[2026-04-18 16:58:08] F002 开始开发: 登录
+[2026-04-18 16:58:08] 批量导入 5 个features
+[2026-04-18 17:24:02] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 17:24:02] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 17:24:02] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 17:24:02] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 17:24:02] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 17:24:02] [backend] claude CLI未找到
+[2026-04-18 17:24:02] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 17:24:02] [backend] 任务执行超时(600秒)
+[2026-04-18 17:24:02] [backend] git commit: test: commit message
+[2026-04-18 17:24:02] [backend] git commit 失败: 
+[2026-04-18 17:24:02] F001 完成: 用户注册
+[2026-04-18 17:24:02] F001 完成: 注册
+[2026-04-18 17:24:02] F002 开始开发: 登录
+[2026-04-18 17:24:02] 批量导入 5 个features
+[2026-04-18 17:27:08] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 17:27:08] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 17:27:08] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 17:27:08] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 17:27:08] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 17:27:08] [backend] claude CLI未找到
+[2026-04-18 17:27:08] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 17:27:08] [backend] 任务执行超时(600秒)
+[2026-04-18 17:27:08] [backend] git commit: test: commit message
+[2026-04-18 17:27:08] [backend] git commit 失败: 
+[2026-04-18 17:27:08] F001 完成: 用户注册
+[2026-04-18 17:27:08] F001 完成: 注册
+[2026-04-18 17:27:08] F002 开始开发: 登录
+[2026-04-18 17:27:08] 批量导入 5 个features
+[2026-04-18 17:29:29] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 17:29:29] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 17:29:29] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 17:29:29] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 17:29:29] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 17:29:29] [backend] claude CLI未找到
+[2026-04-18 17:29:29] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 17:29:29] [backend] 任务执行超时(600秒)
+[2026-04-18 17:29:29] [backend] git commit: test: commit message
+[2026-04-18 17:29:29] [backend] git commit 失败: 
+[2026-04-18 17:29:29] F001 完成: 用户注册
+[2026-04-18 17:29:29] F001 完成: 注册
+[2026-04-18 17:29:29] F002 开始开发: 登录
+[2026-04-18 17:29:29] 批量导入 5 个features
+[2026-04-18 17:37:07] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 17:37:07] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 17:37:07] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 17:37:07] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 17:37:07] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 17:37:07] [backend] claude CLI未找到
+[2026-04-18 17:37:07] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 17:37:07] [backend] 任务执行超时(600秒)
+[2026-04-18 17:37:07] [backend] git commit: test: commit message
+[2026-04-18 17:37:07] [backend] git commit 失败: 
+[2026-04-18 17:37:07] F001 完成: 用户注册
+[2026-04-18 17:37:07] F001 完成: 注册
+[2026-04-18 17:37:07] F002 开始开发: 登录
+[2026-04-18 17:37:07] 批量导入 5 个features
+[2026-04-18 17:40:52] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 17:40:52] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 17:40:52] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 17:40:52] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 17:40:52] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 17:40:52] [backend] claude CLI未找到
+[2026-04-18 17:40:52] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 17:40:52] [backend] 任务执行超时(600秒)
+[2026-04-18 17:40:52] [backend] git commit: test: commit message
+[2026-04-18 17:40:52] [backend] git commit 失败: 
+[2026-04-18 17:40:52] F001 完成: 用户注册
+[2026-04-18 17:40:52] F001 完成: 注册
+[2026-04-18 17:40:52] F002 开始开发: 登录
+[2026-04-18 17:40:52] 批量导入 5 个features
+[2026-04-18 17:48:14] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 17:48:14] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 17:48:14] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 17:48:14] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 17:48:14] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 17:48:14] [backend] claude CLI未找到
+[2026-04-18 17:48:14] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 17:48:14] [backend] 任务执行超时(600秒)
+[2026-04-18 17:48:14] [backend] git commit: test: commit message
+[2026-04-18 17:48:14] [backend] git commit 失败: 
+[2026-04-18 17:48:14] F001 完成: 用户注册
+[2026-04-18 17:48:14] F001 完成: 注册
+[2026-04-18 17:48:14] F002 开始开发: 登录
+[2026-04-18 17:48:14] 批量导入 5 个features
+[2026-04-18 17:52:46] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 17:52:46] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 17:52:46] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 17:52:46] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 17:52:46] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 17:52:46] [backend] claude CLI未找到
+[2026-04-18 17:52:46] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 17:52:46] [backend] 任务执行超时(600秒)
+[2026-04-18 17:52:47] [backend] git commit: test: commit message
+[2026-04-18 17:52:47] [backend] git commit 失败: 
+[2026-04-18 17:52:47] F001 完成: 用户注册
+[2026-04-18 17:52:47] F001 完成: 注册
+[2026-04-18 17:52:47] F002 开始开发: 登录
+[2026-04-18 17:52:47] 批量导入 5 个features
+[2026-04-18 18:04:41] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 18:04:41] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 18:04:41] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 18:04:41] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 18:04:41] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 18:04:41] [backend] claude CLI未找到
+[2026-04-18 18:04:41] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 18:04:41] [backend] 任务执行超时(600秒)
+[2026-04-18 18:04:41] [backend] git commit: test: commit message
+[2026-04-18 18:04:41] [backend] git commit 失败: 
+[2026-04-18 18:04:41] F001 完成: 用户注册
+[2026-04-18 18:04:41] F001 完成: 注册
+[2026-04-18 18:04:41] F002 开始开发: 登录
+[2026-04-18 18:04:41] 批量导入 5 个features
+[2026-04-18 22:26:54] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-18 22:26:54] [backend] 任务执行成功, 输出 4 字符
+[2026-04-18 22:26:54] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-18 22:26:54] [backend] 任务执行失败: error: something went wrong
+[2026-04-18 22:26:54] [backend] 开始backend任务: F003 - 测试
+[2026-04-18 22:26:54] [backend] claude CLI未找到
+[2026-04-18 22:26:54] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-18 22:26:54] [backend] 任务执行超时(600秒)
+[2026-04-18 22:26:54] [backend] git commit: test: commit message
+[2026-04-18 22:26:54] [backend] git commit 失败: 
+[2026-04-18 22:26:54] F001 完成: 用户注册
+[2026-04-18 22:26:54] F001 完成: 注册
+[2026-04-18 22:26:54] F002 开始开发: 登录
+[2026-04-18 22:26:54] 批量导入 5 个features
+[2026-04-19 10:51:27] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 10:51:27] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 10:52:07] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 10:52:07] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 10:52:43] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 10:52:43] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 10:52:58] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 10:52:58] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 10:53:03] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 10:53:03] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 10:53:03] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 10:53:03] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 10:53:03] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 10:53:03] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 10:53:03] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 10:53:03] [backend] claude CLI未找到
+[2026-04-19 10:53:03] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 10:53:03] [backend] 任务执行超时(600秒)
+[2026-04-19 10:53:03] [backend] git commit: test: commit message
+[2026-04-19 10:53:03] [backend] git commit 失败: 
+[2026-04-19 10:53:04] F001 完成: 用户注册
+[2026-04-19 10:53:04] F001 完成: 注册
+[2026-04-19 10:53:04] F002 开始开发: 登录
+[2026-04-19 10:53:04] 批量导入 5 个features
+[2026-04-19 10:58:52] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 10:58:52] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 10:58:52] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 10:58:52] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 10:58:52] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 10:58:52] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 10:58:52] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 10:58:52] [backend] claude CLI未找到
+[2026-04-19 10:58:52] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 10:58:52] [backend] 任务执行超时(600秒)
+[2026-04-19 10:58:52] [backend] git commit: test: commit message
+[2026-04-19 10:58:52] [backend] git commit 失败: 
+[2026-04-19 10:58:53] F001 完成: 用户注册
+[2026-04-19 10:58:53] F001 完成: 注册
+[2026-04-19 10:58:53] F002 开始开发: 登录
+[2026-04-19 10:58:53] 批量导入 5 个features
+[2026-04-19 10:59:58] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 10:59:58] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 10:59:58] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 10:59:58] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 10:59:58] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 10:59:58] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 10:59:58] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 10:59:58] [backend] claude CLI未找到
+[2026-04-19 10:59:58] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 10:59:58] [backend] 任务执行超时(600秒)
+[2026-04-19 10:59:58] [backend] git commit: test: commit message
+[2026-04-19 10:59:58] [backend] git commit 失败: 
+[2026-04-19 10:59:58] F001 完成: 用户注册
+[2026-04-19 10:59:58] F001 完成: 注册
+[2026-04-19 10:59:58] F002 开始开发: 登录
+[2026-04-19 10:59:58] 批量导入 5 个features
+[2026-04-19 11:10:05] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 11:10:05] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 11:10:05] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 11:10:05] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 11:10:05] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 11:10:05] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 11:10:05] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 11:10:05] [backend] claude CLI未找到
+[2026-04-19 11:10:05] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 11:10:05] [backend] 任务执行超时(600秒)
+[2026-04-19 11:10:05] [backend] git commit: test: commit message
+[2026-04-19 11:10:05] [backend] git commit 失败: 
+[2026-04-19 11:10:05] F001 完成: 用户注册
+[2026-04-19 11:10:05] F001 完成: 注册
+[2026-04-19 11:10:05] F002 开始开发: 登录
+[2026-04-19 11:10:05] 批量导入 5 个features
+[2026-04-19 13:35:18] 项目启动: 我想做一个任务管理系统
+[2026-04-19 13:35:18] git仓库初始化完成
+[2026-04-19 13:36:20] 批量导入 20 个features
+[2026-04-19 13:36:20] PRD生成完成，分解为 20 个features
+[2026-04-19 13:38:08] 批量导入 20 个features
+[2026-04-19 13:38:28] 开始带审批的执行循环
+[2026-04-19 13:38:28] F001 开始开发: 初始化 FastAPI 项目骨架，包含 app 目录结构、main.py 入口、基础配置文件（config/settings.py）、数据库连接（SQLite + SQLAlchemy async）
+[2026-04-19 13:38:28] [backend] 开始backend任务: F001 - 初始化 FastAPI 项目骨架，包含 app 目录结构、main.py 入口、基础配置文件（config/settings.py）、数据库连接（SQLite + SQLAlchemy async）
+[2026-04-19 13:44:05] [backend] 任务执行成功, 输出 885 字符
+[2026-04-19 15:43:49] 批量导入 20 个features
+[2026-04-19 15:44:18] 批量导入 20 个features
+[2026-04-19 16:12:00] 批量导入 20 个features
+[2026-04-19 16:17:43] 批量导入 20 个features
+[2026-04-19 16:47:52] 批量导入 20 个features
+[2026-04-19 22:30:34] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:30:34] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:30:35] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:30:35] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:30:35] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:30:35] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:30:35] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:30:35] [backend] claude CLI未找到
+[2026-04-19 22:30:35] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:30:35] [backend] 任务执行超时(600秒)
+[2026-04-19 22:30:35] [backend] git commit: test: commit message
+[2026-04-19 22:30:35] [backend] git commit 失败: 
+[2026-04-19 22:30:35] F001 完成: 用户注册
+[2026-04-19 22:30:35] F001 完成: 注册
+[2026-04-19 22:30:35] F002 开始开发: 登录
+[2026-04-19 22:30:35] 批量导入 5 个features
+[2026-04-19 22:31:49] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:31:49] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:31:49] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:31:49] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:31:49] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:31:49] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:31:49] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:31:49] [backend] claude CLI未找到
+[2026-04-19 22:31:49] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:31:49] [backend] 任务执行超时(600秒)
+[2026-04-19 22:31:49] [backend] git commit: test: commit message
+[2026-04-19 22:31:49] [backend] git commit 失败: 
+[2026-04-19 22:31:49] F001 完成: 用户注册
+[2026-04-19 22:31:49] F001 完成: 注册
+[2026-04-19 22:31:49] F002 开始开发: 登录
+[2026-04-19 22:31:49] 批量导入 5 个features
+[2026-04-19 22:31:58] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:31:58] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:31:58] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:31:58] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:31:58] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:31:58] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:31:58] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:31:58] [backend] claude CLI未找到
+[2026-04-19 22:31:58] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:31:58] [backend] 任务执行超时(600秒)
+[2026-04-19 22:31:58] [backend] git commit: test: commit message
+[2026-04-19 22:31:58] [backend] git commit 失败: 
+[2026-04-19 22:31:58] F001 完成: 用户注册
+[2026-04-19 22:31:58] F001 完成: 注册
+[2026-04-19 22:31:58] F002 开始开发: 登录
+[2026-04-19 22:31:58] 批量导入 5 个features
+[2026-04-19 22:32:51] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:32:51] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:32:51] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:32:51] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:32:51] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:32:51] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:32:51] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:32:51] [backend] claude CLI未找到
+[2026-04-19 22:32:51] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:32:51] [backend] 任务执行超时(600秒)
+[2026-04-19 22:32:51] [backend] git commit: test: commit message
+[2026-04-19 22:32:51] [backend] git commit 失败: 
+[2026-04-19 22:32:51] F001 完成: 用户注册
+[2026-04-19 22:32:51] F001 完成: 注册
+[2026-04-19 22:32:51] F002 开始开发: 登录
+[2026-04-19 22:32:51] 批量导入 5 个features
+[2026-04-19 22:33:00] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:33:00] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:33:00] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:33:00] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:33:00] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:33:00] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:33:00] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:33:00] [backend] claude CLI未找到
+[2026-04-19 22:33:00] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:33:00] [backend] 任务执行超时(600秒)
+[2026-04-19 22:33:00] [backend] git commit: test: commit message
+[2026-04-19 22:33:00] [backend] git commit 失败: 
+[2026-04-19 22:33:00] F001 完成: 用户注册
+[2026-04-19 22:33:00] F001 完成: 注册
+[2026-04-19 22:33:00] F002 开始开发: 登录
+[2026-04-19 22:33:00] 批量导入 5 个features
+[2026-04-19 22:33:20] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:33:20] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:33:20] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:33:20] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:33:20] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:33:20] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:33:20] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:33:20] [backend] claude CLI未找到
+[2026-04-19 22:33:20] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:33:20] [backend] 任务执行超时(600秒)
+[2026-04-19 22:33:20] [backend] git commit: test: commit message
+[2026-04-19 22:33:20] [backend] git commit 失败: 
+[2026-04-19 22:33:20] F001 完成: 用户注册
+[2026-04-19 22:33:20] F001 完成: 注册
+[2026-04-19 22:33:20] F002 开始开发: 登录
+[2026-04-19 22:33:20] 批量导入 5 个features
+[2026-04-19 22:33:28] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:33:28] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:33:28] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:33:28] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:33:28] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:33:28] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:33:28] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:33:28] [backend] claude CLI未找到
+[2026-04-19 22:33:28] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:33:28] [backend] 任务执行超时(600秒)
+[2026-04-19 22:33:28] [backend] git commit: test: commit message
+[2026-04-19 22:33:28] [backend] git commit 失败: 
+[2026-04-19 22:33:28] F001 完成: 用户注册
+[2026-04-19 22:33:28] F001 完成: 注册
+[2026-04-19 22:33:28] F002 开始开发: 登录
+[2026-04-19 22:33:28] 批量导入 5 个features
+[2026-04-19 22:33:54] [backend] 开始backend任务: F001 - test feature
+[2026-04-19 22:33:54] [backend] 开始backend任务: F002 - fail feature
+[2026-04-19 22:33:54] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-19 22:33:54] [backend] 任务执行成功, 输出 4 字符
+[2026-04-19 22:33:54] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-19 22:33:54] [backend] 任务执行失败: error: something went wrong
+[2026-04-19 22:33:54] [backend] 开始backend任务: F003 - 测试
+[2026-04-19 22:33:54] [backend] claude CLI未找到
+[2026-04-19 22:33:54] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-19 22:33:54] [backend] 任务执行超时(600秒)
+[2026-04-19 22:33:54] [backend] git commit: test: commit message
+[2026-04-19 22:33:54] [backend] git commit 失败: 
+[2026-04-19 22:33:54] F001 完成: 用户注册
+[2026-04-19 22:33:54] F001 完成: 注册
+[2026-04-19 22:33:54] F002 开始开发: 登录
+[2026-04-19 22:33:54] 批量导入 5 个features
+[2026-04-20 11:32:34] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 11:32:34] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 11:32:34] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 11:32:34] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 11:32:34] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 11:32:34] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 11:32:34] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 11:32:34] [backend] claude CLI未找到
+[2026-04-20 11:32:34] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 11:32:34] [backend] 任务执行超时(600秒)
+[2026-04-20 11:32:34] [backend] git commit: test: commit message
+[2026-04-20 11:32:34] [backend] git commit 失败: 
+[2026-04-20 11:32:34] F001 完成: 用户注册
+[2026-04-20 11:32:34] F001 完成: 注册
+[2026-04-20 11:32:34] F002 开始开发: 登录
+[2026-04-20 11:32:34] 批量导入 5 个features
+[2026-04-20 11:33:27] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 11:33:27] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 11:33:27] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 11:33:27] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 11:33:27] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 11:33:27] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 11:33:27] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 11:33:27] [backend] claude CLI未找到
+[2026-04-20 11:33:27] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 11:33:27] [backend] 任务执行超时(600秒)
+[2026-04-20 11:33:27] [backend] git commit: test: commit message
+[2026-04-20 11:33:27] [backend] git commit 失败: 
+[2026-04-20 11:33:27] F001 完成: 用户注册
+[2026-04-20 11:33:27] F001 完成: 注册
+[2026-04-20 11:33:27] F002 开始开发: 登录
+[2026-04-20 11:33:27] 批量导入 5 个features
+[2026-04-20 11:33:42] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 11:33:42] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 11:33:42] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 11:33:42] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 11:33:42] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 11:33:42] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 11:33:42] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 11:33:42] [backend] claude CLI未找到
+[2026-04-20 11:33:42] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 11:33:42] [backend] 任务执行超时(600秒)
+[2026-04-20 11:33:42] [backend] git commit: test: commit message
+[2026-04-20 11:33:42] [backend] git commit 失败: 
+[2026-04-20 11:33:42] F001 完成: 用户注册
+[2026-04-20 11:33:42] F001 完成: 注册
+[2026-04-20 11:33:42] F002 开始开发: 登录
+[2026-04-20 11:33:42] 批量导入 5 个features
+[2026-04-20 12:12:12] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 12:12:12] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 12:12:12] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 12:12:12] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 12:12:12] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 12:12:12] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 12:12:12] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 12:12:12] [backend] claude CLI未找到
+[2026-04-20 12:12:12] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 12:12:12] [backend] 任务执行超时(600秒)
+[2026-04-20 12:12:12] [backend] git commit: test: commit message
+[2026-04-20 12:12:12] [backend] git commit 失败: 
+[2026-04-20 12:12:12] F001 完成: 用户注册
+[2026-04-20 12:12:12] F001 完成: 注册
+[2026-04-20 12:12:12] F002 开始开发: 登录
+[2026-04-20 12:12:12] 批量导入 5 个features
+[2026-04-20 12:19:30] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 12:19:30] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 12:19:31] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 12:19:31] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 12:19:31] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 12:19:31] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 12:19:31] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 12:19:31] [backend] claude CLI未找到
+[2026-04-20 12:19:31] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 12:19:31] [backend] 任务执行超时(600秒)
+[2026-04-20 12:19:31] [backend] git commit: test: commit message
+[2026-04-20 12:19:31] [backend] git commit 失败: 
+[2026-04-20 12:19:31] F001 完成: 用户注册
+[2026-04-20 12:19:31] F001 完成: 注册
+[2026-04-20 12:19:31] F002 开始开发: 登录
+[2026-04-20 12:19:31] 批量导入 5 个features
+[2026-04-20 12:36:18] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 12:36:18] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 12:36:18] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 12:36:18] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 12:36:18] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 12:36:18] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 12:36:18] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 12:36:18] [backend] claude CLI未找到
+[2026-04-20 12:36:18] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 12:36:18] [backend] 任务执行超时(600秒)
+[2026-04-20 12:36:18] [backend] git commit: test: commit message
+[2026-04-20 12:36:18] [backend] git commit 失败: 
+[2026-04-20 12:36:18] F001 完成: 用户注册
+[2026-04-20 12:36:18] F001 完成: 注册
+[2026-04-20 12:36:18] F002 开始开发: 登录
+[2026-04-20 12:36:18] 批量导入 5 个features
+[2026-04-20 12:57:23] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 12:57:23] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 12:57:23] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 12:57:23] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 12:57:23] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 12:57:23] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 12:57:23] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 12:57:23] [backend] claude CLI未找到
+[2026-04-20 12:57:23] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 12:57:23] [backend] 任务执行超时(600秒)
+[2026-04-20 12:57:23] [backend] git commit: test: commit message
+[2026-04-20 12:57:23] [backend] git commit 失败: 
+[2026-04-20 12:57:23] F001 完成: 用户注册
+[2026-04-20 12:57:23] F001 完成: 注册
+[2026-04-20 12:57:23] F002 开始开发: 登录
+[2026-04-20 12:57:23] 批量导入 5 个features
+[2026-04-20 13:12:41] [backend] 开始backend任务: F001 - test feature
+[2026-04-20 13:12:41] [backend] 开始backend任务: F002 - fail feature
+[2026-04-20 13:12:42] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-20 13:12:42] [backend] 任务执行成功, 输出 4 字符
+[2026-04-20 13:12:42] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-20 13:12:42] [backend] 任务执行失败: error: something went wrong
+[2026-04-20 13:12:42] [backend] 开始backend任务: F003 - 测试
+[2026-04-20 13:12:42] [backend] claude CLI未找到
+[2026-04-20 13:12:42] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-20 13:12:42] [backend] 任务执行超时(600秒)
+[2026-04-20 13:12:42] [backend] git commit: test: commit message
+[2026-04-20 13:12:42] [backend] git commit 失败: 
+[2026-04-20 13:12:42] F001 完成: 用户注册
+[2026-04-20 13:12:42] F001 完成: 注册
+[2026-04-20 13:12:42] F002 开始开发: 登录
+[2026-04-20 13:12:42] 批量导入 5 个features
+[2026-04-21 14:54:39] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 14:54:39] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 14:54:39] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 14:54:39] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 14:54:39] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 14:54:39] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 14:54:39] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 14:54:39] [backend] claude CLI未找到
+[2026-04-21 14:54:39] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 14:54:39] [backend] 任务执行超时(600秒)
+[2026-04-21 14:54:39] [backend] git commit: test: commit message
+[2026-04-21 14:54:39] [backend] git commit 失败: 
+[2026-04-21 14:54:39] F001 完成: 用户注册
+[2026-04-21 14:54:39] F001 完成: 注册
+[2026-04-21 14:54:39] F002 开始开发: 登录
+[2026-04-21 14:54:39] 批量导入 5 个features
+[2026-04-21 15:00:31] F001 完成: 用户注册
+[2026-04-21 15:00:31] F001 完成: 注册
+[2026-04-21 15:00:31] F002 开始开发: 登录
+[2026-04-21 15:00:31] 批量导入 5 个features
+[2026-04-21 15:46:22] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 15:46:22] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 15:46:22] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 15:46:22] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 15:46:22] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 15:46:22] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 15:46:22] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 15:46:22] [backend] claude CLI未找到
+[2026-04-21 15:46:22] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 15:46:22] [backend] 任务执行超时(600秒)
+[2026-04-21 15:46:22] [backend] git commit: test: commit message
+[2026-04-21 15:46:22] [backend] git commit 失败: 
+[2026-04-21 15:46:22] F001 完成: 用户注册
+[2026-04-21 15:46:22] F001 完成: 注册
+[2026-04-21 15:46:22] F002 开始开发: 登录
+[2026-04-21 15:46:22] 批量导入 5 个features
+[2026-04-21 15:46:34] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 15:46:34] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 15:46:34] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 15:46:34] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 15:46:34] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 15:46:34] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 15:46:34] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 15:46:34] [backend] claude CLI未找到
+[2026-04-21 15:46:34] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 15:46:34] [backend] 任务执行超时(600秒)
+[2026-04-21 15:46:34] [backend] git commit: test: commit message
+[2026-04-21 15:46:34] [backend] git commit 失败: 
+[2026-04-21 15:46:34] F001 完成: 用户注册
+[2026-04-21 15:46:34] F001 完成: 注册
+[2026-04-21 15:46:34] F002 开始开发: 登录
+[2026-04-21 15:46:34] 批量导入 5 个features
+[2026-04-21 15:51:45] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 15:51:45] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 15:51:45] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 15:51:45] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 15:51:45] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 15:51:45] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 15:51:45] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 15:51:45] [backend] claude CLI未找到
+[2026-04-21 15:51:45] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 15:51:45] [backend] 任务执行超时(600秒)
+[2026-04-21 15:51:45] [backend] git commit: test: commit message
+[2026-04-21 15:51:45] [backend] git commit 失败: 
+[2026-04-21 15:51:45] F001 完成: 用户注册
+[2026-04-21 15:51:45] F001 完成: 注册
+[2026-04-21 15:51:45] F002 开始开发: 登录
+[2026-04-21 15:51:45] 批量导入 5 个features
+[2026-04-21 15:52:24] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 15:52:24] F001 完成: 注册
+[2026-04-21 15:52:24] F002 开始开发: 登录
+[2026-04-21 15:57:51] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 15:57:51] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 15:57:51] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 15:57:51] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 15:57:51] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 15:57:51] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 15:57:51] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 15:57:51] [backend] claude CLI未找到
+[2026-04-21 15:57:51] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 15:57:51] [backend] 任务执行超时(600秒)
+[2026-04-21 15:57:51] [backend] git commit: test: commit message
+[2026-04-21 15:57:52] [backend] git commit 失败: 
+[2026-04-21 15:57:52] F001 完成: 用户注册
+[2026-04-21 15:57:52] F001 完成: 注册
+[2026-04-21 15:57:52] F002 开始开发: 登录
+[2026-04-21 15:57:52] 批量导入 5 个features
+[2026-04-21 16:02:09] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 16:02:09] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 16:02:09] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 16:02:09] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 16:02:09] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 16:02:09] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 16:02:09] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 16:02:09] [backend] claude CLI未找到
+[2026-04-21 16:02:09] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 16:02:09] [backend] 任务执行超时(600秒)
+[2026-04-21 16:02:09] [backend] git commit: test: commit message
+[2026-04-21 16:02:09] [backend] git commit 失败: 
+[2026-04-21 16:02:09] F001 完成: 用户注册
+[2026-04-21 16:02:09] F001 完成: 注册
+[2026-04-21 16:02:09] F002 开始开发: 登录
+[2026-04-21 16:02:09] 批量导入 5 个features
+[2026-04-21 16:08:15] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 16:08:15] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 16:08:15] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 16:08:15] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 16:08:15] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 16:08:15] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 16:08:15] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 16:08:15] [backend] claude CLI未找到
+[2026-04-21 16:08:15] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 16:08:15] [backend] 任务执行超时(600秒)
+[2026-04-21 16:08:15] [backend] git commit: test: commit message
+[2026-04-21 16:08:15] [backend] git commit 失败: 
+[2026-04-21 16:08:15] F001 完成: 用户注册
+[2026-04-21 16:08:15] F001 完成: 注册
+[2026-04-21 16:08:15] F002 开始开发: 登录
+[2026-04-21 16:08:15] 批量导入 5 个features
+[2026-04-21 16:08:34] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 16:08:34] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 16:08:34] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 16:08:34] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 16:08:34] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 16:08:34] [backend] claude CLI未找到
+[2026-04-21 16:08:34] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 16:08:34] [backend] 任务执行超时(600秒)
+[2026-04-21 16:08:34] [backend] git commit: test: commit message
+[2026-04-21 16:08:34] [backend] git commit 失败: 
+[2026-04-21 17:02:34] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 17:02:34] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 17:02:34] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 17:02:34] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 17:02:34] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 17:02:34] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 17:02:34] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 17:02:34] [backend] claude CLI未找到
+[2026-04-21 17:02:34] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 17:02:34] [backend] 任务执行超时(600秒)
+[2026-04-21 17:02:34] [backend] git commit: test: commit message
+[2026-04-21 17:02:34] [backend] git commit 失败: 
+[2026-04-21 17:02:34] F001 完成: 用户注册
+[2026-04-21 17:02:34] F001 完成: 注册
+[2026-04-21 17:02:34] F002 开始开发: 登录
+[2026-04-21 17:02:34] 批量导入 5 个features
+[2026-04-21 17:12:22] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 17:12:22] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 17:12:22] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 17:12:22] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 17:12:22] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 17:12:22] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 17:12:22] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 17:12:22] [backend] claude CLI未找到
+[2026-04-21 17:12:22] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 17:12:22] [backend] 任务执行超时(600秒)
+[2026-04-21 17:12:22] [backend] git commit: test: commit message
+[2026-04-21 17:12:22] [backend] git commit 失败: 
+[2026-04-21 17:12:22] F001 完成: 用户注册
+[2026-04-21 17:12:22] F001 完成: 注册
+[2026-04-21 17:12:22] F002 开始开发: 登录
+[2026-04-21 17:12:22] 批量导入 5 个features
+[2026-04-21 17:12:57] [backend] 开始backend任务: F001 - test feature
+[2026-04-21 17:12:57] [backend] 开始backend任务: F002 - fail feature
+[2026-04-21 17:12:57] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-21 17:12:57] [backend] 任务执行成功, 输出 4 字符
+[2026-04-21 17:12:57] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-21 17:12:57] [backend] 任务执行失败: error: something went wrong
+[2026-04-21 17:12:57] [backend] 开始backend任务: F003 - 测试
+[2026-04-21 17:12:57] [backend] claude CLI未找到
+[2026-04-21 17:12:57] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-21 17:12:57] [backend] 任务执行超时(600秒)
+[2026-04-21 17:12:57] [backend] git commit: test: commit message
+[2026-04-21 17:12:57] [backend] git commit 失败: 
+[2026-04-21 17:12:57] F001 完成: 用户注册
+[2026-04-21 17:12:57] F001 完成: 注册
+[2026-04-21 17:12:57] F002 开始开发: 登录
+[2026-04-21 17:12:57] 批量导入 5 个features
+[2026-04-22 18:14:52] [backend] 开始backend任务: F001 - test feature
+[2026-04-22 18:14:52] [backend] 开始backend任务: F002 - fail feature
+[2026-04-22 18:14:52] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-22 18:14:52] [backend] 任务执行成功, 输出 4 字符
+[2026-04-22 18:14:52] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-22 18:14:52] [backend] 任务执行失败: error: something went wrong
+[2026-04-22 18:14:52] [backend] 开始backend任务: F003 - 测试
+[2026-04-22 18:14:52] [backend] claude CLI未找到
+[2026-04-22 18:14:52] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-22 18:14:52] [backend] 任务执行超时(600秒)
+[2026-04-22 18:14:52] [backend] git commit: test: commit message
+[2026-04-22 18:14:52] [backend] git commit 失败: 
+[2026-04-22 18:14:52] F001 完成: 用户注册
+[2026-04-22 18:14:52] F001 完成: 注册
+[2026-04-22 18:14:52] F002 开始开发: 登录
+[2026-04-22 18:14:52] 批量导入 5 个features
+[2026-04-23 14:16:23] [backend] 开始backend任务: F001 - test feature
+[2026-04-23 14:16:23] [backend] 开始backend任务: F002 - fail feature
+[2026-04-23 14:16:23] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-23 14:16:23] [backend] 任务执行成功, 输出 4 字符
+[2026-04-23 14:16:23] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-23 14:16:23] [backend] 任务执行失败: error: something went wrong
+[2026-04-23 14:16:23] [backend] 开始backend任务: F003 - 测试
+[2026-04-23 14:16:23] [backend] claude CLI未找到
+[2026-04-23 14:16:23] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-23 14:16:23] [backend] 任务执行超时(600秒)
+[2026-04-23 14:16:23] [backend] git commit: test: commit message
+[2026-04-23 14:16:23] [backend] git commit 失败: 
+[2026-04-23 14:16:23] F001 完成: 用户注册
+[2026-04-23 14:16:23] F001 完成: 注册
+[2026-04-23 14:16:23] F002 开始开发: 登录
+[2026-04-23 14:16:23] 批量导入 5 个features
+[2026-04-23 14:40:57] [backend] 开始backend任务: F001 - test feature
+[2026-04-23 14:40:57] [backend] 开始backend任务: F002 - fail feature
+[2026-04-23 14:40:57] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-23 14:40:57] [backend] 任务执行成功, 输出 4 字符
+[2026-04-23 14:40:57] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-23 14:40:57] [backend] 任务执行失败: error: something went wrong
+[2026-04-23 14:40:57] [backend] 开始backend任务: F003 - 测试
+[2026-04-23 14:40:57] [backend] claude CLI未找到
+[2026-04-23 14:40:57] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-23 14:40:57] [backend] 任务执行超时(600秒)
+[2026-04-23 14:40:57] [backend] git commit: test: commit message
+[2026-04-23 14:40:57] [backend] git commit 失败: 
+[2026-04-23 14:40:57] F001 完成: 用户注册
+[2026-04-23 14:40:57] F001 完成: 注册
+[2026-04-23 14:40:57] F002 开始开发: 登录
+[2026-04-23 14:40:57] 批量导入 5 个features
+[2026-04-24 15:17:33] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 15:17:33] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 15:17:33] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 15:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-277/test_execute_success_with_mock0
+[2026-04-24 15:17:33] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 15:17:33] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 15:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-277/test_execute_failure_with_mock0
+[2026-04-24 15:17:33] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 15:17:33] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 15:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-277/test_execute_claude_not_found0
+[2026-04-24 15:17:33] [backend] claude CLI未找到
+[2026-04-24 15:17:33] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 15:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-277/test_execute_timeout0
+[2026-04-24 15:17:33] [backend] 任务执行超时(600秒)
+[2026-04-24 15:17:33] [backend] git commit: test: commit message
+[2026-04-24 15:17:33] [backend] git commit 失败: 
+[2026-04-24 15:17:33] F001 完成: 用户注册
+[2026-04-24 15:17:33] F001 完成: 注册
+[2026-04-24 15:17:33] F002 开始开发: 登录
+[2026-04-24 15:17:33] 批量导入 5 个features
+[2026-04-24 15:19:42] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 15:19:42] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 15:19:42] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 15:19:42] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-279/test_execute_success_with_mock0
+[2026-04-24 15:19:42] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 15:19:42] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 15:19:42] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-279/test_execute_failure_with_mock0
+[2026-04-24 15:19:42] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 15:19:42] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 15:19:42] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-279/test_execute_claude_not_found0
+[2026-04-24 15:19:42] [backend] claude CLI未找到
+[2026-04-24 15:19:42] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 15:19:42] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-279/test_execute_timeout0
+[2026-04-24 15:19:42] [backend] 任务执行超时(600秒)
+[2026-04-24 15:19:42] [backend] git commit: test: commit message
+[2026-04-24 15:19:42] [backend] git commit 失败: 
+[2026-04-24 15:19:42] F001 完成: 用户注册
+[2026-04-24 15:19:42] F001 完成: 注册
+[2026-04-24 15:19:42] F002 开始开发: 登录
+[2026-04-24 15:19:42] 批量导入 5 个features
+[2026-04-24 15:43:48] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 15:43:48] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 15:43:48] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 15:43:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-280/test_execute_success_with_mock0
+[2026-04-24 15:43:48] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 15:43:48] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 15:43:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-280/test_execute_failure_with_mock0
+[2026-04-24 15:43:48] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 15:43:48] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 15:43:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-280/test_execute_claude_not_found0
+[2026-04-24 15:43:48] [backend] claude CLI未找到
+[2026-04-24 15:43:48] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 15:43:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-280/test_execute_timeout0
+[2026-04-24 15:43:48] [backend] 任务执行超时(600秒)
+[2026-04-24 15:43:48] [backend] git commit: test: commit message
+[2026-04-24 15:43:48] [backend] git commit 失败: 
+[2026-04-24 15:43:48] F001 完成: 用户注册
+[2026-04-24 15:43:48] F001 完成: 注册
+[2026-04-24 15:43:48] F002 开始开发: 登录
+[2026-04-24 15:43:48] 批量导入 5 个features
+[2026-04-24 16:12:14] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 16:12:14] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 16:12:14] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 16:12:14] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-288/test_execute_success_with_mock0
+[2026-04-24 16:12:14] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 16:12:14] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 16:12:14] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-288/test_execute_failure_with_mock0
+[2026-04-24 16:12:14] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 16:12:14] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 16:12:14] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-288/test_execute_claude_not_found0
+[2026-04-24 16:12:14] [backend] claude CLI未找到
+[2026-04-24 16:12:14] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 16:12:14] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-288/test_execute_timeout0
+[2026-04-24 16:12:14] [backend] 任务执行超时(600秒)
+[2026-04-24 16:12:14] [backend] git commit: test: commit message
+[2026-04-24 16:12:14] [backend] git commit 失败: 
+[2026-04-24 16:12:14] F001 完成: 用户注册
+[2026-04-24 16:12:14] F001 完成: 注册
+[2026-04-24 16:12:14] F002 开始开发: 登录
+[2026-04-24 16:12:14] 批量导入 5 个features
+[2026-04-24 16:12:35] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 16:12:35] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 16:12:35] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 16:12:35] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-289/test_execute_success_with_mock0
+[2026-04-24 16:12:35] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 16:12:35] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 16:12:35] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-289/test_execute_failure_with_mock0
+[2026-04-24 16:12:35] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 16:12:35] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 16:12:35] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-289/test_execute_claude_not_found0
+[2026-04-24 16:12:35] [backend] claude CLI未找到
+[2026-04-24 16:12:35] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 16:12:35] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-289/test_execute_timeout0
+[2026-04-24 16:12:35] [backend] 任务执行超时(600秒)
+[2026-04-24 16:12:35] [backend] git commit: test: commit message
+[2026-04-24 16:12:35] [backend] git commit 失败: 
+[2026-04-24 16:12:35] F001 完成: 用户注册
+[2026-04-24 16:12:35] F001 完成: 注册
+[2026-04-24 16:12:35] F002 开始开发: 登录
+[2026-04-24 16:12:35] 批量导入 5 个features
+[2026-04-24 16:16:28] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 16:16:28] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 16:16:28] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 16:16:28] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-290/test_execute_success_with_mock0
+[2026-04-24 16:16:28] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 16:16:28] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 16:16:28] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-290/test_execute_failure_with_mock0
+[2026-04-24 16:16:28] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 16:16:28] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 16:16:28] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-290/test_execute_claude_not_found0
+[2026-04-24 16:16:28] [backend] claude CLI未找到
+[2026-04-24 16:16:28] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 16:16:28] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-290/test_execute_timeout0
+[2026-04-24 16:16:28] [backend] 任务执行超时(600秒)
+[2026-04-24 16:16:28] [backend] git commit: test: commit message
+[2026-04-24 16:16:28] [backend] git commit 失败: 
+[2026-04-24 16:16:28] F001 完成: 用户注册
+[2026-04-24 16:16:28] F001 完成: 注册
+[2026-04-24 16:16:28] F002 开始开发: 登录
+[2026-04-24 16:16:28] 批量导入 5 个features
+[2026-04-24 16:18:09] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 16:18:09] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 16:18:09] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 16:18:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-292/test_execute_success_with_mock0
+[2026-04-24 16:18:09] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 16:18:09] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 16:18:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-292/test_execute_failure_with_mock0
+[2026-04-24 16:18:09] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 16:18:09] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 16:18:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-292/test_execute_claude_not_found0
+[2026-04-24 16:18:09] [backend] claude CLI未找到
+[2026-04-24 16:18:09] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 16:18:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-292/test_execute_timeout0
+[2026-04-24 16:18:09] [backend] 任务执行超时(600秒)
+[2026-04-24 16:18:09] [backend] git commit: test: commit message
+[2026-04-24 16:18:09] [backend] git commit 失败: 
+[2026-04-24 16:18:09] F001 完成: 用户注册
+[2026-04-24 16:18:09] F001 完成: 注册
+[2026-04-24 16:18:09] F002 开始开发: 登录
+[2026-04-24 16:18:09] 批量导入 5 个features
+[2026-04-24 16:20:55] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 16:20:55] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 16:20:55] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 16:20:55] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-293/test_execute_success_with_mock0
+[2026-04-24 16:20:55] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 16:20:55] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 16:20:55] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-293/test_execute_failure_with_mock0
+[2026-04-24 16:20:55] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 16:20:55] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 16:20:55] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-293/test_execute_claude_not_found0
+[2026-04-24 16:20:55] [backend] claude CLI未找到
+[2026-04-24 16:20:55] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 16:20:55] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-293/test_execute_timeout0
+[2026-04-24 16:20:55] [backend] 任务执行超时(600秒)
+[2026-04-24 16:20:55] [backend] git commit: test: commit message
+[2026-04-24 16:20:55] [backend] git commit 失败: 
+[2026-04-24 16:20:55] F001 完成: 用户注册
+[2026-04-24 16:20:55] F001 完成: 注册
+[2026-04-24 16:20:55] F002 开始开发: 登录
+[2026-04-24 16:20:55] 批量导入 5 个features
+[2026-04-24 17:29:09] [backend] 开始backend任务: F001 - test feature
+[2026-04-24 17:29:09] [backend] 开始backend任务: F002 - fail feature
+[2026-04-24 17:29:09] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-24 17:29:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-294/test_execute_success_with_mock0
+[2026-04-24 17:29:09] [backend] 任务执行成功, 输出 4 字符
+[2026-04-24 17:29:09] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-24 17:29:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-294/test_execute_failure_with_mock0
+[2026-04-24 17:29:09] [backend] 任务执行失败: error: something went wrong
+[2026-04-24 17:29:09] [backend] 开始backend任务: F003 - 测试
+[2026-04-24 17:29:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-294/test_execute_claude_not_found0
+[2026-04-24 17:29:09] [backend] claude CLI未找到
+[2026-04-24 17:29:09] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-24 17:29:09] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-294/test_execute_timeout0
+[2026-04-24 17:29:09] [backend] 任务执行超时(600秒)
+[2026-04-24 17:29:09] [backend] git commit: test: commit message
+[2026-04-24 17:29:09] [backend] git commit 失败: 
+[2026-04-24 17:29:09] F001 完成: 用户注册
+[2026-04-24 17:29:09] F001 完成: 注册
+[2026-04-24 17:29:09] F002 开始开发: 登录
+[2026-04-24 17:29:09] 批量导入 5 个features
+[2026-04-30 21:58:05] [backend] 开始backend任务: F001 - test feature
+[2026-04-30 21:58:05] [backend] 开始backend任务: F002 - fail feature
+[2026-04-30 21:58:05] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-30 21:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-456/test_execute_success_with_mock0
+[2026-04-30 21:58:05] [backend] 任务执行成功, 输出 4 字符
+[2026-04-30 21:58:05] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-30 21:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-456/test_execute_failure_with_mock0
+[2026-04-30 21:58:05] [backend] 任务执行失败: error: something went wrong
+[2026-04-30 21:58:05] [backend] 开始backend任务: F003 - 测试
+[2026-04-30 21:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-456/test_execute_claude_not_found0
+[2026-04-30 21:58:05] [backend] claude CLI未找到
+[2026-04-30 21:58:05] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-30 21:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-456/test_execute_timeout0
+[2026-04-30 21:58:05] [backend] 任务执行超时(600秒)
+[2026-04-30 21:58:05] [backend] git commit: test: commit message
+[2026-04-30 21:58:05] [backend] git commit 失败: 
+[2026-04-30 21:58:05] F001 完成: 用户注册
+[2026-04-30 21:58:05] F001 完成: 注册
+[2026-04-30 21:58:05] F002 开始开发: 登录
+[2026-04-30 21:58:05] 批量导入 5 个features
+[2026-04-30 22:00:36] [backend] 开始backend任务: F001 - test feature
+[2026-04-30 22:00:36] [backend] 开始backend任务: F002 - fail feature
+[2026-04-30 22:00:36] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-30 22:00:36] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-459/test_execute_success_with_mock0
+[2026-04-30 22:00:36] [backend] 任务执行成功, 输出 4 字符
+[2026-04-30 22:00:36] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-30 22:00:36] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-459/test_execute_failure_with_mock0
+[2026-04-30 22:00:36] [backend] 任务执行失败: error: something went wrong
+[2026-04-30 22:00:36] [backend] 开始backend任务: F003 - 测试
+[2026-04-30 22:00:36] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-459/test_execute_claude_not_found0
+[2026-04-30 22:00:36] [backend] claude CLI未找到
+[2026-04-30 22:00:36] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-30 22:00:36] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-459/test_execute_timeout0
+[2026-04-30 22:00:36] [backend] 任务执行超时(600秒)
+[2026-04-30 22:00:36] [backend] git commit: test: commit message
+[2026-04-30 22:00:36] [backend] git commit 失败: 
+[2026-04-30 22:00:36] F001 完成: 用户注册
+[2026-04-30 22:00:36] F001 完成: 注册
+[2026-04-30 22:00:36] F002 开始开发: 登录
+[2026-04-30 22:00:36] 批量导入 5 个features
+[2026-04-30 22:00:51] [backend] 开始backend任务: F001 - test feature
+[2026-04-30 22:00:51] [backend] 开始backend任务: F002 - fail feature
+[2026-04-30 22:00:51] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-30 22:00:51] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-460/test_execute_success_with_mock0
+[2026-04-30 22:00:51] [backend] 任务执行成功, 输出 4 字符
+[2026-04-30 22:00:51] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-30 22:00:51] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-460/test_execute_failure_with_mock0
+[2026-04-30 22:00:51] [backend] 任务执行失败: error: something went wrong
+[2026-04-30 22:00:51] [backend] 开始backend任务: F003 - 测试
+[2026-04-30 22:00:51] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-460/test_execute_claude_not_found0
+[2026-04-30 22:00:51] [backend] claude CLI未找到
+[2026-04-30 22:00:51] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-30 22:00:51] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-460/test_execute_timeout0
+[2026-04-30 22:00:51] [backend] 任务执行超时(600秒)
+[2026-04-30 22:00:52] [backend] git commit: test: commit message
+[2026-04-30 22:00:52] [backend] git commit 失败: 
+[2026-04-30 22:00:52] F001 完成: 用户注册
+[2026-04-30 22:00:52] F001 完成: 注册
+[2026-04-30 22:00:52] F002 开始开发: 登录
+[2026-04-30 22:00:52] 批量导入 5 个features
+[2026-04-30 22:06:18] [backend] 开始backend任务: F001 - test feature
+[2026-04-30 22:06:18] [backend] 开始backend任务: F002 - fail feature
+[2026-04-30 22:06:18] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-30 22:06:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-464/test_execute_success_with_mock0
+[2026-04-30 22:06:18] [backend] 任务执行成功, 输出 4 字符
+[2026-04-30 22:06:18] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-30 22:06:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-464/test_execute_failure_with_mock0
+[2026-04-30 22:06:18] [backend] 任务执行失败: error: something went wrong
+[2026-04-30 22:06:18] [backend] 开始backend任务: F003 - 测试
+[2026-04-30 22:06:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-464/test_execute_claude_not_found0
+[2026-04-30 22:06:18] [backend] claude CLI未找到
+[2026-04-30 22:06:18] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-30 22:06:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-464/test_execute_timeout0
+[2026-04-30 22:06:18] [backend] 任务执行超时(600秒)
+[2026-04-30 22:06:18] [backend] git commit: test: commit message
+[2026-04-30 22:06:18] [backend] git commit 失败: 
+[2026-04-30 22:06:18] F001 完成: 用户注册
+[2026-04-30 22:06:18] F001 完成: 注册
+[2026-04-30 22:06:18] F002 开始开发: 登录
+[2026-04-30 22:06:18] 批量导入 5 个features
+[2026-04-30 22:16:45] [backend] 开始backend任务: F001 - test feature
+[2026-04-30 22:16:45] [backend] 开始backend任务: F002 - fail feature
+[2026-04-30 22:16:45] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-30 22:16:45] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-468/test_execute_success_with_mock0
+[2026-04-30 22:16:45] [backend] 任务执行成功, 输出 4 字符
+[2026-04-30 22:16:45] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-30 22:16:45] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-468/test_execute_failure_with_mock0
+[2026-04-30 22:16:45] [backend] 任务执行失败: error: something went wrong
+[2026-04-30 22:16:45] [backend] 开始backend任务: F003 - 测试
+[2026-04-30 22:16:45] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-468/test_execute_claude_not_found0
+[2026-04-30 22:16:45] [backend] claude CLI未找到
+[2026-04-30 22:16:45] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-30 22:16:45] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-468/test_execute_timeout0
+[2026-04-30 22:16:45] [backend] 任务执行超时(600秒)
+[2026-04-30 22:16:45] [backend] git commit: test: commit message
+[2026-04-30 22:16:45] [backend] git commit 失败: 
+[2026-04-30 22:16:45] F001 完成: 用户注册
+[2026-04-30 22:16:45] F001 完成: 注册
+[2026-04-30 22:16:45] F002 开始开发: 登录
+[2026-04-30 22:16:45] 批量导入 5 个features
+[2026-04-30 22:29:41] [backend] 开始backend任务: F001 - test feature
+[2026-04-30 22:29:41] [backend] 开始backend任务: F002 - fail feature
+[2026-04-30 22:29:41] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-30 22:29:41] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-470/test_execute_success_with_mock0
+[2026-04-30 22:29:41] [backend] 任务执行成功, 输出 4 字符
+[2026-04-30 22:29:41] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-30 22:29:41] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-470/test_execute_failure_with_mock0
+[2026-04-30 22:29:41] [backend] 任务执行失败: error: something went wrong
+[2026-04-30 22:29:41] [backend] 开始backend任务: F003 - 测试
+[2026-04-30 22:29:41] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-470/test_execute_claude_not_found0
+[2026-04-30 22:29:41] [backend] claude CLI未找到
+[2026-04-30 22:29:41] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-30 22:29:41] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-470/test_execute_timeout0
+[2026-04-30 22:29:41] [backend] 任务执行超时(600秒)
+[2026-04-30 22:29:41] [backend] git commit: test: commit message
+[2026-04-30 22:29:41] [backend] git commit 失败: 
+[2026-04-30 22:29:41] F001 完成: 用户注册
+[2026-04-30 22:29:41] F001 完成: 注册
+[2026-04-30 22:29:41] F002 开始开发: 登录
+[2026-04-30 22:29:41] 批量导入 5 个features
+[2026-04-30 22:44:06] [backend] 开始backend任务: F001 - test feature
+[2026-04-30 22:44:06] [backend] 开始backend任务: F002 - fail feature
+[2026-04-30 22:44:06] [backend] 开始backend任务: F001 - 测试任务
+[2026-04-30 22:44:06] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-477/test_execute_success_with_mock0
+[2026-04-30 22:44:06] [backend] 任务执行成功, 输出 4 字符
+[2026-04-30 22:44:06] [backend] 开始backend任务: F002 - 失败任务
+[2026-04-30 22:44:06] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-477/test_execute_failure_with_mock0
+[2026-04-30 22:44:06] [backend] 任务执行失败: error: something went wrong
+[2026-04-30 22:44:06] [backend] 开始backend任务: F003 - 测试
+[2026-04-30 22:44:06] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-477/test_execute_claude_not_found0
+[2026-04-30 22:44:06] [backend] claude CLI未找到
+[2026-04-30 22:44:06] [backend] 开始backend任务: F004 - 超时任务
+[2026-04-30 22:44:06] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-477/test_execute_timeout0
+[2026-04-30 22:44:06] [backend] 任务执行超时(600秒)
+[2026-04-30 22:44:06] [backend] git commit: test: commit message
+[2026-04-30 22:44:06] [backend] git commit 失败: 
+[2026-04-30 22:44:06] F001 完成: 用户注册
+[2026-04-30 22:44:06] F001 完成: 注册
+[2026-04-30 22:44:06] F002 开始开发: 登录
+[2026-04-30 22:44:06] 批量导入 5 个features
+[2026-05-01 16:09:17] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 16:09:17] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 16:09:17] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 16:09:17] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-491/test_execute_success_with_mock0
+[2026-05-01 16:09:17] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 16:09:17] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 16:09:17] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-491/test_execute_failure_with_mock0
+[2026-05-01 16:09:17] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 16:09:17] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 16:09:17] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-491/test_execute_claude_not_found0
+[2026-05-01 16:09:17] [backend] claude CLI未找到
+[2026-05-01 16:09:17] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 16:09:17] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-491/test_execute_timeout0
+[2026-05-01 16:09:17] [backend] 任务执行超时(600秒)
+[2026-05-01 16:09:17] [backend] git commit: test: commit message
+[2026-05-01 16:09:17] [backend] git commit 失败: 
+[2026-05-01 16:09:17] F001 完成: 用户注册
+[2026-05-01 16:09:17] F001 完成: 注册
+[2026-05-01 16:09:17] F002 开始开发: 登录
+[2026-05-01 16:09:17] 批量导入 5 个features
+[2026-05-01 16:24:07] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 16:24:07] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 16:24:07] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 16:24:07] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-494/test_execute_success_with_mock0
+[2026-05-01 16:24:07] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 16:24:07] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 16:24:07] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-494/test_execute_failure_with_mock0
+[2026-05-01 16:24:07] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 16:24:07] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 16:24:07] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-494/test_execute_claude_not_found0
+[2026-05-01 16:24:07] [backend] claude CLI未找到
+[2026-05-01 16:24:07] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 16:24:07] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-494/test_execute_timeout0
+[2026-05-01 16:24:07] [backend] 任务执行超时(600秒)
+[2026-05-01 16:24:07] [backend] git commit: test: commit message
+[2026-05-01 16:24:07] [backend] git commit 失败: 
+[2026-05-01 16:24:07] F001 完成: 用户注册
+[2026-05-01 16:24:07] F001 完成: 注册
+[2026-05-01 16:24:07] F002 开始开发: 登录
+[2026-05-01 16:24:07] 批量导入 5 个features
+[2026-05-01 16:32:19] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 16:32:19] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 16:32:19] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 16:32:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-502/test_execute_success_with_mock0
+[2026-05-01 16:32:19] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 16:32:19] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 16:32:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-502/test_execute_failure_with_mock0
+[2026-05-01 16:32:19] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 16:32:19] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 16:32:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-502/test_execute_claude_not_found0
+[2026-05-01 16:32:19] [backend] claude CLI未找到
+[2026-05-01 16:32:19] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 16:32:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-502/test_execute_timeout0
+[2026-05-01 16:32:19] [backend] 任务执行超时(600秒)
+[2026-05-01 16:32:19] [backend] git commit: test: commit message
+[2026-05-01 16:32:19] [backend] git commit 失败: 
+[2026-05-01 16:32:19] F001 完成: 用户注册
+[2026-05-01 16:32:19] F001 完成: 注册
+[2026-05-01 16:32:19] F002 开始开发: 登录
+[2026-05-01 16:32:19] 批量导入 5 个features
+[2026-05-01 17:17:33] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 17:17:33] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 17:17:33] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 17:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-506/test_execute_success_with_mock0
+[2026-05-01 17:17:33] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 17:17:33] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 17:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-506/test_execute_failure_with_mock0
+[2026-05-01 17:17:33] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 17:17:33] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 17:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-506/test_execute_claude_not_found0
+[2026-05-01 17:17:33] [backend] claude CLI未找到
+[2026-05-01 17:17:33] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 17:17:33] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-506/test_execute_timeout0
+[2026-05-01 17:17:33] [backend] 任务执行超时(600秒)
+[2026-05-01 17:17:33] [backend] git commit: test: commit message
+[2026-05-01 17:17:33] [backend] git commit 失败: 
+[2026-05-01 17:17:33] F001 完成: 用户注册
+[2026-05-01 17:17:33] F001 完成: 注册
+[2026-05-01 17:17:33] F002 开始开发: 登录
+[2026-05-01 17:17:33] 批量导入 5 个features
+[2026-05-01 17:19:18] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 17:19:18] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 17:19:18] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 17:19:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-508/test_execute_success_with_mock0
+[2026-05-01 17:19:18] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 17:19:18] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 17:19:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-508/test_execute_failure_with_mock0
+[2026-05-01 17:19:18] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 17:19:18] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 17:19:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-508/test_execute_claude_not_found0
+[2026-05-01 17:19:18] [backend] claude CLI未找到
+[2026-05-01 17:19:18] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 17:19:18] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-508/test_execute_timeout0
+[2026-05-01 17:19:18] [backend] 任务执行超时(600秒)
+[2026-05-01 17:19:18] [backend] git commit: test: commit message
+[2026-05-01 17:19:18] [backend] git commit 失败: 
+[2026-05-01 17:19:18] F001 完成: 用户注册
+[2026-05-01 17:19:18] F001 完成: 注册
+[2026-05-01 17:19:18] F002 开始开发: 登录
+[2026-05-01 17:19:18] 批量导入 5 个features
+[2026-05-01 17:31:48] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 17:31:48] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 17:31:48] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 17:31:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-509/test_execute_success_with_mock0
+[2026-05-01 17:31:48] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 17:31:48] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 17:31:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-509/test_execute_failure_with_mock0
+[2026-05-01 17:31:48] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 17:31:48] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 17:31:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-509/test_execute_claude_not_found0
+[2026-05-01 17:31:48] [backend] claude CLI未找到
+[2026-05-01 17:31:48] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 17:31:48] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-509/test_execute_timeout0
+[2026-05-01 17:31:48] [backend] 任务执行超时(600秒)
+[2026-05-01 17:31:48] [backend] git commit: test: commit message
+[2026-05-01 17:31:48] [backend] git commit 失败: 
+[2026-05-01 17:31:48] F001 完成: 用户注册
+[2026-05-01 17:31:48] F001 完成: 注册
+[2026-05-01 17:31:48] F002 开始开发: 登录
+[2026-05-01 17:31:48] 批量导入 5 个features
+[2026-05-01 18:04:59] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:04:59] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:04:59] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:04:59] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-514/test_execute_success_with_mock0
+[2026-05-01 18:04:59] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:04:59] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:04:59] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-514/test_execute_failure_with_mock0
+[2026-05-01 18:04:59] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:04:59] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:04:59] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-514/test_execute_claude_not_found0
+[2026-05-01 18:04:59] [backend] claude CLI未找到
+[2026-05-01 18:04:59] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:04:59] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-514/test_execute_timeout0
+[2026-05-01 18:04:59] [backend] 任务执行超时(600秒)
+[2026-05-01 18:04:59] [backend] git commit: test: commit message
+[2026-05-01 18:04:59] [backend] git commit 失败: 
+[2026-05-01 18:04:59] F001 完成: 用户注册
+[2026-05-01 18:04:59] F001 完成: 注册
+[2026-05-01 18:04:59] F002 开始开发: 登录
+[2026-05-01 18:04:59] 批量导入 5 个features
+[2026-05-01 18:09:01] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:09:01] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:09:01] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:09:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-515/test_execute_success_with_mock0
+[2026-05-01 18:09:01] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:09:01] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:09:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-515/test_execute_failure_with_mock0
+[2026-05-01 18:09:01] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:09:01] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:09:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-515/test_execute_claude_not_found0
+[2026-05-01 18:09:01] [backend] claude CLI未找到
+[2026-05-01 18:09:01] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:09:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-515/test_execute_timeout0
+[2026-05-01 18:09:01] [backend] 任务执行超时(600秒)
+[2026-05-01 18:09:01] [backend] git commit: test: commit message
+[2026-05-01 18:09:01] [backend] git commit 失败: 
+[2026-05-01 18:09:01] F001 完成: 用户注册
+[2026-05-01 18:09:01] F001 完成: 注册
+[2026-05-01 18:09:01] F002 开始开发: 登录
+[2026-05-01 18:09:01] 批量导入 5 个features
+[2026-05-01 18:09:46] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:09:46] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:09:46] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:09:46] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-517/test_execute_success_with_mock0
+[2026-05-01 18:09:46] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:09:46] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:09:46] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-517/test_execute_failure_with_mock0
+[2026-05-01 18:09:46] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:09:46] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:09:46] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-517/test_execute_claude_not_found0
+[2026-05-01 18:09:46] [backend] claude CLI未找到
+[2026-05-01 18:09:46] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:09:46] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-517/test_execute_timeout0
+[2026-05-01 18:09:46] [backend] 任务执行超时(600秒)
+[2026-05-01 18:09:46] [backend] git commit: test: commit message
+[2026-05-01 18:09:46] [backend] git commit 失败: 
+[2026-05-01 18:09:47] F001 完成: 用户注册
+[2026-05-01 18:09:47] F001 完成: 注册
+[2026-05-01 18:09:47] F002 开始开发: 登录
+[2026-05-01 18:09:47] 批量导入 5 个features
+[2026-05-01 18:10:54] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:10:54] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:10:54] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:10:54] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-518/test_execute_success_with_mock0
+[2026-05-01 18:10:54] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:10:54] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:10:54] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-518/test_execute_failure_with_mock0
+[2026-05-01 18:10:54] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:10:54] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:10:54] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-518/test_execute_claude_not_found0
+[2026-05-01 18:10:54] [backend] claude CLI未找到
+[2026-05-01 18:10:54] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:10:54] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-518/test_execute_timeout0
+[2026-05-01 18:10:54] [backend] 任务执行超时(600秒)
+[2026-05-01 18:10:54] [backend] git commit: test: commit message
+[2026-05-01 18:10:54] [backend] git commit 失败: 
+[2026-05-01 18:10:54] F001 完成: 用户注册
+[2026-05-01 18:10:54] F001 完成: 注册
+[2026-05-01 18:10:54] F002 开始开发: 登录
+[2026-05-01 18:10:54] 批量导入 5 个features
+[2026-05-01 18:21:53] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:21:53] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:21:53] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:21:53] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-1/test_execute_success_with_mock0
+[2026-05-01 18:21:53] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:21:53] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:21:53] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-1/test_execute_failure_with_mock0
+[2026-05-01 18:21:53] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:21:53] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:21:53] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-1/test_execute_claude_not_found0
+[2026-05-01 18:21:53] [backend] claude CLI未找到
+[2026-05-01 18:21:53] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:21:53] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-1/test_execute_timeout0
+[2026-05-01 18:21:53] [backend] 任务执行超时(600秒)
+[2026-05-01 18:21:53] [backend] git commit: test: commit message
+[2026-05-01 18:21:53] [backend] git commit 失败: 
+[2026-05-01 18:21:53] F001 完成: 用户注册
+[2026-05-01 18:21:53] F001 完成: 注册
+[2026-05-01 18:21:53] F002 开始开发: 登录
+[2026-05-01 18:21:53] 批量导入 5 个features
+[2026-05-01 18:25:48] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:25:48] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:25:48] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:25:48] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-2/test_execute_success_with_mock0
+[2026-05-01 18:25:48] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:25:48] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:25:48] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-2/test_execute_failure_with_mock0
+[2026-05-01 18:25:48] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:25:48] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:25:48] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-2/test_execute_claude_not_found0
+[2026-05-01 18:25:48] [backend] claude CLI未找到
+[2026-05-01 18:25:48] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:25:48] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-2/test_execute_timeout0
+[2026-05-01 18:25:48] [backend] 任务执行超时(600秒)
+[2026-05-01 18:25:48] [backend] git commit: test: commit message
+[2026-05-01 18:25:48] [backend] git commit 失败: 
+[2026-05-01 18:25:48] F001 完成: 用户注册
+[2026-05-01 18:25:48] F001 完成: 注册
+[2026-05-01 18:25:48] F002 开始开发: 登录
+[2026-05-01 18:25:48] 批量导入 5 个features
+[2026-05-01 18:25:59] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:25:59] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:25:59] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:25:59] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-3/test_execute_success_with_mock0
+[2026-05-01 18:25:59] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:25:59] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:25:59] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-3/test_execute_failure_with_mock0
+[2026-05-01 18:25:59] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:25:59] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:25:59] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-3/test_execute_claude_not_found0
+[2026-05-01 18:25:59] [backend] claude CLI未找到
+[2026-05-01 18:25:59] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:25:59] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-3/test_execute_timeout0
+[2026-05-01 18:25:59] [backend] 任务执行超时(600秒)
+[2026-05-01 18:25:59] [backend] git commit: test: commit message
+[2026-05-01 18:25:59] [backend] git commit 失败: 
+[2026-05-01 18:25:59] F001 完成: 用户注册
+[2026-05-01 18:25:59] F001 完成: 注册
+[2026-05-01 18:25:59] F002 开始开发: 登录
+[2026-05-01 18:25:59] 批量导入 5 个features
+[2026-05-01 18:31:43] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 18:31:43] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 18:31:43] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 18:31:43] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-4/test_execute_success_with_mock0
+[2026-05-01 18:31:43] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 18:31:43] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 18:31:43] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-4/test_execute_failure_with_mock0
+[2026-05-01 18:31:43] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 18:31:43] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 18:31:43] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-4/test_execute_claude_not_found0
+[2026-05-01 18:31:43] [backend] claude CLI未找到
+[2026-05-01 18:31:43] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 18:31:43] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-4/test_execute_timeout0
+[2026-05-01 18:31:43] [backend] 任务执行超时(600秒)
+[2026-05-01 18:31:43] [backend] git commit: test: commit message
+[2026-05-01 18:31:43] [backend] git commit 失败: 
+[2026-05-01 18:31:43] F001 完成: 用户注册
+[2026-05-01 18:31:43] F001 完成: 注册
+[2026-05-01 18:31:43] F002 开始开发: 登录
+[2026-05-01 18:31:43] 批量导入 5 个features
+[2026-05-01 21:14:31] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 21:14:31] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 21:14:31] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 21:14:31] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-523/test_execute_success_with_mock0
+[2026-05-01 21:14:31] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 21:14:31] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 21:14:31] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-523/test_execute_failure_with_mock0
+[2026-05-01 21:14:31] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 21:14:31] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 21:14:31] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-523/test_execute_claude_not_found0
+[2026-05-01 21:14:31] [backend] claude CLI未找到
+[2026-05-01 21:14:31] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 21:14:31] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-523/test_execute_timeout0
+[2026-05-01 21:14:31] [backend] 任务执行超时(600秒)
+[2026-05-01 21:14:32] [backend] git commit: test: commit message
+[2026-05-01 21:14:32] [backend] git commit 失败: 
+[2026-05-01 21:14:32] F001 完成: 用户注册
+[2026-05-01 21:14:32] F001 完成: 注册
+[2026-05-01 21:14:32] F002 开始开发: 登录
+[2026-05-01 21:14:32] 批量导入 5 个features
+[2026-05-01 21:18:44] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 21:18:44] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 21:18:44] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 21:18:44] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-525/test_execute_success_with_mock0
+[2026-05-01 21:18:44] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 21:18:44] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 21:18:44] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-525/test_execute_failure_with_mock0
+[2026-05-01 21:18:44] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 21:18:44] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 21:18:44] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-525/test_execute_claude_not_found0
+[2026-05-01 21:18:44] [backend] claude CLI未找到
+[2026-05-01 21:18:44] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 21:18:44] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-525/test_execute_timeout0
+[2026-05-01 21:18:44] [backend] 任务执行超时(600秒)
+[2026-05-01 21:18:44] [backend] git commit: test: commit message
+[2026-05-01 21:18:45] [backend] git commit 失败: 
+[2026-05-01 21:18:45] F001 完成: 用户注册
+[2026-05-01 21:18:45] F001 完成: 注册
+[2026-05-01 21:18:45] F002 开始开发: 登录
+[2026-05-01 21:18:45] 批量导入 5 个features
+[2026-05-01 21:18:56] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 21:18:56] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 21:18:56] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 21:18:56] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-526/test_execute_success_with_mock0
+[2026-05-01 21:18:56] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 21:18:56] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 21:18:56] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-526/test_execute_failure_with_mock0
+[2026-05-01 21:18:56] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 21:18:56] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 21:18:56] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-526/test_execute_claude_not_found0
+[2026-05-01 21:18:56] [backend] claude CLI未找到
+[2026-05-01 21:18:56] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 21:18:56] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-526/test_execute_timeout0
+[2026-05-01 21:18:56] [backend] 任务执行超时(600秒)
+[2026-05-01 21:18:56] [backend] git commit: test: commit message
+[2026-05-01 21:18:56] [backend] git commit 失败: 
+[2026-05-01 21:18:56] F001 完成: 用户注册
+[2026-05-01 21:18:56] F001 完成: 注册
+[2026-05-01 21:18:56] F002 开始开发: 登录
+[2026-05-01 21:18:56] 批量导入 5 个features
+[2026-05-01 21:32:32] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 21:32:32] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 21:32:32] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 21:32:32] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-529/test_execute_success_with_mock0
+[2026-05-01 21:32:32] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 21:32:32] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 21:32:32] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-529/test_execute_failure_with_mock0
+[2026-05-01 21:32:32] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 21:32:32] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 21:32:32] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-529/test_execute_claude_not_found0
+[2026-05-01 21:32:32] [backend] claude CLI未找到
+[2026-05-01 21:32:32] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 21:32:32] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-529/test_execute_timeout0
+[2026-05-01 21:32:32] [backend] 任务执行超时(600秒)
+[2026-05-01 21:32:32] [backend] git commit: test: commit message
+[2026-05-01 21:32:32] [backend] git commit 失败: 
+[2026-05-01 21:32:32] F001 完成: 用户注册
+[2026-05-01 21:32:32] F001 完成: 注册
+[2026-05-01 21:32:32] F002 开始开发: 登录
+[2026-05-01 21:32:32] 批量导入 5 个features
+[2026-05-01 21:33:19] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 21:33:19] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 21:33:19] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 21:33:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-530/test_execute_success_with_mock0
+[2026-05-01 21:33:19] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 21:33:19] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 21:33:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-530/test_execute_failure_with_mock0
+[2026-05-01 21:33:19] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 21:33:19] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 21:33:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-530/test_execute_claude_not_found0
+[2026-05-01 21:33:19] [backend] claude CLI未找到
+[2026-05-01 21:33:19] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 21:33:19] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-530/test_execute_timeout0
+[2026-05-01 21:33:19] [backend] 任务执行超时(600秒)
+[2026-05-01 21:33:19] [backend] git commit: test: commit message
+[2026-05-01 21:33:19] [backend] git commit 失败: 
+[2026-05-01 21:33:19] F001 完成: 用户注册
+[2026-05-01 21:33:19] F001 完成: 注册
+[2026-05-01 21:33:19] F002 开始开发: 登录
+[2026-05-01 21:33:19] 批量导入 5 个features
+[2026-05-01 21:53:13] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 21:53:13] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 21:53:13] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 21:53:13] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-534/test_execute_success_with_mock0
+[2026-05-01 21:53:13] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 21:53:13] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 21:53:13] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-534/test_execute_failure_with_mock0
+[2026-05-01 21:53:13] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 21:53:13] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 21:53:13] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-534/test_execute_claude_not_found0
+[2026-05-01 21:53:13] [backend] claude CLI未找到
+[2026-05-01 21:53:13] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 21:53:13] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-534/test_execute_timeout0
+[2026-05-01 21:53:13] [backend] 任务执行超时(600秒)
+[2026-05-01 21:53:13] [backend] git commit: test: commit message
+[2026-05-01 21:53:13] [backend] git commit 失败: 
+[2026-05-01 21:53:14] F001 完成: 用户注册
+[2026-05-01 21:53:14] F001 完成: 注册
+[2026-05-01 21:53:14] F002 开始开发: 登录
+[2026-05-01 21:53:14] 批量导入 5 个features
+[2026-05-01 21:55:01] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 21:55:01] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 21:55:01] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 21:55:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-535/test_execute_success_with_mock0
+[2026-05-01 21:55:01] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 21:55:01] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 21:55:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-535/test_execute_failure_with_mock0
+[2026-05-01 21:55:01] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 21:55:01] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 21:55:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-535/test_execute_claude_not_found0
+[2026-05-01 21:55:01] [backend] claude CLI未找到
+[2026-05-01 21:55:01] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 21:55:01] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-535/test_execute_timeout0
+[2026-05-01 21:55:01] [backend] 任务执行超时(600秒)
+[2026-05-01 21:55:01] [backend] git commit: test: commit message
+[2026-05-01 21:55:02] [backend] git commit 失败: 
+[2026-05-01 21:55:02] F001 完成: 用户注册
+[2026-05-01 21:55:02] F001 完成: 注册
+[2026-05-01 21:55:02] F002 开始开发: 登录
+[2026-05-01 21:55:02] 批量导入 5 个features
+[2026-05-01 22:29:37] [backend] 开始backend任务: F001 - test feature
+[2026-05-01 22:29:37] [backend] 开始backend任务: F002 - fail feature
+[2026-05-01 22:29:37] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-01 22:29:37] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-541/test_execute_success_with_mock0
+[2026-05-01 22:29:37] [backend] 任务执行成功, 输出 4 字符
+[2026-05-01 22:29:37] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-01 22:29:37] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-541/test_execute_failure_with_mock0
+[2026-05-01 22:29:37] [backend] 任务执行失败: error: something went wrong
+[2026-05-01 22:29:37] [backend] 开始backend任务: F003 - 测试
+[2026-05-01 22:29:37] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-541/test_execute_claude_not_found0
+[2026-05-01 22:29:37] [backend] claude CLI未找到
+[2026-05-01 22:29:37] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-01 22:29:37] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-541/test_execute_timeout0
+[2026-05-01 22:29:37] [backend] 任务执行超时(600秒)
+[2026-05-01 22:29:37] [backend] git commit: test: commit message
+[2026-05-01 22:29:37] [backend] git commit 失败: 
+[2026-05-01 22:29:37] F001 完成: 用户注册
+[2026-05-01 22:29:37] F001 完成: 注册
+[2026-05-01 22:29:37] F002 开始开发: 登录
+[2026-05-01 22:29:37] 批量导入 5 个features
+[2026-05-02 08:08:42] 批量导入 3 个features
+[2026-05-02 08:08:42] f1 开始开发: Feature f1
+[2026-05-02 08:08:42] f1 完成: Feature f1
+[2026-05-02 08:08:42] f1 被阻塞: missing env
+[2026-05-02 08:08:42] f1 进入验收阶段
+[2026-05-02 08:08:42] f1 开始开发: Feature f1
+[2026-05-02 08:08:42] f1 完成: Feature f1
+[2026-05-02 08:11:55] F001 完成: 用户注册
+[2026-05-02 08:11:55] F001 完成: 注册
+[2026-05-02 08:11:55] F002 开始开发: 登录
+[2026-05-02 08:11:55] 批量导入 5 个features
+[2026-05-02 08:12:45] F001 完成: 用户注册
+[2026-05-02 08:12:45] F001 完成: 注册
+[2026-05-02 08:12:45] F002 开始开发: 登录
+[2026-05-02 08:12:45] 批量导入 5 个features
+[2026-05-02 08:18:16] [backend] 开始backend任务: F001 - test feature
+[2026-05-02 08:18:16] [backend] 开始backend任务: F002 - fail feature
+[2026-05-02 08:18:16] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-02 08:18:16] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-550/test_execute_success_with_mock0
+[2026-05-02 08:18:16] [backend] 任务执行成功, 输出 4 字符
+[2026-05-02 08:18:16] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-02 08:18:16] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-550/test_execute_failure_with_mock0
+[2026-05-02 08:18:16] [backend] 任务执行失败: error: something went wrong
+[2026-05-02 08:18:16] [backend] 开始backend任务: F003 - 测试
+[2026-05-02 08:18:16] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-550/test_execute_claude_not_found0
+[2026-05-02 08:18:16] [backend] claude CLI未找到
+[2026-05-02 08:18:16] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-02 08:18:16] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-550/test_execute_timeout0
+[2026-05-02 08:18:16] [backend] 任务执行超时(600秒)
+[2026-05-02 08:18:16] [backend] git commit: test: commit message
+[2026-05-02 08:18:16] [backend] git commit 失败: 
+[2026-05-02 08:18:16] F001 完成: 用户注册
+[2026-05-02 08:18:16] F001 完成: 注册
+[2026-05-02 08:18:16] F002 开始开发: 登录
+[2026-05-02 08:18:16] 批量导入 5 个features
+[2026-05-02 08:18:17] 批量导入 3 个features
+[2026-05-02 08:18:17] f1 开始开发: Feature f1
+[2026-05-02 08:18:17] f1 完成: Feature f1
+[2026-05-02 08:18:17] f1 被阻塞: missing env
+[2026-05-02 08:18:17] f1 进入验收阶段
+[2026-05-02 08:18:17] f1 开始开发: Feature f1
+[2026-05-02 08:18:17] f1 完成: Feature f1
+[2026-05-02 09:16:52] 批量导入 3 个features
+[2026-05-02 09:16:52] f1 开始开发: Feature f1
+[2026-05-02 09:16:52] f1 完成: Feature f1
+[2026-05-02 09:16:52] f1 被阻塞: missing env
+[2026-05-02 09:16:52] f1 进入验收阶段
+[2026-05-02 09:16:52] f1 开始开发: Feature f1
+[2026-05-02 09:16:52] f1 完成: Feature f1
+[2026-05-02 09:17:04] 批量导入 3 个features
+[2026-05-02 09:17:04] f1 开始开发: Feature f1
+[2026-05-02 09:17:04] f1 完成: Feature f1
+[2026-05-02 09:17:04] f1 被阻塞: missing env
+[2026-05-02 09:17:04] f1 进入验收阶段
+[2026-05-02 09:17:04] f1 开始开发: Feature f1
+[2026-05-02 09:17:04] f1 完成: Feature f1
+[2026-05-02 09:27:30] 批量导入 3 个features
+[2026-05-02 09:27:30] f1 开始开发: Feature f1
+[2026-05-02 09:27:30] f1 完成: Feature f1
+[2026-05-02 09:27:30] f1 被阻塞: missing env
+[2026-05-02 09:27:30] f1 进入验收阶段
+[2026-05-02 09:27:30] f1 开始开发: Feature f1
+[2026-05-02 09:27:30] f1 完成: Feature f1
+[2026-05-02 09:27:57] [backend] 开始backend任务: F001 - test feature
+[2026-05-02 09:27:57] [backend] 开始backend任务: F002 - fail feature
+[2026-05-02 09:27:57] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-02 09:27:57] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-13/test_execute_success_with_mock0
+[2026-05-02 09:27:57] [backend] 任务执行成功, 输出 4 字符
+[2026-05-02 09:27:57] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-02 09:27:57] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-13/test_execute_failure_with_mock0
+[2026-05-02 09:27:57] [backend] 任务执行失败: error: something went wrong
+[2026-05-02 09:27:57] [backend] 开始backend任务: F003 - 测试
+[2026-05-02 09:27:57] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-13/test_execute_claude_not_found0
+[2026-05-02 09:27:57] [backend] claude CLI未找到
+[2026-05-02 09:27:57] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-02 09:27:57] [backend] claude -p 执行目录: /private/tmp/claude-501/pytest-of-jieson/pytest-13/test_execute_timeout0
+[2026-05-02 09:27:57] [backend] 任务执行超时(600秒)
+[2026-05-02 09:27:57] [backend] git commit: test: commit message
+[2026-05-02 09:27:57] [backend] git commit 失败: 
+[2026-05-02 09:27:57] F001 完成: 用户注册
+[2026-05-02 09:27:57] F001 完成: 注册
+[2026-05-02 09:27:57] F002 开始开发: 登录
+[2026-05-02 09:27:57] 批量导入 5 个features
+[2026-05-02 09:56:37] 批量导入 3 个features
+[2026-05-02 09:56:37] f1 开始开发: Feature f1
+[2026-05-02 09:56:37] f1 完成: Feature f1
+[2026-05-02 09:56:37] f1 被阻塞: missing env
+[2026-05-02 09:56:37] f1 进入验收阶段
+[2026-05-02 09:56:37] f1 开始开发: Feature f1
+[2026-05-02 09:56:37] f1 完成: Feature f1
+[2026-05-02 09:58:05] [backend] 开始backend任务: F001 - test feature
+[2026-05-02 09:58:05] [backend] 开始backend任务: F002 - fail feature
+[2026-05-02 09:58:05] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-02 09:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-553/test_execute_success_with_mock0
+[2026-05-02 09:58:05] [backend] 任务执行成功, 输出 4 字符
+[2026-05-02 09:58:05] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-02 09:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-553/test_execute_failure_with_mock0
+[2026-05-02 09:58:05] [backend] 任务执行失败: error: something went wrong
+[2026-05-02 09:58:05] [backend] 开始backend任务: F003 - 测试
+[2026-05-02 09:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-553/test_execute_claude_not_found0
+[2026-05-02 09:58:05] [backend] claude CLI未找到
+[2026-05-02 09:58:05] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-02 09:58:05] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-553/test_execute_timeout0
+[2026-05-02 09:58:05] [backend] 任务执行超时(600秒)
+[2026-05-02 09:58:05] [backend] git commit: test: commit message
+[2026-05-02 09:58:05] [backend] git commit 失败: 
+[2026-05-02 09:58:05] F001 完成: 用户注册
+[2026-05-02 09:58:05] F001 完成: 注册
+[2026-05-02 09:58:05] F002 开始开发: 登录
+[2026-05-02 09:58:05] 批量导入 5 个features
+[2026-05-02 09:58:06] 批量导入 3 个features
+[2026-05-02 09:58:06] f1 开始开发: Feature f1
+[2026-05-02 09:58:06] f1 完成: Feature f1
+[2026-05-02 09:58:06] f1 被阻塞: missing env
+[2026-05-02 09:58:06] f1 进入验收阶段
+[2026-05-02 09:58:06] f1 开始开发: Feature f1
+[2026-05-02 09:58:06] f1 完成: Feature f1
+[2026-05-02 10:06:04] [backend] 开始backend任务: F001 - test feature
+[2026-05-02 10:06:04] [backend] 开始backend任务: F002 - fail feature
+[2026-05-02 10:06:04] [backend] 开始backend任务: F001 - 测试任务
+[2026-05-02 10:06:04] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-554/test_execute_success_with_mock0
+[2026-05-02 10:06:04] [backend] 任务执行成功, 输出 4 字符
+[2026-05-02 10:06:04] [backend] 开始backend任务: F002 - 失败任务
+[2026-05-02 10:06:04] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-554/test_execute_failure_with_mock0
+[2026-05-02 10:06:04] [backend] 任务执行失败: error: something went wrong
+[2026-05-02 10:06:04] [backend] 开始backend任务: F003 - 测试
+[2026-05-02 10:06:04] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-554/test_execute_claude_not_found0
+[2026-05-02 10:06:04] [backend] claude CLI未找到
+[2026-05-02 10:06:04] [backend] 开始backend任务: F004 - 超时任务
+[2026-05-02 10:06:04] [backend] claude -p 执行目录: /private/var/folders/cz/5qyndygs3jbgryb06r2785000000gn/T/pytest-of-jieson/pytest-554/test_execute_timeout0
+[2026-05-02 10:06:04] [backend] 任务执行超时(600秒)
+[2026-05-02 10:06:04] [backend] git commit: test: commit message
+[2026-05-02 10:06:04] [backend] git commit 失败: 
+[2026-05-02 10:06:04] F001 完成: 用户注册
+[2026-05-02 10:06:04] F001 完成: 注册
+[2026-05-02 10:06:04] F002 开始开发: 登录
+[2026-05-02 10:06:04] 批量导入 5 个features
+[2026-05-02 10:06:05] 批量导入 3 个features
+[2026-05-02 10:06:05] f1 开始开发: Feature f1
+[2026-05-02 10:06:05] f1 完成: Feature f1
+[2026-05-02 10:06:05] f1 被阻塞: missing env
+[2026-05-02 10:06:05] f1 进入验收阶段
+[2026-05-02 10:06:05] f1 开始开发: Feature f1
+[2026-05-02 10:06:05] f1 完成: Feature f1

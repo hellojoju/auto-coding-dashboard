@@ -1,0 +1,4052 @@
+{
+  "features": [
+    {
+      "id": "F001",
+      "category": "backend",
+      "description": "初始化 FastAPI 项目骨架，包含 app 目录结构、main.py 入口、基础配置文件（config/settings.py）、数据库连接（SQLite + SQLAlchemy async）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "启动应用返回 200",
+        "访问 /docs 显示 Swagger UI",
+        "数据库连接池初始化成功"
+      ],
+      "error_log": [
+        "PM 驳回：需求不符合预期"
+      ],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": "2026-04-19T13:38:28.755885"
+    },
+    {
+      "id": "F002",
+      "category": "database",
+      "description": "设计并创建 TODO 数据模型（id, title, description, is_completed, priority, created_at, updated_at, deleted_at），编写 Alembic 迁移文件",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 alembic upgrade head 成功",
+        "数据库中存在 todos 表",
+        "表字段与模型定义一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现创建 TODO 接口 POST /api/todos，包含 Pydantic 请求校验（title 必填且长度 1-200），返回创建的完整任务对象",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "POST 有效数据返回 201 和完整对象",
+        "title 为空返回 422",
+        "title 超过 200 字符返回 422",
+        "创建后数据库有对应记录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现查询 TODO 列表接口 GET /api/todos，支持分页（page, page_size）、按状态筛选（is_completed）、按优先级筛选（priority），返回分页结果",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "GET 返回分页列表",
+        "page=1&page_size=10 正确分页",
+        "is_completed=true 只返回已完成任务",
+        "priority=high 只返回高优先级任务"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "backend",
+      "description": "实现按 ID 查询单条任务接口 GET /api/todos/{todo_id}，任务不存在返回 404",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "GET 有效 ID 返回 200 和任务对象",
+        "GET 不存在 ID 返回 404"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现更新 TODO 接口 PUT /api/todos/{todo_id}，支持部分更新（PATCH 语义），可更新 title、description、is_completed、priority",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "PUT 更新单个字段成功",
+        "PUT 更新多个字段成功",
+        "更新不存在的 ID 返回 404",
+        "更新后数据库数据正确变更"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现删除 TODO 接口 DELETE /api/todos/{todo_id}，采用软删除（设置 deleted_at 时间戳），已删除任务不在列表查询中返回",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "DELETE 返回 204",
+        "删除后列表查询不返回该任务",
+        "按 ID 查询已删除任务返回 404"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "配置 CORS 中间件，允许指定来源的跨域请求，设置合理的 allowed_origins、allowed_methods、allowed_headers",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "跨域请求包含正确 CORS 头",
+        "OPTIONS 预检请求返回 200",
+        "未授权的 origin 被拒绝"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "qa",
+      "description": "为所有 CRUD 接口编写单元测试，覆盖正常路径和异常路径（422 校验失败、404 不存在），测试覆盖率 >= 80%",
+      "priority": "P1",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "pytest 运行全部通过",
+        "覆盖率报告 >= 80%",
+        "每个 CRUD 接口至少 3 个测试用例"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "qa",
+      "description": "编写 E2E 集成测试，模拟完整用户操作流程：创建 → 查询列表 → 更新 → 标记完成 → 删除 → 验证删除",
+      "priority": "P1",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试全部通过",
+        "完整 CRUD 流程无错误",
+        "测试数据自动清理"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "docs",
+      "description": "编写 API 文档 README，包含项目启动指南、环境变量说明、API 接口列表及使用示例（curl 命令）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含完整的安装步骤",
+        "curl 示例可直接运行",
+        "环境变量说明清晰"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "security",
+      "description": "添加全局异常处理和请求限流（slowapi），防止恶意请求和敏感信息泄露",
+      "priority": "P2",
+      "assigned_to": "security",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "限流触发返回 429",
+        "异常响应不包含堆栈信息",
+        "错误响应格式统一"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "创建 SQLAlchemy 数据库配置和 TODO 模型（id, title, description, completed, priority, created_at, updated_at, deleted_at）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "验证数据库连接成功",
+        "验证模型表结构正确创建",
+        "验证迁移脚本可执行"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "搭建 FastAPI 应用骨架，包含项目结构、路由注册、数据库依赖注入",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "启动服务返回 200",
+        "验证 /docs 页面可访问",
+        "验证数据库依赖注入正常"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现创建 TODO 的 POST 接口（/api/todos），支持 title（必填）、description、priority 字段",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "POST 创建成功返回 201",
+        "必填字段缺失返回 422",
+        "验证数据写入数据库"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现查询 TODO 的 GET 接口，支持列表查询（分页、过滤、排序）和单条查询",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "GET /api/todos 返回分页列表",
+        "GET /api/todos/{id} 返回单条",
+        "按 completed 和 priority 过滤正确",
+        "不存在的 id 返回 404"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "backend",
+      "description": "实现更新 TODO 的 PUT/PATCH 接口（/api/todos/{id}），支持部分更新",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "PATCH 更新字段返回 200",
+        "不存在的 id 返回 404",
+        "仅修改指定字段其余不变"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现删除 TODO 的 DELETE 接口（软删除），设置 deleted_at 时间戳",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "DELETE 返回 204",
+        "已删除项不在列表中出现",
+        "已删除的 id 查询返回 404"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现切换 TODO 完成状态的快捷接口（PATCH /api/todos/{id}/toggle）",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F005"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "toggle 切换 completed 状态",
+        "再次 toggle 恢复原状态"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "security",
+      "description": "添加输入验证和 Pydantic 模型约束（title 长度、priority 范围、防 SQL 注入）",
+      "priority": "P1",
+      "assigned_to": "security",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "超长 title 返回 422",
+        "非法 priority 返回 422",
+        "特殊字符输入被正确转义"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "配置 CORS 中间件和全局异常处理",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "跨域请求携带正确 CORS 头",
+        "异常返回统一 JSON 格式"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "qa",
+      "description": "编写完整的 pytest 测试套件，覆盖所有 CRUD 接口、边界情况和错误场景",
+      "priority": "P1",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006",
+        "F008"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 pytest 覆盖率 > 80%",
+        "所有 CRUD 测试通过",
+        "边界条件测试通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "docs",
+      "description": "完善 API 文档（OpenAPI 标签分类、示例值、错误响应说明）和 README",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "/docs 页面标签分类清晰",
+        "每个接口有示例请求和响应",
+        "README 包含安装和运行说明"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "搭建项目基础结构，配置 FastAPI 应用、SQLAlchemy 连接 SQLite、Alembic 迁移框架",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "启动应用无报错",
+        "连接数据库成功",
+        "Alembic migration 初始化成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "database",
+      "description": "创建 TODO 数据模型（id, title, description, is_complete, priority, created_at, updated_at）及 Alembic 迁移",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 alembic upgrade head 成功",
+        "TODO 表结构正确",
+        "字段类型和约束正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现创建 TODO 接口 POST /todos，包含请求体校验和数据库写入",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "POST /todos 创建任务成功返回 201",
+        "缺少 title 字段返回 422",
+        "响应包含完整任务数据"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现查询 TODO 列表接口 GET /todos，支持分页（skip/limit）和状态筛选（is_complete）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "GET /todos 返回任务列表",
+        "分页参数 skip/limit 生效",
+        "is_complete 筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "backend",
+      "description": "实现查询单个 TODO 接口 GET /todos/{todo_id}，不存在时返回 404",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "GET /todos/1 返回正确任务",
+        "GET /todos/999 返回 404"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现更新 TODO 接口 PUT /todos/{todo_id}，支持部分字段更新，不存在返回 404",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "PUT /todos/1 更新成功",
+        "仅传 title 时其他字段不变",
+        "更新不存在的 ID 返回 404"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现删除 TODO 接口 DELETE /todos/{todo_id}，不存在返回 404",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "DELETE /todos/1 返回 200",
+        "再次查询该 ID 返回 404 或不在列表中",
+        "删除不存在的 ID 返回 404"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现 Pydantic 请求/响应模型（TodoCreate, TodoUpdate, TodoResponse, TodoListResponse），统一 API 返回格式",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务时校验 priority 枚举值",
+        "响应字段与模型定义一致",
+        "时间字段正确序列化"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "qa",
+      "description": "为 CRUD 接口编写集成测试（pytest + httpx），覆盖正常流程和异常流程",
+      "priority": "P1",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 pytest 全部通过",
+        "测试覆盖率 >= 80%",
+        "包含正常和异常用例"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "security",
+      "description": "添加全局异常处理、输入安全校验、CORS 中间件配置",
+      "priority": "P2",
+      "assigned_to": "security",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "非法输入返回友好 422 错误",
+        "CORS 配置正确",
+        "SQL 注入尝试被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 自动生成的 Swagger/ReDoc），补充 README 包含项目安装、运行、测试说明",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F003",
+        "F004",
+        "F005",
+        "F006",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "访问 /docs 可查看 Swagger UI",
+        "所有端点有描述和示例",
+        "README 包含完整运行指南"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "设计并创建用户、任务、项目、标签核心数据库 schema（Prisma schema + 首次 migration）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 prisma migrate",
+        "验证表结构正确",
+        "验证外键约束",
+        "验证索引存在"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "实现用户注册接口（POST /auth/register），含密码加密和输入验证",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效注册返回 201",
+        "重复邮箱返回 409",
+        "无效密码返回 400",
+        "密码已加密存储"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现用户登录接口（POST /auth/login），JWT 签发",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "正确凭据返回 JWT",
+        "错误凭据返回 401",
+        "JWT 包含 userId 和 exp"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现 JWT 中间件和认证守卫（请求解析、token 验证、用户注入）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效 token 通过中间件",
+        "无效 token 返回 401",
+        "无 token 返回 401"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "security",
+      "description": "安全加固：全局中间件（CORS、速率限制、Helmet/CSP、输入净化）",
+      "priority": "P0",
+      "assigned_to": "security",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "CORS 限制有效源",
+        "超限请求返回 429",
+        "响应头包含安全头",
+        "XSS payload 被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现任务 CRUD 接口（POST/GET/PUT/DELETE /tasks）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务返回 201",
+        "查询返回任务列表",
+        "更新任务返回 200",
+        "删除任务返回 204"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现任务筛选和搜索接口（按状态/优先级/标签筛选，关键词搜索）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "按状态筛选返回正确结果",
+        "关键词搜索命中标题和内容",
+        "多条件组合筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现标签 CRUD 和任务-标签关联接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建标签返回 201",
+        "关联标签到任务成功",
+        "移除标签成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "实现项目 CRUD 和项目成员邀请接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建项目返回 201",
+        "邀请成员返回 200",
+        "被邀请者加入项目成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "frontend",
+      "description": "搭建 Next.js 前端骨架（路由结构、TailwindCSS 配置、布局组件）",
+      "priority": "P0",
+      "assigned_to": "frontend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "npm dev 启动成功",
+        "访问 / 显示布局",
+        "TailwindCSS 样式生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "frontend",
+      "description": "实现注册和登录页面及表单逻辑（含表单验证和错误提示）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "表单验证拦截无效输入",
+        "登录成功跳转到任务列表",
+        "错误信息正确展示"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "frontend",
+      "description": "实现前端认证上下文和 API 请求拦截器（JWT 存储、自动附加 token、401 自动登出）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F011"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "登录后 token 存储到 localStorage",
+        "请求自动携带 Authorization 头",
+        "401 响应时自动跳转登录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F013",
+      "category": "frontend",
+      "description": "实现任务列表页面（表格视图，含筛选和搜索 UI）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F012",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务列表正确加载",
+        "筛选功能生效",
+        "搜索功能生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F014",
+      "category": "frontend",
+      "description": "实现看板视图页面（状态列展示，拖拽切换状态）",
+      "priority": "P2",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务按状态分列显示",
+        "拖拽任务到另一列更新状态",
+        "拖拽后 UI 乐观更新"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F015",
+      "category": "frontend",
+      "description": "实现任务创建/编辑/详情模态框组件",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "点击新建弹出模态框",
+        "提交创建成功更新列表",
+        "编辑已保存任务成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F016",
+      "category": "ui",
+      "description": "设计并实现全局 UI 主题系统（设计令牌、配色方案、排版、组件样式规范）",
+      "priority": "P1",
+      "assigned_to": "ui",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "设计令牌定义完整",
+        "暗色/亮色主题切换正常",
+        "组件风格统一一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F017",
+      "category": "qa",
+      "description": "编写端到端测试（注册->登录->创建任务->完成任务 完整流程）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F011",
+        "F013",
+        "F015"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试注册到完成任务流程",
+        "断言各步骤 UI 状态正确",
+        "测试在无头浏览器中通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F018",
+      "category": "qa",
+      "description": "编写后端 API 集成测试（认证 + 任务 CRUD）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "认证接口测试通过",
+        "CRUD 接口测试通过",
+        "鉴权失败场景覆盖"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F019",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 3.0 规范，含认证、任务、项目、标签所有端点）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F009"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "OpenAPI 规范文件生成",
+        "所有端点有请求/响应示例",
+        "Swagger UI 可正常浏览"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F020",
+      "category": "docs",
+      "description": "编写前端使用文档和部署指南（README、环境变量说明、Docker 部署说明）",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F019"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含安装和使用说明",
+        "环境变量文档完整",
+        "Docker 部署指南可执行成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "设计并创建用户、任务、项目、标签核心数据库 schema（Prisma schema + 首次 migration）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 prisma migrate",
+        "验证表结构正确",
+        "验证外键约束",
+        "验证索引存在"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "实现用户注册接口（POST /auth/register），含密码加密和输入验证",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效注册返回 201",
+        "重复邮箱返回 409",
+        "无效密码返回 400",
+        "密码已加密存储"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现用户登录接口（POST /auth/login），JWT 签发",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "正确凭据返回 JWT",
+        "错误凭据返回 401",
+        "JWT 包含 userId 和 exp"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现 JWT 中间件和认证守卫（请求解析、token 验证、用户注入）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效 token 通过中间件",
+        "无效 token 返回 401",
+        "无 token 返回 401"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "security",
+      "description": "安全加固：全局中间件（CORS、速率限制、Helmet/CSP、输入净化）",
+      "priority": "P0",
+      "assigned_to": "security",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "CORS 限制有效源",
+        "超限请求返回 429",
+        "响应头包含安全头",
+        "XSS payload 被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现任务 CRUD 接口（POST/GET/PUT/DELETE /tasks）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务返回 201",
+        "查询返回任务列表",
+        "更新任务返回 200",
+        "删除任务返回 204"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现任务筛选和搜索接口（按状态/优先级/标签筛选，关键词搜索）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "按状态筛选返回正确结果",
+        "关键词搜索命中标题和内容",
+        "多条件组合筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现标签 CRUD 和任务-标签关联接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建标签返回 201",
+        "关联标签到任务成功",
+        "移除标签成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "实现项目 CRUD 和项目成员邀请接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建项目返回 201",
+        "邀请成员返回 200",
+        "被邀请者加入项目成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "frontend",
+      "description": "搭建 Next.js 前端骨架（路由结构、TailwindCSS 配置、布局组件）",
+      "priority": "P0",
+      "assigned_to": "frontend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "npm dev 启动成功",
+        "访问 / 显示布局",
+        "TailwindCSS 样式生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "frontend",
+      "description": "实现注册和登录页面及表单逻辑（含表单验证和错误提示）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "表单验证拦截无效输入",
+        "登录成功跳转到任务列表",
+        "错误信息正确展示"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "frontend",
+      "description": "实现前端认证上下文和 API 请求拦截器（JWT 存储、自动附加 token、401 自动登出）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F011"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "登录后 token 存储到 localStorage",
+        "请求自动携带 Authorization 头",
+        "401 响应时自动跳转登录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F013",
+      "category": "frontend",
+      "description": "实现任务列表页面（表格视图，含筛选和搜索 UI）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F012",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务列表正确加载",
+        "筛选功能生效",
+        "搜索功能生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F014",
+      "category": "frontend",
+      "description": "实现看板视图页面（状态列展示，拖拽切换状态）",
+      "priority": "P2",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务按状态分列显示",
+        "拖拽任务到另一列更新状态",
+        "拖拽后 UI 乐观更新"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F015",
+      "category": "frontend",
+      "description": "实现任务创建/编辑/详情模态框组件",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "点击新建弹出模态框",
+        "提交创建成功更新列表",
+        "编辑已保存任务成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F016",
+      "category": "ui",
+      "description": "设计并实现全局 UI 主题系统（设计令牌、配色方案、排版、组件样式规范）",
+      "priority": "P1",
+      "assigned_to": "ui",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "设计令牌定义完整",
+        "暗色/亮色主题切换正常",
+        "组件风格统一一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F017",
+      "category": "qa",
+      "description": "编写端到端测试（注册->登录->创建任务->完成任务 完整流程）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F011",
+        "F013",
+        "F015"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试注册到完成任务流程",
+        "断言各步骤 UI 状态正确",
+        "测试在无头浏览器中通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F018",
+      "category": "qa",
+      "description": "编写后端 API 集成测试（认证 + 任务 CRUD）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "认证接口测试通过",
+        "CRUD 接口测试通过",
+        "鉴权失败场景覆盖"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F019",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 3.0 规范，含认证、任务、项目、标签所有端点）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F009"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "OpenAPI 规范文件生成",
+        "所有端点有请求/响应示例",
+        "Swagger UI 可正常浏览"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F020",
+      "category": "docs",
+      "description": "编写前端使用文档和部署指南（README、环境变量说明、Docker 部署说明）",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F019"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含安装和使用说明",
+        "环境变量文档完整",
+        "Docker 部署指南可执行成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "设计并创建用户、任务、项目、标签核心数据库 schema（Prisma schema + 首次 migration）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 prisma migrate",
+        "验证表结构正确",
+        "验证外键约束",
+        "验证索引存在"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "实现用户注册接口（POST /auth/register），含密码加密和输入验证",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效注册返回 201",
+        "重复邮箱返回 409",
+        "无效密码返回 400",
+        "密码已加密存储"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现用户登录接口（POST /auth/login），JWT 签发",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "正确凭据返回 JWT",
+        "错误凭据返回 401",
+        "JWT 包含 userId 和 exp"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现 JWT 中间件和认证守卫（请求解析、token 验证、用户注入）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效 token 通过中间件",
+        "无效 token 返回 401",
+        "无 token 返回 401"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "security",
+      "description": "安全加固：全局中间件（CORS、速率限制、Helmet/CSP、输入净化）",
+      "priority": "P0",
+      "assigned_to": "security",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "CORS 限制有效源",
+        "超限请求返回 429",
+        "响应头包含安全头",
+        "XSS payload 被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现任务 CRUD 接口（POST/GET/PUT/DELETE /tasks）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务返回 201",
+        "查询返回任务列表",
+        "更新任务返回 200",
+        "删除任务返回 204"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现任务筛选和搜索接口（按状态/优先级/标签筛选，关键词搜索）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "按状态筛选返回正确结果",
+        "关键词搜索命中标题和内容",
+        "多条件组合筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现标签 CRUD 和任务-标签关联接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建标签返回 201",
+        "关联标签到任务成功",
+        "移除标签成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "实现项目 CRUD 和项目成员邀请接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建项目返回 201",
+        "邀请成员返回 200",
+        "被邀请者加入项目成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "frontend",
+      "description": "搭建 Next.js 前端骨架（路由结构、TailwindCSS 配置、布局组件）",
+      "priority": "P0",
+      "assigned_to": "frontend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "npm dev 启动成功",
+        "访问 / 显示布局",
+        "TailwindCSS 样式生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "frontend",
+      "description": "实现注册和登录页面及表单逻辑（含表单验证和错误提示）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "表单验证拦截无效输入",
+        "登录成功跳转到任务列表",
+        "错误信息正确展示"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "frontend",
+      "description": "实现前端认证上下文和 API 请求拦截器（JWT 存储、自动附加 token、401 自动登出）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F011"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "登录后 token 存储到 localStorage",
+        "请求自动携带 Authorization 头",
+        "401 响应时自动跳转登录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F013",
+      "category": "frontend",
+      "description": "实现任务列表页面（表格视图，含筛选和搜索 UI）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F012",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务列表正确加载",
+        "筛选功能生效",
+        "搜索功能生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F014",
+      "category": "frontend",
+      "description": "实现看板视图页面（状态列展示，拖拽切换状态）",
+      "priority": "P2",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务按状态分列显示",
+        "拖拽任务到另一列更新状态",
+        "拖拽后 UI 乐观更新"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F015",
+      "category": "frontend",
+      "description": "实现任务创建/编辑/详情模态框组件",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "点击新建弹出模态框",
+        "提交创建成功更新列表",
+        "编辑已保存任务成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F016",
+      "category": "ui",
+      "description": "设计并实现全局 UI 主题系统（设计令牌、配色方案、排版、组件样式规范）",
+      "priority": "P1",
+      "assigned_to": "ui",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "设计令牌定义完整",
+        "暗色/亮色主题切换正常",
+        "组件风格统一一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F017",
+      "category": "qa",
+      "description": "编写端到端测试（注册->登录->创建任务->完成任务 完整流程）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F011",
+        "F013",
+        "F015"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试注册到完成任务流程",
+        "断言各步骤 UI 状态正确",
+        "测试在无头浏览器中通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F018",
+      "category": "qa",
+      "description": "编写后端 API 集成测试（认证 + 任务 CRUD）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "认证接口测试通过",
+        "CRUD 接口测试通过",
+        "鉴权失败场景覆盖"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F019",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 3.0 规范，含认证、任务、项目、标签所有端点）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F009"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "OpenAPI 规范文件生成",
+        "所有端点有请求/响应示例",
+        "Swagger UI 可正常浏览"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F020",
+      "category": "docs",
+      "description": "编写前端使用文档和部署指南（README、环境变量说明、Docker 部署说明）",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F019"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含安装和使用说明",
+        "环境变量文档完整",
+        "Docker 部署指南可执行成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "设计并创建用户、任务、项目、标签核心数据库 schema（Prisma schema + 首次 migration）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 prisma migrate",
+        "验证表结构正确",
+        "验证外键约束",
+        "验证索引存在"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "实现用户注册接口（POST /auth/register），含密码加密和输入验证",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效注册返回 201",
+        "重复邮箱返回 409",
+        "无效密码返回 400",
+        "密码已加密存储"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现用户登录接口（POST /auth/login），JWT 签发",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "正确凭据返回 JWT",
+        "错误凭据返回 401",
+        "JWT 包含 userId 和 exp"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现 JWT 中间件和认证守卫（请求解析、token 验证、用户注入）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效 token 通过中间件",
+        "无效 token 返回 401",
+        "无 token 返回 401"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "security",
+      "description": "安全加固：全局中间件（CORS、速率限制、Helmet/CSP、输入净化）",
+      "priority": "P0",
+      "assigned_to": "security",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "CORS 限制有效源",
+        "超限请求返回 429",
+        "响应头包含安全头",
+        "XSS payload 被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现任务 CRUD 接口（POST/GET/PUT/DELETE /tasks）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务返回 201",
+        "查询返回任务列表",
+        "更新任务返回 200",
+        "删除任务返回 204"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现任务筛选和搜索接口（按状态/优先级/标签筛选，关键词搜索）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "按状态筛选返回正确结果",
+        "关键词搜索命中标题和内容",
+        "多条件组合筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现标签 CRUD 和任务-标签关联接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建标签返回 201",
+        "关联标签到任务成功",
+        "移除标签成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "实现项目 CRUD 和项目成员邀请接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建项目返回 201",
+        "邀请成员返回 200",
+        "被邀请者加入项目成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "frontend",
+      "description": "搭建 Next.js 前端骨架（路由结构、TailwindCSS 配置、布局组件）",
+      "priority": "P0",
+      "assigned_to": "frontend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "npm dev 启动成功",
+        "访问 / 显示布局",
+        "TailwindCSS 样式生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "frontend",
+      "description": "实现注册和登录页面及表单逻辑（含表单验证和错误提示）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "表单验证拦截无效输入",
+        "登录成功跳转到任务列表",
+        "错误信息正确展示"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "frontend",
+      "description": "实现前端认证上下文和 API 请求拦截器（JWT 存储、自动附加 token、401 自动登出）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F011"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "登录后 token 存储到 localStorage",
+        "请求自动携带 Authorization 头",
+        "401 响应时自动跳转登录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F013",
+      "category": "frontend",
+      "description": "实现任务列表页面（表格视图，含筛选和搜索 UI）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F012",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务列表正确加载",
+        "筛选功能生效",
+        "搜索功能生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F014",
+      "category": "frontend",
+      "description": "实现看板视图页面（状态列展示，拖拽切换状态）",
+      "priority": "P2",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务按状态分列显示",
+        "拖拽任务到另一列更新状态",
+        "拖拽后 UI 乐观更新"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F015",
+      "category": "frontend",
+      "description": "实现任务创建/编辑/详情模态框组件",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "点击新建弹出模态框",
+        "提交创建成功更新列表",
+        "编辑已保存任务成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F016",
+      "category": "ui",
+      "description": "设计并实现全局 UI 主题系统（设计令牌、配色方案、排版、组件样式规范）",
+      "priority": "P1",
+      "assigned_to": "ui",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "设计令牌定义完整",
+        "暗色/亮色主题切换正常",
+        "组件风格统一一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F017",
+      "category": "qa",
+      "description": "编写端到端测试（注册->登录->创建任务->完成任务 完整流程）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F011",
+        "F013",
+        "F015"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试注册到完成任务流程",
+        "断言各步骤 UI 状态正确",
+        "测试在无头浏览器中通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F018",
+      "category": "qa",
+      "description": "编写后端 API 集成测试（认证 + 任务 CRUD）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "认证接口测试通过",
+        "CRUD 接口测试通过",
+        "鉴权失败场景覆盖"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F019",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 3.0 规范，含认证、任务、项目、标签所有端点）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F009"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "OpenAPI 规范文件生成",
+        "所有端点有请求/响应示例",
+        "Swagger UI 可正常浏览"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F020",
+      "category": "docs",
+      "description": "编写前端使用文档和部署指南（README、环境变量说明、Docker 部署说明）",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F019"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含安装和使用说明",
+        "环境变量文档完整",
+        "Docker 部署指南可执行成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "设计并创建用户、任务、项目、标签核心数据库 schema（Prisma schema + 首次 migration）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 prisma migrate",
+        "验证表结构正确",
+        "验证外键约束",
+        "验证索引存在"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "实现用户注册接口（POST /auth/register），含密码加密和输入验证",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效注册返回 201",
+        "重复邮箱返回 409",
+        "无效密码返回 400",
+        "密码已加密存储"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现用户登录接口（POST /auth/login），JWT 签发",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "正确凭据返回 JWT",
+        "错误凭据返回 401",
+        "JWT 包含 userId 和 exp"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现 JWT 中间件和认证守卫（请求解析、token 验证、用户注入）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效 token 通过中间件",
+        "无效 token 返回 401",
+        "无 token 返回 401"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "security",
+      "description": "安全加固：全局中间件（CORS、速率限制、Helmet/CSP、输入净化）",
+      "priority": "P0",
+      "assigned_to": "security",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "CORS 限制有效源",
+        "超限请求返回 429",
+        "响应头包含安全头",
+        "XSS payload 被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现任务 CRUD 接口（POST/GET/PUT/DELETE /tasks）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务返回 201",
+        "查询返回任务列表",
+        "更新任务返回 200",
+        "删除任务返回 204"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现任务筛选和搜索接口（按状态/优先级/标签筛选，关键词搜索）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "按状态筛选返回正确结果",
+        "关键词搜索命中标题和内容",
+        "多条件组合筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现标签 CRUD 和任务-标签关联接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建标签返回 201",
+        "关联标签到任务成功",
+        "移除标签成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "实现项目 CRUD 和项目成员邀请接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建项目返回 201",
+        "邀请成员返回 200",
+        "被邀请者加入项目成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "frontend",
+      "description": "搭建 Next.js 前端骨架（路由结构、TailwindCSS 配置、布局组件）",
+      "priority": "P0",
+      "assigned_to": "frontend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "npm dev 启动成功",
+        "访问 / 显示布局",
+        "TailwindCSS 样式生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "frontend",
+      "description": "实现注册和登录页面及表单逻辑（含表单验证和错误提示）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "表单验证拦截无效输入",
+        "登录成功跳转到任务列表",
+        "错误信息正确展示"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "frontend",
+      "description": "实现前端认证上下文和 API 请求拦截器（JWT 存储、自动附加 token、401 自动登出）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F011"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "登录后 token 存储到 localStorage",
+        "请求自动携带 Authorization 头",
+        "401 响应时自动跳转登录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F013",
+      "category": "frontend",
+      "description": "实现任务列表页面（表格视图，含筛选和搜索 UI）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F012",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务列表正确加载",
+        "筛选功能生效",
+        "搜索功能生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F014",
+      "category": "frontend",
+      "description": "实现看板视图页面（状态列展示，拖拽切换状态）",
+      "priority": "P2",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务按状态分列显示",
+        "拖拽任务到另一列更新状态",
+        "拖拽后 UI 乐观更新"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F015",
+      "category": "frontend",
+      "description": "实现任务创建/编辑/详情模态框组件",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "点击新建弹出模态框",
+        "提交创建成功更新列表",
+        "编辑已保存任务成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F016",
+      "category": "ui",
+      "description": "设计并实现全局 UI 主题系统（设计令牌、配色方案、排版、组件样式规范）",
+      "priority": "P1",
+      "assigned_to": "ui",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "设计令牌定义完整",
+        "暗色/亮色主题切换正常",
+        "组件风格统一一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F017",
+      "category": "qa",
+      "description": "编写端到端测试（注册->登录->创建任务->完成任务 完整流程）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F011",
+        "F013",
+        "F015"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试注册到完成任务流程",
+        "断言各步骤 UI 状态正确",
+        "测试在无头浏览器中通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F018",
+      "category": "qa",
+      "description": "编写后端 API 集成测试（认证 + 任务 CRUD）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "认证接口测试通过",
+        "CRUD 接口测试通过",
+        "鉴权失败场景覆盖"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F019",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 3.0 规范，含认证、任务、项目、标签所有端点）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F009"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "OpenAPI 规范文件生成",
+        "所有端点有请求/响应示例",
+        "Swagger UI 可正常浏览"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F020",
+      "category": "docs",
+      "description": "编写前端使用文档和部署指南（README、环境变量说明、Docker 部署说明）",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F019"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含安装和使用说明",
+        "环境变量文档完整",
+        "Docker 部署指南可执行成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "设计并创建用户、任务、项目、标签核心数据库 schema（Prisma schema + 首次 migration）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 prisma migrate",
+        "验证表结构正确",
+        "验证外键约束",
+        "验证索引存在"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "实现用户注册接口（POST /auth/register），含密码加密和输入验证",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效注册返回 201",
+        "重复邮箱返回 409",
+        "无效密码返回 400",
+        "密码已加密存储"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现用户登录接口（POST /auth/login），JWT 签发",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "正确凭据返回 JWT",
+        "错误凭据返回 401",
+        "JWT 包含 userId 和 exp"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现 JWT 中间件和认证守卫（请求解析、token 验证、用户注入）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效 token 通过中间件",
+        "无效 token 返回 401",
+        "无 token 返回 401"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "security",
+      "description": "安全加固：全局中间件（CORS、速率限制、Helmet/CSP、输入净化）",
+      "priority": "P0",
+      "assigned_to": "security",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "CORS 限制有效源",
+        "超限请求返回 429",
+        "响应头包含安全头",
+        "XSS payload 被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现任务 CRUD 接口（POST/GET/PUT/DELETE /tasks）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务返回 201",
+        "查询返回任务列表",
+        "更新任务返回 200",
+        "删除任务返回 204"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现任务筛选和搜索接口（按状态/优先级/标签筛选，关键词搜索）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "按状态筛选返回正确结果",
+        "关键词搜索命中标题和内容",
+        "多条件组合筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现标签 CRUD 和任务-标签关联接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建标签返回 201",
+        "关联标签到任务成功",
+        "移除标签成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "实现项目 CRUD 和项目成员邀请接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建项目返回 201",
+        "邀请成员返回 200",
+        "被邀请者加入项目成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "frontend",
+      "description": "搭建 Next.js 前端骨架（路由结构、TailwindCSS 配置、布局组件）",
+      "priority": "P0",
+      "assigned_to": "frontend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "npm dev 启动成功",
+        "访问 / 显示布局",
+        "TailwindCSS 样式生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "frontend",
+      "description": "实现注册和登录页面及表单逻辑（含表单验证和错误提示）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "表单验证拦截无效输入",
+        "登录成功跳转到任务列表",
+        "错误信息正确展示"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "frontend",
+      "description": "实现前端认证上下文和 API 请求拦截器（JWT 存储、自动附加 token、401 自动登出）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F011"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "登录后 token 存储到 localStorage",
+        "请求自动携带 Authorization 头",
+        "401 响应时自动跳转登录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F013",
+      "category": "frontend",
+      "description": "实现任务列表页面（表格视图，含筛选和搜索 UI）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F012",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务列表正确加载",
+        "筛选功能生效",
+        "搜索功能生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F014",
+      "category": "frontend",
+      "description": "实现看板视图页面（状态列展示，拖拽切换状态）",
+      "priority": "P2",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务按状态分列显示",
+        "拖拽任务到另一列更新状态",
+        "拖拽后 UI 乐观更新"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F015",
+      "category": "frontend",
+      "description": "实现任务创建/编辑/详情模态框组件",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "点击新建弹出模态框",
+        "提交创建成功更新列表",
+        "编辑已保存任务成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F016",
+      "category": "ui",
+      "description": "设计并实现全局 UI 主题系统（设计令牌、配色方案、排版、组件样式规范）",
+      "priority": "P1",
+      "assigned_to": "ui",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "设计令牌定义完整",
+        "暗色/亮色主题切换正常",
+        "组件风格统一一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F017",
+      "category": "qa",
+      "description": "编写端到端测试（注册->登录->创建任务->完成任务 完整流程）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F011",
+        "F013",
+        "F015"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试注册到完成任务流程",
+        "断言各步骤 UI 状态正确",
+        "测试在无头浏览器中通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F018",
+      "category": "qa",
+      "description": "编写后端 API 集成测试（认证 + 任务 CRUD）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "认证接口测试通过",
+        "CRUD 接口测试通过",
+        "鉴权失败场景覆盖"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F019",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 3.0 规范，含认证、任务、项目、标签所有端点）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F009"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "OpenAPI 规范文件生成",
+        "所有端点有请求/响应示例",
+        "Swagger UI 可正常浏览"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F020",
+      "category": "docs",
+      "description": "编写前端使用文档和部署指南（README、环境变量说明、Docker 部署说明）",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F019"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含安装和使用说明",
+        "环境变量文档完整",
+        "Docker 部署指南可执行成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F001",
+      "category": "database",
+      "description": "设计并创建用户、任务、项目、标签核心数据库 schema（Prisma schema + 首次 migration）",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "运行 prisma migrate",
+        "验证表结构正确",
+        "验证外键约束",
+        "验证索引存在"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F002",
+      "category": "backend",
+      "description": "实现用户注册接口（POST /auth/register），含密码加密和输入验证",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F001"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效注册返回 201",
+        "重复邮箱返回 409",
+        "无效密码返回 400",
+        "密码已加密存储"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现用户登录接口（POST /auth/login），JWT 签发",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F002"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "正确凭据返回 JWT",
+        "错误凭据返回 401",
+        "JWT 包含 userId 和 exp"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现 JWT 中间件和认证守卫（请求解析、token 验证、用户注入）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F003"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "有效 token 通过中间件",
+        "无效 token 返回 401",
+        "无 token 返回 401"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F005",
+      "category": "security",
+      "description": "安全加固：全局中间件（CORS、速率限制、Helmet/CSP、输入净化）",
+      "priority": "P0",
+      "assigned_to": "security",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "CORS 限制有效源",
+        "超限请求返回 429",
+        "响应头包含安全头",
+        "XSS payload 被拦截"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现任务 CRUD 接口（POST/GET/PUT/DELETE /tasks）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建任务返回 201",
+        "查询返回任务列表",
+        "更新任务返回 200",
+        "删除任务返回 204"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现任务筛选和搜索接口（按状态/优先级/标签筛选，关键词搜索）",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "按状态筛选返回正确结果",
+        "关键词搜索命中标题和内容",
+        "多条件组合筛选正确"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "实现标签 CRUD 和任务-标签关联接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建标签返回 201",
+        "关联标签到任务成功",
+        "移除标签成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F009",
+      "category": "backend",
+      "description": "实现项目 CRUD 和项目成员邀请接口",
+      "priority": "P2",
+      "assigned_to": "backend",
+      "dependencies": [
+        "F004"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "创建项目返回 201",
+        "邀请成员返回 200",
+        "被邀请者加入项目成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F010",
+      "category": "frontend",
+      "description": "搭建 Next.js 前端骨架（路由结构、TailwindCSS 配置、布局组件）",
+      "priority": "P0",
+      "assigned_to": "frontend",
+      "dependencies": [],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "npm dev 启动成功",
+        "访问 / 显示布局",
+        "TailwindCSS 样式生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F011",
+      "category": "frontend",
+      "description": "实现注册和登录页面及表单逻辑（含表单验证和错误提示）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "表单验证拦截无效输入",
+        "登录成功跳转到任务列表",
+        "错误信息正确展示"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F012",
+      "category": "frontend",
+      "description": "实现前端认证上下文和 API 请求拦截器（JWT 存储、自动附加 token、401 自动登出）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F011"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "登录后 token 存储到 localStorage",
+        "请求自动携带 Authorization 头",
+        "401 响应时自动跳转登录"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F013",
+      "category": "frontend",
+      "description": "实现任务列表页面（表格视图，含筛选和搜索 UI）",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F012",
+        "F007"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务列表正确加载",
+        "筛选功能生效",
+        "搜索功能生效"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F014",
+      "category": "frontend",
+      "description": "实现看板视图页面（状态列展示，拖拽切换状态）",
+      "priority": "P2",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "任务按状态分列显示",
+        "拖拽任务到另一列更新状态",
+        "拖拽后 UI 乐观更新"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F015",
+      "category": "frontend",
+      "description": "实现任务创建/编辑/详情模态框组件",
+      "priority": "P1",
+      "assigned_to": "frontend",
+      "dependencies": [
+        "F013"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "点击新建弹出模态框",
+        "提交创建成功更新列表",
+        "编辑已保存任务成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F016",
+      "category": "ui",
+      "description": "设计并实现全局 UI 主题系统（设计令牌、配色方案、排版、组件样式规范）",
+      "priority": "P1",
+      "assigned_to": "ui",
+      "dependencies": [
+        "F010"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "设计令牌定义完整",
+        "暗色/亮色主题切换正常",
+        "组件风格统一一致"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F017",
+      "category": "qa",
+      "description": "编写端到端测试（注册->登录->创建任务->完成任务 完整流程）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F011",
+        "F013",
+        "F015"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "E2E 测试注册到完成任务流程",
+        "断言各步骤 UI 状态正确",
+        "测试在无头浏览器中通过"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F018",
+      "category": "qa",
+      "description": "编写后端 API 集成测试（认证 + 任务 CRUD）",
+      "priority": "P2",
+      "assigned_to": "qa",
+      "dependencies": [
+        "F006"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "认证接口测试通过",
+        "CRUD 接口测试通过",
+        "鉴权失败场景覆盖"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F019",
+      "category": "docs",
+      "description": "编写 API 文档（OpenAPI 3.0 规范，含认证、任务、项目、标签所有端点）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F009"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "OpenAPI 规范文件生成",
+        "所有端点有请求/响应示例",
+        "Swagger UI 可正常浏览"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    },
+    {
+      "id": "F020",
+      "category": "docs",
+      "description": "编写前端使用文档和部署指南（README、环境变量说明、Docker 部署说明）",
+      "priority": "P3",
+      "assigned_to": "docs",
+      "dependencies": [
+        "F019"
+      ],
+      "status": "pending",
+      "passes": false,
+      "test_steps": [
+        "README 包含安装和使用说明",
+        "环境变量文档完整",
+        "Docker 部署指南可执行成功"
+      ],
+      "error_log": [],
+      "completed_at": null,
+      "assigned_instance": "",
+      "workspace_path": "",
+      "files_changed": [],
+      "started_at": null
+    }
+  ],
+  "summary": {
+    "total": 174,
+    "done": 0,
+    "in_progress": 0,
+    "blocked": 0,
+    "pending": 174,
+    "passing": 0
+  }
+}

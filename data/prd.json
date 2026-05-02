@@ -1,0 +1,113 @@
+{
+  "prd_summary": "# FastAPI TODO 清单应用 PRD\n\n## 产品概述\n一款基于 FastAPI 的轻量级 TODO 清单应用，提供任务的增删改查（CRUD）核心能力，支持任务状态管理和基础分类。\n\n## 核心功能\n1. 创建 TODO 任务（标题、描述、优先级、截止日期）\n2. 查询 TODO 列表（支持按状态/优先级筛选、分页）\n3. 更新 TODO 任务（修改内容、标记完成/未完成）\n4. 删除 TODO 任务（软删除）\n5. 按 ID 查询单条任务详情\n\n## 技术选型\n- 框架：FastAPI + Pydantic v2\n- 数据库：SQLite（开发）/ PostgreSQL（生产），使用 SQLAlchemy 2.0 async\n- 迁移：Alembic\n- 测试：pytest + httpx（异步测试）\n- API 文档：FastAPI 自动生成的 Swagger UI / ReDoc\n\n## 非功能需求\n- 性能：P99 响应时间 < 200ms，支持 100 QPS\n- 安全：输入校验（Pydantic）、SQL 注入防护（ORM 参数化）、CORS 配置\n- 可扩展性：分层架构（router → service → repository），便于后续接入认证、多租户等能力",
+  "features": [
+    {
+      "id": "F001",
+      "category": "backend",
+      "description": "初始化 FastAPI 项目骨架，包含 app 目录结构、main.py 入口、基础配置文件（config/settings.py）、数据库连接（SQLite + SQLAlchemy async）",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": [],
+      "test_steps": ["启动应用返回 200", "访问 /docs 显示 Swagger UI", "数据库连接池初始化成功"]
+    },
+    {
+      "id": "F002",
+      "category": "database",
+      "description": "设计并创建 TODO 数据模型（id, title, description, is_completed, priority, created_at, updated_at, deleted_at），编写 Alembic 迁移文件",
+      "priority": "P0",
+      "assigned_to": "database",
+      "dependencies": ["F001"],
+      "test_steps": ["运行 alembic upgrade head 成功", "数据库中存在 todos 表", "表字段与模型定义一致"]
+    },
+    {
+      "id": "F003",
+      "category": "backend",
+      "description": "实现创建 TODO 接口 POST /api/todos，包含 Pydantic 请求校验（title 必填且长度 1-200），返回创建的完整任务对象",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": ["F002"],
+      "test_steps": ["POST 有效数据返回 201 和完整对象", "title 为空返回 422", "title 超过 200 字符返回 422", "创建后数据库有对应记录"]
+    },
+    {
+      "id": "F004",
+      "category": "backend",
+      "description": "实现查询 TODO 列表接口 GET /api/todos，支持分页（page, page_size）、按状态筛选（is_completed）、按优先级筛选（priority），返回分页结果",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": ["F002"],
+      "test_steps": ["GET 返回分页列表", "page=1&page_size=10 正确分页", "is_completed=true 只返回已完成任务", "priority=high 只返回高优先级任务"]
+    },
+    {
+      "id": "F005",
+      "category": "backend",
+      "description": "实现按 ID 查询单条任务接口 GET /api/todos/{todo_id}，任务不存在返回 404",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": ["F002"],
+      "test_steps": ["GET 有效 ID 返回 200 和任务对象", "GET 不存在 ID 返回 404"]
+    },
+    {
+      "id": "F006",
+      "category": "backend",
+      "description": "实现更新 TODO 接口 PUT /api/todos/{todo_id}，支持部分更新（PATCH 语义），可更新 title、description、is_completed、priority",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": ["F002"],
+      "test_steps": ["PUT 更新单个字段成功", "PUT 更新多个字段成功", "更新不存在的 ID 返回 404", "更新后数据库数据正确变更"]
+    },
+    {
+      "id": "F007",
+      "category": "backend",
+      "description": "实现删除 TODO 接口 DELETE /api/todos/{todo_id}，采用软删除（设置 deleted_at 时间戳），已删除任务不在列表查询中返回",
+      "priority": "P0",
+      "assigned_to": "backend",
+      "dependencies": ["F002"],
+      "test_steps": ["DELETE 返回 204", "删除后列表查询不返回该任务", "按 ID 查询已删除任务返回 404"]
+    },
+    {
+      "id": "F008",
+      "category": "backend",
+      "description": "配置 CORS 中间件，允许指定来源的跨域请求，设置合理的 allowed_origins、allowed_methods、allowed_headers",
+      "priority": "P1",
+      "assigned_to": "backend",
+      "dependencies": ["F001"],
+      "test_steps": ["跨域请求包含正确 CORS 头", "OPTIONS 预检请求返回 200", "未授权的 origin 被拒绝"]
+    },
+    {
+      "id": "F009",
+      "category": "qa",
+      "description": "为所有 CRUD 接口编写单元测试，覆盖正常路径和异常路径（422 校验失败、404 不存在），测试覆盖率 >= 80%",
+      "priority": "P1",
+      "assigned_to": "qa",
+      "dependencies": ["F003", "F004", "F005", "F006", "F007"],
+      "test_steps": ["pytest 运行全部通过", "覆盖率报告 >= 80%", "每个 CRUD 接口至少 3 个测试用例"]
+    },
+    {
+      "id": "F010",
+      "category": "qa",
+      "description": "编写 E2E 集成测试，模拟完整用户操作流程：创建 → 查询列表 → 更新 → 标记完成 → 删除 → 验证删除",
+      "priority": "P1",
+      "assigned_to": "qa",
+      "dependencies": ["F003", "F004", "F005", "F006", "F007"],
+      "test_steps": ["E2E 测试全部通过", "完整 CRUD 流程无错误", "测试数据自动清理"]
+    },
+    {
+      "id": "F011",
+      "category": "docs",
+      "description": "编写 API 文档 README，包含项目启动指南、环境变量说明、API 接口列表及使用示例（curl 命令）",
+      "priority": "P2",
+      "assigned_to": "docs",
+      "dependencies": ["F003", "F004", "F005", "F006", "F007"],
+      "test_steps": ["README 包含完整的安装步骤", "curl 示例可直接运行", "环境变量说明清晰"]
+    },
+    {
+      "id": "F012",
+      "category": "security",
+      "description": "添加全局异常处理和请求限流（slowapi），防止恶意请求和敏感信息泄露",
+      "priority": "P2",
+      "assigned_to": "security",
+      "dependencies": ["F001"],
+      "test_steps": ["限流触发返回 429", "异常响应不包含堆栈信息", "错误响应格式统一"]
+    }
+  ]
+}
